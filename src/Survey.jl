@@ -2,6 +2,7 @@ module Survey
 
 using DataFrames
 using Statistics
+using StatsBase
 
 export svydesign
 export svyby
