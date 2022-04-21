@@ -20,10 +20,10 @@ struct svydesign
     svydesign(; data = DataFrame(), ids = Symbol(), probs = Symbol(), strata = Symbol(), variables = Symbol(), fpc = Symbol(), nest = false, check_strat = false, weights = Symbol()) = new(ids, probs, strata, variables, fpc, data, nest, check_strat, weights)
 end
 
-function svyby(;formula = Symbol(), by = Symbol(), design = svydesign(), func=mean, params = [])
+function svyby(;formula = Symbol(), by = Symbol(), design = svydesign(), func = mean, params = [])
     gdf = groupby(design.data, by)
     w = design.weights
-    statistic = combine(gdf, [formula, w] => ((x, y) -> func(x, weights(y), params...)) => :stats)
+    statistic = combine(gdf, [formula, w] => ((x, y) -> func(x, weights(y), params...)) => formula)
     return statistic
 end
 
@@ -40,7 +40,7 @@ function Base.show(io::IO, design::svydesign)
         print(design.ids)
     end
     if length(string(design.strata)) > 0
-        printstyled("\nid: "; bold = true)
+        printstyled("\nstrata: "; bold = true)
         print(design.strata)
     end
     if length(string(design.variables)) > 0
@@ -48,7 +48,7 @@ function Base.show(io::IO, design::svydesign)
         print(design.variables)
     end
     if length(string(design.fpc)) > 0
-        printstyled("\nid: "; bold = true)
+        printstyled("\nfpc: "; bold = true)
         print(design.fpc)
     end
     printstyled("\nnest: "; bold = true)
