@@ -20,7 +20,7 @@ struct svydesign
     svydesign(; data = DataFrame(), ids = Symbol(), probs = Symbol(), strata = Symbol(), variables = Symbol(), fpc = Symbol(), nest = false, check_strat = false, weights = Symbol()) = new(ids, probs, strata, variables, fpc, data, nest, check_strat, weights)
 end
 
-function svyby(formula, by, design::svydesign, func, params = [])
+function svyby(;formula = Symbol(), by = Symbol(), design::svydesign(), func=mean, params = [])
     gdf = groupby(design.data, by)
     w = design.weights
     statistic = combine(gdf, [formula, w] => ((x, y) -> func(x, weights(y), params...)) => :stats)
