@@ -1,5 +1,5 @@
 """
-The svydesign object combines a data frame and all the survey design information needed to analyse it.
+The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
 
 ```jldoctest
 julia> using Survey; 

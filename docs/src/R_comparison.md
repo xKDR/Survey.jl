@@ -56,7 +56,7 @@ dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1, fpc = :fpc)
 ```
 
 ## svyby
-The svyby function can be used to generate stratified estimates.
+The `svyby` function can be used to generate stratified estimates.
 
 ### Mean
 Weighted mean of a variable by strata can be computed using the following command: 
