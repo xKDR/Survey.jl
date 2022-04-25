@@ -16,7 +16,7 @@ As the size of survey datasets have larger, processing the records can take hour
 ## Basic usage:
 
 ```julia
-using Survey, Statistics, StatsBase       
+using Survey
 
 data(api)
 ## This function loads a commonly used dataset as an example. Any DataFrame object can be used. 

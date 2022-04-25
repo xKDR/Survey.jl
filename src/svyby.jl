@@ -6,7 +6,7 @@ svysum = wsum
 The svyby function can be used to generate stratified estimates.
 
 ```jldoctest
-julia> using Survey, Statistics, StatsBase;   
+julia> using Survey  
 
 julia> data(api); 
 
@@ -27,7 +27,7 @@ end
 The svyby function can be used to generate stratified estimates.
 
 ```jldoctest
-julia> using Survey, Statistics, StatsBase;        
+julia> using Survey      
 
 julia> data(api); 
 
