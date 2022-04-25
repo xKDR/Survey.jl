@@ -21,7 +21,7 @@ using Survey
 data(api)
 ## This function loads a commonly used dataset as an example. Any DataFrame object can be used. 
 
-dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
+dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1, fpc = :fpc)
 
 svyby(:api00, :cname, dclus1, svymean)
 11×2 DataFrame
