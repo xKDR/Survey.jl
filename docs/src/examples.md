@@ -58,7 +58,7 @@ dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1, fpc = :fpc)
 # svyby
 The svyby function can be used to generate stratified estimates.
 
-## Mean
+## mean
 Weighted mean of a variable by strata can be computed using the following command: 
 
 ### R
@@ -71,7 +71,7 @@ svyby(~api00, by = ~cname, design = dclus1, svymean)
 svyby(:api00, :cname, dclus1, svymean)
 ```
 
-## Sum
+## sum
 Weighted sum of a variable by strata can be computed using the following command: 
 
 ### R
@@ -84,7 +84,7 @@ svyby(~api00, by = ~cname, design = dclus1, svytotal)
 svyby(:api00, :cname, dclus1, svytotal)
 ```
 
-## Quantile
+## quantile
 Weighted quantile of a variable by strata can be computed using the following command: 
 
 ### R
