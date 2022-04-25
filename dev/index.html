@@ -10,14 +10,7 @@ weights: pw
 id: dnum
 fpc: fpc
 nest: false
-check_strat: false</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/5b378c48037bf9f1a4b9382a7398011e7ea3ad90/src/svydesign.jl#L1-L18">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The svyby function can be used to generate stratified estimates.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey  
-
-julia&gt; data(api); 
-
-julia&gt; dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc);
-
-julia&gt; svyby(:api00, dclus1, svymean)
-644.1693989071047</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/5b378c48037bf9f1a4b9382a7398011e7ea3ad90/src/svyby.jl#L5-L18">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The svyby function can be used to generate stratified estimates.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey      
+check_strat: false</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/1ca6689d7d8150acff67d2e28407ce39319a84bf/src/svydesign.jl#L1-L18">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The svyby function can be used to generate stratified estimates.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey      
 
 julia&gt; data(api); 
 
@@ -38,10 +31,17 @@ julia&gt; svyby(:api00, :cname, dclus1, svymean)
    8 │ Plumas       709.556
    9 │ San Diego    659.436
   10 │ San Joaquin  551.189
-  11 │ Santa Clara  732.077</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/5b378c48037bf9f1a4b9382a7398011e7ea3ad90/src/svyby.jl#L26-L53">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The svyby function can be used to generate stratified estimates. A vector of columns can be used to groupby. </p><pre><code class="language-repl hljs">julia&gt; using Survey      
+  11 │ Santa Clara  732.077</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/1ca6689d7d8150acff67d2e28407ce39319a84bf/src/svyby.jl#L26-L53">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The svyby function can be used to generate stratified estimates.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey  
+
+julia&gt; data(api); 
+
+julia&gt; dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc);
+
+julia&gt; svyby(:api00, dclus1, svymean)
+644.1693989071047</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/1ca6689d7d8150acff67d2e28407ce39319a84bf/src/svyby.jl#L5-L18">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The svyby function can be used to generate stratified estimates. A vector of columns can be used to groupby. </p><pre><code class="language-repl hljs">julia&gt; using Survey      
 
 julia&gt; data(api); 
 
 julia&gt; dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc); 
 
-julia&gt; svyby(:api00, [:cname, :meals], dclus1, svymean)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/5b378c48037bf9f1a4b9382a7398011e7ea3ad90/src/svyby.jl#L61-L73">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="R_comparison/">Comparison with R »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.16 on <span class="colophon-date" title="Monday 25 April 2022 11:18">Monday 25 April 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+julia&gt; svyby(:api00, [:cname, :meals], dclus1, svymean)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/1ca6689d7d8150acff67d2e28407ce39319a84bf/src/svyby.jl#L61-L73">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="R_comparison/">Comparison with R »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.16 on <span class="colophon-date" title="Monday 25 April 2022 11:26">Monday 25 April 2022</span>. Using Julia version 1.7.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
