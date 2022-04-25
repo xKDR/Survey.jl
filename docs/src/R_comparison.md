@@ -24,9 +24,7 @@ add "https://github.com/xKDR/Survey.jl.git"
 
 ## API data
 
-[The Academic Performance Index is computed for all California schools based on standardised
-testing of students. The data sets contain information for all schools with at least 100 students and
-for various probability samples of the data. apiclus1 is a cluster sample of school districts, apistrat is a sample stratified by stype.](https://cran.r-project.org/web/packages/survey/survey.pdf)
+The Academic Performance Index is computed for all California schools based on standardised testing of students. The [data sets](https://cran.r-project.org/web/packages/survey/survey.pdf) contain information for all schools with at least 100 students and for various probability samples of the data. apiclus1 is a cluster sample of school districts, apistrat is a sample stratified by stype.
 
 In the following examples, we'll use the apiclus1 data from the api dataset. 
 
