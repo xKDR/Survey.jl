@@ -2,8 +2,11 @@ using Survey
 using Test
 
 @testset "Survey.jl" begin
-    data(api); 
-    dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc);
+    data(api)
+    @test size(apiclus1) == (183, 40)
+    @test size(apiclus2) == (126, 41)
+    @test size(apipop)   == ((6194, 38))
+    dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
     @test dclus1.weights == :pw
     @test dclus1.id == :dnum
     @test dclus1.fpc == :fpc
