@@ -3,7 +3,11 @@ svyquantile = quantile
 svysum = wsum
 
 """
-The svyby function can be used to generate stratified estimates.
+```julia
+svyby(formula::Symbol, design::svydesign, func::Function, params = [])
+```
+
+The `svyby` function can be used to generate stratified estimates.
 
 ```jldoctest
 julia> using Survey  
@@ -24,7 +28,11 @@ function svyby(formula::Symbol, design::svydesign, func::Function, params = [])
 end
 
 """
-The svyby function can be used to generate stratified estimates.
+```julia
+svyby(formula::Symbol, by::Symbol, design::svydesign, func::Function, params = [])
+```
+
+The `svyby` function can be used to generate stratified estimates.
 
 ```jldoctest
 julia> using Survey      
@@ -59,7 +67,11 @@ end
 
 
 """
-The svyby function can be used to generate stratified estimates. A vector of columns can be used to groupby. 
+```julia
+svyby(formula::Symbol, by::Vector{Symbol}, design::svydesign, func::Function, params = [])
+```
+
+The `svyby` function can be used to generate stratified estimates. A vector of columns can be used to groupby. 
 
 ```repl
 julia> using Survey      
