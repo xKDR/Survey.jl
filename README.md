@@ -19,7 +19,7 @@ As the size of survey datasets have become larger, processing the records can ta
 using Survey
 
 data(api)
-## This function loads a commonly used dataset as an example. Any DataFrame object can be used. 
+## This function loads a commonly used dataset, AcaAcademic Performance Index (API), as an example. Any DataFrame object can be used. 
 
 dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1, fpc = :fpc)
 
@@ -40,3 +40,5 @@ svyby(:api00, :cname, dclus1, svymean)
   10 │ San Joaquin  551.189
   11 │ Santa Clara  732.077
 ```
+
+This example is from the Survey package in R. The [examples section of the documentation](https://xkdr.github.io/Survey.jl/dev/examples/) shows the R and the Julia code side by side for this and a few other examples. 
