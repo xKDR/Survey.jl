@@ -1,6 +1,6 @@
 # Performance
 
-## Grouping by single variable
+## Grouping by a single column  
 **R**
 
 ```R
@@ -36,7 +36,7 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
 
 **The median time is about 198 times lower in Julia as compared to R.** 
 
-## Grouby two variables.
+## Grouping by two columns.
 
 **R**
 
