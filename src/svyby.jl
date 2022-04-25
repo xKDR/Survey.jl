@@ -58,3 +58,21 @@ function svyby(formula::Symbol, by::Symbol, design::svydesign, func::Function, p
 end
 
 
+"""
+The svyby function can be used to generate stratified estimates. A vector of columns can be used to groupby. 
+
+```repl
+julia> using Survey      
+
+julia> data(api); 
+
+julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc); 
+
+julia> svyby(:api00, [:cname, :meals], dclus1, svymean)
+```
+"""
+function svyby(formula::Symbol, by::Vector{Symbol}, design::svydesign, func::Function, params = [])
+    gdf = groupby(design.data, by)
+    w = design.weights
+    return combine(gdf, [formula, w] => ((x, y) -> func(x, weights(y), params...)) => formula)
+end
