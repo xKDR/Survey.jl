@@ -13,8 +13,5 @@ export svydesign, svyby
 export data, api, apiclus1, apiclus2, apipop
 export svymean, svytotal, svyquantile
 
-
-# unstack(mean_income, :HR, :statistic)
-
 end
 
