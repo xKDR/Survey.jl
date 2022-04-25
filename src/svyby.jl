@@ -1,12 +1,16 @@
+svymean = mean
+svyquantile = quantile
+svysum = wsum
+
 """
 ```jldoctest
 julia> using Survey, Statistics, StatsBase;   
 
-julia> load_sample_data(); 
+julia> data(api); 
 
 julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc);
 
-julia> svyby(:api00, dclus1, mean)
+julia> svyby(:api00, dclus1, svymean)
 644.1693989071047
 ```
 """
@@ -21,11 +25,11 @@ end
 ```jldoctest
 julia> using Survey, Statistics, StatsBase;        
 
-julia> load_sample_data(); 
+julia> data(api); 
 
 julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc); 
 
-julia> svyby(:api00, :cname, dclus1, mean)
+julia> svyby(:api00, :cname, dclus1, svymean)
 11×2 DataFrame
  Row │ cname        api00   
      │ String15     Float64 

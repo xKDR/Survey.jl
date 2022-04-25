@@ -22,7 +22,7 @@ data(api)
 This loads the apiclus1 data as apiclus1 variable.  
 
 ```julia
-load_sample_data()
+data(api)
 ```
 
 This also loads the apiclus1 data as apiclus1 variable.  
@@ -46,8 +46,8 @@ svyby(~api00, by =~cname, design = dclus1, svymean)
 ```
 
 ```julia
-svyby(:api00, dclus1, mean)
-svyby(:api00, :cname, dclus1, mean)
+svyby(:api00, dclus1, svymean)
+svyby(:api00, :cname, dclus1, svymean)
 ```
 
 ## Sum
@@ -57,7 +57,7 @@ svyby(~api00, by =~cname, design = dclus1, svytotal)
 ```
 
 ```julia
-svyby(:api00, dclus1, wsum)
+svyby(:api00, dclus1, svytotal)
 ```
 
 ## Quantile
@@ -68,5 +68,5 @@ svyby(~api00, by =~cname, design = dclus1, svyquantile, quantile = 0.63)
 ```
 
 ```julia
-svyby(:api00, :cname, dclus1, quantile, 0.63)
+svyby(:api00, :cname, dclus1, svyquantile, 0.63)
 ```

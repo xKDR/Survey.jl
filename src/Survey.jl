@@ -9,10 +9,10 @@ include("svydesign.jl")
 include("svyby.jl")
 include("example.jl")
 
-export svydesign
-export svyby
-export load_sample_data
-export apiclus1
+export svydesign, svyby
+export data, api, apiclus1, apiclus2, apipop
+export svymean, svytotal, svyquantile
+
 
 # unstack(mean_income, :HR, :statistic)
 
