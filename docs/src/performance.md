@@ -1,5 +1,5 @@
 # Performance
-### R
+**R**
 
 ```R
 > library(survey)
@@ -17,7 +17,7 @@ Unit: microseconds
  9427.043 10587.81 11269.22 10938.55 11219.24 17620.25   100
 ```
 
-### Julia
+**Julia**
 ```julia
 using Survey, BenchmarkTools      
 data(api)
@@ -36,7 +36,7 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
 
 ## We increase the complexity to grouby two variables.
 
-### R
+**R**
 
 ```R
 > library(survey)
@@ -54,7 +54,7 @@ Unit: microseconds
  120823.6 131472.8 141797.3 134375.8 140818.3 263964.3   100
 ```
 
-### Julia
+**Julia**
 ```julia
 using Survey, BenchmarkTools      
 data(api)
