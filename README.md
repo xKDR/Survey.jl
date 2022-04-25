@@ -7,7 +7,7 @@
 
 This package is the Julia implementation of the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005). 
 
-As the size of survey datasets have larger, processing the records can take hours or days in R. We endeavour to solve this problem by implementing the Survey package in Julia.  
+As the size of survey datasets have become larger, processing the records can take hours or days in R. We endeavour to solve this problem by implementing the Survey package in Julia.  
 
 # To install:
 
