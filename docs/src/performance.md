@@ -32,7 +32,7 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
  Range (min … max):  43.567 μs …   5.905 ms  ┊ GC (min … max): 0.00% … 90.27%
  Time  (median):     53.680 μs               ┊ GC (median):    0.00%
  Time  (mean ± σ):   58.090 μs ± 125.671 μs  ┊ GC (mean ± σ):  4.36% ±  2.00%
- ```
+```
 
 **The median time is about 198 times lower in Julia as compared to R.** 
 
