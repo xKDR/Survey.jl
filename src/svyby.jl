@@ -3,6 +3,8 @@ svyquantile = quantile
 svysum = wsum
 
 """
+The svyby function can be used to generate stratified estimates.
+
 ```jldoctest
 julia> using Survey, Statistics, StatsBase;   
 
@@ -22,6 +24,8 @@ function svyby(formula::Symbol, design::svydesign, func::Function, params = [])
 end
 
 """
+The svyby function can be used to generate stratified estimates.
+
 ```jldoctest
 julia> using Survey, Statistics, StatsBase;        
 

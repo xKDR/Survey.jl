@@ -3,6 +3,9 @@
 The ```data(api)``` function loads 3 dataframes: apiclus1, apiclus2, apipop.
 
 Details about the columns of the dataset can be found here: https://r-survey.r-forge.r-project.org/survey/html/api.html
+
+The API program has been discontinued at the end of 2018. Information is archived at https:
+//www.cde.ca.gov/re/pr/api.asp
 """
 
 struct API
