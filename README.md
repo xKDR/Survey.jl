@@ -46,7 +46,8 @@ svyby(:api00, :cname, dclus1, svymean)
 This example is from the Survey package in R. The [examples section of the documentation](https://xkdr.github.io/Survey.jl/dev/examples/) shows the R and the Julia code side by side for this and a few other examples. 
 
 # Performance
-### R
+We will measure the performance of the R and Julia for example shown above. 
+**R**
 
 ```R
 > library(survey)
@@ -64,7 +65,7 @@ Unit: microseconds
  9427.043 10587.81 11269.22 10938.55 11219.24 17620.25   100
 ```
 
-### Julia
+**Julia**
 ```julia
 using Survey, BenchmarkTools      
 data(api)
@@ -81,9 +82,9 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
 
 **The median time is about 198 times lower in Julia as compared to R.** 
 
-## We increase the complexity to grouby two variables.
+### We increase the complexity to grouby two variables and then perform the same operations.
 
-### R
+**R**
 
 ```R
 > library(survey)
@@ -101,7 +102,7 @@ Unit: microseconds
  120823.6 131472.8 141797.3 134375.8 140818.3 263964.3   100
 ```
 
-### Julia
+**Julia**
 ```julia
 using Survey, BenchmarkTools      
 data(api)
