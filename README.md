@@ -15,7 +15,7 @@ As the size of survey datasets have become larger, processing the records can ta
 
 # Basic usage:
 
-In the following example, we will load the Academic Performance Index dataset for Californian schools and produced the weighted mean for each county.  
+In the following example, we will load the Academic Performance Index dataset for Californian schools and produce the weighted mean for each county.  
 ```julia
 using Survey
 
@@ -47,6 +47,7 @@ This example is from the Survey package in R. The [examples section of the docum
 
 # Performance
 We will measure the performance of the R and Julia for example shown above. 
+
 **R**
 
 ```R
