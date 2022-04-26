@@ -4,6 +4,8 @@
 ![Build Status](https://github.com/xKDR/Survey.jl/actions/workflows/ci.yml/badge.svg)
 ![Build Status](https://github.com/xKDR/Survey.jl/actions/workflows/documentation.yml/badge.svg)
 [![codecov](https://codecov.io/gh/xKDR/Survey.jl/branch/main/graph/badge.svg?token=4PFSF47BT2)](https://codecov.io/gh/xKDR/Survey.jl)
+[![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
+
 
 This package is used to study stratified survey data. It is the Julia implementation of the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005). 
 
@@ -119,3 +121,10 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
  ```
 
  **The median time is about 1718 times lower in Julia as compared to R.** 
+
+
+# Strategic goals
+
+We want to implement all the features provided by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
+
+The [milestones](https://github.com/xKDR/Survey.jl/milestones) sections of the repository contains a list of features that contributors can implement in the short-term. 
