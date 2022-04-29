@@ -128,3 +128,7 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
 We want to implement all the features provided by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 
 The [milestones](https://github.com/xKDR/Survey.jl/milestones) sections of the repository contains a list of features that contributors can implement in the short-term. 
+
+# Support
+
+We gratefully acknowledge the JuliaLab at MIT for financial support for this project.
