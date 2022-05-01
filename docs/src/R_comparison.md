@@ -1,9 +1,9 @@
 # Comparison with R
 
-In the following examples, we'll compare R and Julia for performing the same set of operations. 
+In the following examples, we'll compare Julia's performance to R's on the same set of operations.
 
 ## Installing and loading the package 
-**R** code
+**R**
 
 ```r
 install.package("survey")
