@@ -11,11 +11,11 @@ This package is used to study stratified survey data. It is the Julia implementa
 
 As the size of survey datasets have become larger, processing the records can take hours or days in R. We endeavour to solve this problem by implementing the Survey package in Julia.  
 
-# To install:
+## How to install
 
     add "https://github.com/xKDR/Survey.jl.git"
 
-# Basic usage:
+## Basic usage
 
 In the following example, we will load the Academic Performance Index dataset for Californian schools and produce the weighted mean for each county.  
 ```julia
@@ -47,7 +47,7 @@ svyby(:api00, :cname, dclus1, svymean)
 
 This example is from the Survey package in R. The [examples section of the documentation](https://xkdr.github.io/Survey.jl/dev/examples/) shows the R and the Julia code side by side for this and a few other examples. 
 
-# Performance
+## Performance
 We will measure the performance of the R and Julia for example shown above. 
 
 **R**
@@ -83,9 +83,9 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
  Time  (mean ± σ):   58.090 μs ± 125.671 μs  ┊ GC (mean ± σ):  4.36% ±  2.00%
  ```
 
-**The median time is about 198 times lower in Julia as compared to R.** 
+The julia code is about 198 times faster than R. 
 
-### We increase the complexity to grouby two variables and then perform the same operations.
+We increase the complexity to grouby two variables and then perform the same operations.
 
 **R**
 
@@ -120,15 +120,14 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
  Time  (mean ± σ):   89.447 μs ± 235.344 μs  ┊ GC (mean ± σ):  8.48% ±  3.19%
  ```
 
- **The median time is about 1718 times lower in Julia as compared to R.** 
+The julia code is about 1718 times faster than R. 
 
-
-# Strategic goals
+## Strategic goals
 
 We want to implement all the features provided by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 
 The [milestones](https://github.com/xKDR/Survey.jl/milestones) sections of the repository contains a list of features that contributors can implement in the short-term. 
 
-# Support
+## Support
 
 We gratefully acknowledge the JuliaLab at MIT for financial support for this project.
