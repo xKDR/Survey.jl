@@ -10,7 +10,7 @@ include("svyby.jl")
 include("example.jl")
 
 export svydesign, svyby
-export data, api, apiclus1, apiclus2, apipop
+export data, api, apiclus1, apiclus2, apipop, apistrat, apisrs
 export svymean, svytotal, svyquantile
 
 end

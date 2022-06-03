@@ -23,6 +23,10 @@ function data(dataset::API)
     apiclus2_path = assets_path * "/apiclus2.csv"
     global apiclus2 = CSV.read(apiclus2_path, DataFrame) 
     apipop_path = assets_path * "/apipop.csv"
-    global apipop = CSV.read(apipop_path, DataFrame)    
-    return apiclus1, apiclus2, apipop
+    global apipop = CSV.read(apipop_path, DataFrame) 
+    apistrat_path = assets_path * "/apistrat.csv"
+    global apistrat = CSV.read(apistrat_path, DataFrame)   
+    apisrs_path = assets_path * "/apisrs.csv"
+    global apisrs = CSV.read(apisrs_path, DataFrame)
+    return apiclus1, apiclus2, apipop, apistrat, apisrs
 end
