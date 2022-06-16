@@ -5,6 +5,7 @@ using Statistics
 using StatsBase
 using CSV
 using GLM
+using LinearAlgebra
 
 include("svydesign.jl")
 include("svyby.jl")
