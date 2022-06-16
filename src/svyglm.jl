@@ -39,7 +39,7 @@ mutable struct svyglm
     function svyglm(formula, design, dist, link)
         data = design.data
         if design.probs != Symbol("")
-            weights = (1.0./data[:,design.probs])
+            weights = (1.0 ./ data[:,design.probs])
         else
             weights = ones(size(data)[1])
         end
