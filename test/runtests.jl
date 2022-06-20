@@ -16,3 +16,5 @@ using Test
     api00_by_cname_meals = svyby(:api00, [:cname, :meals], dclus1, svymean)
     @test api00_by_cname_meals[1,3] ≈ 608.0 
 end
+
+include("svyglm.jl")
