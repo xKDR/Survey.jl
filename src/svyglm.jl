@@ -43,6 +43,9 @@ mutable struct svyglm
         else
             weights = ones(size(data)[1])
         end
+        if design.weights != Symbol("")
+            weights .*= data[:,design.weights]
+        end
         absglm = glm(formula, data, dist, link, wts = weights, rtol = 1e-8, atol = 1e-8)
         svyglm_cons(absglm, data, weights)
     end
