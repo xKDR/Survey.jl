@@ -96,3 +96,7 @@ mutable struct svyglm
         svyglm_cons(absglm, data, weights)
     end
 end
+
+function Base.show(io::IO, g::svyglm)
+    print(g.glm)
+end
