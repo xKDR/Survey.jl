@@ -61,6 +61,7 @@ mutable struct svyglm
     fitted_values
     prior_weights #initial weights
     residuals
+    converged
     function svyglm_cons(glm, data, weights)
         out = new()
         out.glm = glm
@@ -79,6 +80,7 @@ mutable struct svyglm
         out.fitted_values = fitted(glm)
         out.prior_weights = weights
         out.residuals = glm.model.rr.wrkresid
+        out.converged = true
         out
     end
 
