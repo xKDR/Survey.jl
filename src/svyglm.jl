@@ -1,3 +1,9 @@
+mutable struct control
+    rtol
+    atol
+    maxiter
+end
+
 """
 ```julia
 svyglm(formula, design, dist, link)
@@ -44,7 +50,8 @@ mutable struct svyglm
     prior_weights #initial weights
     residuals
     converged
-    function svyglm_cons(glm, data, weights)
+    control
+    function svyglm_cons(glm, data, weights,rtol,atol,maxiter)
         out = new()
         out.glm = glm
         out.coefficients = coef(glm)
@@ -63,11 +70,15 @@ mutable struct svyglm
         out.prior_weights = weights
         out.residuals = glm.model.rr.wrkresid
         out.converged = true
+        out.control = control(rtol,atol,maxiter)
         out
     end
 
     function svyglm(formula, design, dist, link)
         data = design.data
+        rtol = 1e-8
+        atol = 1e-8
+        maxiter = 30
         if design.probs != Symbol("")
             weights = (1.0 ./ data[:,design.probs])
         else
@@ -76,8 +87,8 @@ mutable struct svyglm
         if design.weights != Symbol("")
             weights .*= data[:,design.weights]
         end
-        absglm = glm(formula, data, dist, link, wts = weights, rtol = 1e-8, atol = 1e-8)
-        svyglm_cons(absglm, data, weights)
+        glmout = glm(formula, data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
+        svyglm_cons(glmout, data, weights,rtol,atol,maxiter)
     end
 end
 
