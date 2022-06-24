@@ -51,6 +51,7 @@ mutable struct svyglm
     residuals
     converged
     control
+    terms
     function svyglm_cons(glm, data, weights,rtol,atol,maxiter)
         out = new()
         out.glm = glm
@@ -71,6 +72,7 @@ mutable struct svyglm
         out.residuals = glm.model.rr.wrkresid
         out.converged = true
         out.control = control(rtol,atol,maxiter)
+        out.terms = glm.mf.f
         out
     end
 
