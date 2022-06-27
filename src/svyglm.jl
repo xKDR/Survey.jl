@@ -52,6 +52,7 @@ mutable struct svyglm
     converged
     control
     terms
+    contrasts
     function svyglm_cons(glm, data, weights,rtol,atol,maxiter)
         out = new()
         out.glm = glm
@@ -73,6 +74,7 @@ mutable struct svyglm
         out.converged = true
         out.control = control(rtol,atol,maxiter)
         out.terms = glm.mf.f
+        out.contrasts = []
         out
     end
 
