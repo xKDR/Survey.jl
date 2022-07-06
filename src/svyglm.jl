@@ -53,6 +53,7 @@ mutable struct svyglm
     control
     terms
     contrasts
+    naive_cov
     function svyglm_cons(glm, data, weights,rtol,atol,maxiter)
         out = new()
         out.glm = glm
@@ -75,6 +76,7 @@ mutable struct svyglm
         out.control = control(rtol,atol,maxiter)
         out.terms = glm.mf.f
         out.contrasts = []
+        out.naive_cov = vcov(glm)/GLM.dispersion(glm.model,true)
         out
     end
 
