@@ -1,8 +1,6 @@
 
 function svymean(x, w, popsize, sampsize)
-    if !(nothing in [popsize])
-        ps = maximum(popsize)
-    end
+    # popsize correction isn't implemented yet
     ss = maximum(sampsize)
     function SE(x, w, ss)
         f = sqrt(1 - 1/length(x) + 1/ss)
