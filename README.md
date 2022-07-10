@@ -25,7 +25,7 @@ data(api)
 ## This function loads a commonly used dataset, Academic Performance Index (API), as an example.
 ## Any DataFrame object can be used with this package. 
 
-dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1)
+dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1)
 
 svyby(:api00, :cname, dclus1, svymean)
 11×3 DataFrame

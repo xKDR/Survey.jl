@@ -27,7 +27,7 @@ check_strat: true
 ```
 """
 struct svydesign
-    id::Symbol
+    id
     strata::Symbol
     variables::DataFrame
     nest::Bool

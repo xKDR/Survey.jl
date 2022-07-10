@@ -31,7 +31,7 @@ julia> using Survey
 
 julia> data(api); 
 
-julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc); 
+julia> dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1); 
 
 julia> svyby(:api00, :cname, dclus1, svymean)
 11×3 DataFrame
