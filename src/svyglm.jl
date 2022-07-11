@@ -1,3 +1,7 @@
+function nullformula(f)
+    FormulaTerm(f.lhs,ConstantTerm(1))
+end
+ 
 mutable struct control
     rtol
     atol
@@ -43,7 +47,11 @@ mutable struct svyglm
     control
     terms
     contrasts
-    function svyglm_cons(glm, data, weights,rtol,atol,maxiter)
+    naive_cov
+    df_null
+    null_deviance
+    df_residual
+    function svyglm_cons(glm, nullglm, data, weights,rtol,atol,maxiter)
         out = new()
         out.glm = glm
         out.coefficients = coef(glm)
@@ -65,6 +73,10 @@ mutable struct svyglm
         out.control = control(rtol,atol,maxiter)
         out.terms = glm.mf.f
         out.contrasts = []
+        out.naive_cov = vcov(glm)/GLM.dispersion(glm.model,true)
+        out.df_null = dof_residual(nullglm)
+        out.null_deviance = deviance(nullglm)
+        out.df_residual = dof_residual(glm)
         out
     end
 
@@ -73,8 +85,11 @@ mutable struct svyglm
         rtol = 1e-8
         atol = 1e-8
         maxiter = 30
-        glmout = glm(formula, data, dist, link, wts = 1 ./ data.probs, rtol = rtol, atol = atol, maxiter = maxiter)
-        svyglm_cons(glmout, data, weights,rtol,atol,maxiter)
+        weights = 1 ./ data.probs
+        
+        glmout = glm(formula, data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
+        nullglm = glm(nullformula(formula), data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
+        svyglm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)
     end
 end
 
