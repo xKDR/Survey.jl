@@ -53,11 +53,11 @@ We will measure the performance of the R and Julia for example shown above.
 **R**
 
 ```R
-> library(survey)
-> library(microbenchmark)
-> data(api)
-> dclus1 <- svydesign(id = ~dnum, weights = ~pw, data = apiclus1)
-> microbenchmark(svyby(~api00, by = ~cname, design = dclus1, svymean), units = "us")
+library(survey)
+library(microbenchmark)
+data(api)
+dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
+microbenchmark(svyby(~api00, by = ~cname, design = dclus1, svymean), units = "us")
 ```
 
 ```R
@@ -71,7 +71,7 @@ We will measure the performance of the R and Julia for example shown above.
 ```julia
 using Survey, BenchmarkTools      
 data(api)
-dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
+dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
 @benchmark svyby(:api00, :cname, dclus1, svymean)
 ```
 
@@ -88,11 +88,11 @@ We increase the complexity to grouby two variables and then perform the same ope
 **R**
 
 ```R
-> library(survey)
-> library(microbenchmark)
-> data(api)
-> dclus1 <- svydesign(id = ~dnum, weights = ~pw, data = apiclus1, fpc = ~fpc)
-> microbenchmark(svyby(~api00, by = ~cname+meals, design = dclus1, svymean, keep.var = FALSE), units = "us")
+library(survey)
+library(microbenchmark)
+data(api)
+dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
+microbenchmark(svyby(~api00, by = ~cname+meals, design = dclus1, svymean, keep.var = FALSE), units = "us")
 ```
 
 ```R
@@ -107,7 +107,7 @@ Unit: microseconds
 ```julia
 using Survey, BenchmarkTools      
 data(api)
-dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
+dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
 @benchmark svyby(:api00, [:cname, :meals], dclus1, svymean)
 ```
 
