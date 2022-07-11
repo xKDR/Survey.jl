@@ -9,9 +9,9 @@ end
 The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
 
 ```jldoctest
-julia> using Survey; 
+julia> using Survey;
 
-julia> data(api); 
+julia> data(api);
 
 julia> dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |> print
 Survey Design:
@@ -74,7 +74,15 @@ function get_fpc(data, fpc::Real)
     return repeat([fpc], nrow(data))
 end
 
-function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata = Symbol(), fpc = nothing, nest = false, check_strat = !nest, weights = nothing)
+function get_strata(data, strata::Symbol)
+	return data[!, String(strata)]
+end
+
+function get_strata(data, strata::Nothing)
+	return repeat([1], nrow(data))
+end
+
+function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata = nothing, fpc = nothing, nest = false, check_strat = !nest, weights = nothing)
     wt = get_weights(data, weights)
     if isnothing(probs) & isnothing(weights)
         @warn "No weights or probabilities supplied, assuming equal probability"
@@ -83,17 +91,18 @@ function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata 
     df.probs = ProbabilityWeights(get_probs(data, wt, probs))
     df.popsize = get_fpc(data, fpc)
     df.sampsize = repeat([nrow(data)], nrow(data))
-    return svydesign(id, strata, df, nest, check_strat)
-end 
+	df.strata = get_strata(data, strata)
+    return svydesign(id, df, nest, check_strat)
+end
 
 function Base.show(io::IO, design::svydesign)
-    printstyled("Survey Design:\n") 
+    printstyled("Survey Design:\n")
     printstyled("variables: "; bold = true)
     print(size(design.variables)[1], "x", size(design.variables)[2], " DataFrame")
         printstyled("\nid: "; bold = true)
         print(design.id)
         printstyled("\nstrata: "; bold = true)
-        print(design.strata)
+        print(design.variables.strata)
         printstyled("\nprobs: "; bold = true)
         print_short(design.variables.probs)
         printstyled("\nfpc: "; bold = true)
