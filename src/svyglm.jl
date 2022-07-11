@@ -20,20 +20,10 @@ julia> using Survey
 
 julia> data(api); 
 
-julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc); 
+julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1); 
 
 julia> svyglm(@formula(ell~meals),dclus1,Normal(),IdentityLink())
-StatsModels.TableRegressionModel{GLM.GeneralizedLinearModel{GLM.GlmResp{Vector{Float64}, Normal{Float64}, IdentityLink}, GLM.DensePredChol{Float64, LinearAlgebra.Cholesky{Float64, Matrix{Float64}}}}, Matrix{Float64}}
 
-ell ~ 1 + meals
-
-Coefficients:
-────────────────────────────────────────────────────────────────────────
-                Coef.  Std. Error      z  Pr(>|z|)  Lower 95%  Upper 95%
-────────────────────────────────────────────────────────────────────────
-(Intercept)  6.86665   0.350512    19.59    <1e-84   6.17966    7.55364
-meals        0.410511  0.00613985  66.86    <1e-99   0.398477   0.422545
-────────────────────────────────────────────────────────────────────────
 ```
 """
 mutable struct svyglm
@@ -91,21 +81,15 @@ mutable struct svyglm
     end
 
     function svyglm(formula, design, dist, link)
-        data = design.data
+        data = design.variables
         rtol = 1e-8
         atol = 1e-8
         maxiter = 30
-        if design.probs != Symbol("")
-            weights = (1.0 ./ data[:,design.probs])
-        else
-            weights = ones(size(data)[1])
-        end
-        if design.weights != Symbol("")
-            weights .*= data[:,design.weights]
-        end
+        weights = 1 ./ data.probs
+        
         glmout = glm(formula, data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
         nullglm = glm(nullformula(formula), data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
-        svyglm_cons(glmout, nullglm, data, weights,rtol,atol,maxiter)
+        svyglm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)
     end
 end
 

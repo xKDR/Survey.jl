@@ -25,24 +25,24 @@ data(api)
 ## This function loads a commonly used dataset, Academic Performance Index (API), as an example.
 ## Any DataFrame object can be used with this package. 
 
-dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1, fpc = :fpc)
+dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1)
 
 svyby(:api00, :cname, dclus1, svymean)
-11×2 DataFrame
- Row │ cname        api00   
-     │ String15     Float64 
-─────┼──────────────────────
-   1 │ Alameda      669.0
-   2 │ Fresno       472.0
-   3 │ Kern         452.5
-   4 │ Los Angeles  647.267
-   5 │ Mendocino    623.25
-   6 │ Merced       519.25
-   7 │ Orange       710.563
-   8 │ Plumas       709.556
-   9 │ San Diego    659.436
-  10 │ San Joaquin  551.189
-  11 │ Santa Clara  732.077
+11×3 DataFrame
+ Row │ cname        mean     SE       
+     │ String15     Float64  Float64  
+─────┼────────────────────────────────
+   1 │ Alameda      669.0    16.2135
+   2 │ Fresno       472.0     9.85278
+   3 │ Kern         452.5    29.5049
+   4 │ Los Angeles  647.267  23.5116
+   5 │ Mendocino    623.25   24.216
+   6 │ Merced       519.25   10.4925
+   7 │ Orange       710.562  28.9123
+   8 │ Plumas       709.556  13.2174
+   9 │ San Diego    659.436  12.2082
+  10 │ San Joaquin  551.189  11.578
+  11 │ Santa Clara  732.077  12.2291
 ```
 
 This example is from the Survey package in R. The [examples section of the documentation](https://xkdr.github.io/Survey.jl/dev/examples/) shows the R and the Julia code side by side for this and a few other examples. 
@@ -53,74 +53,72 @@ We will measure the performance of the R and Julia for example shown above.
 **R**
 
 ```R
-> library(survey)
-> library(microbenchmark)
-> data(api)
-> dclus1 <- svydesign(id = ~dnum, weights = ~pw, data = apiclus1, fpc = ~fpc)
-> microbenchmark(svyby(~api00, by = ~cname, design = dclus1, svymean, keep.var = FALSE), units = "us")
+library(survey)
+library(microbenchmark)
+data(api)
+dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
+microbenchmark(svyby(~api00, by = ~cname, design = dclus1, svymean), units = "us")
 ```
 
 ```R
-Unit: microseconds
-                                                                   expr
- svyby(~api00, by = ~cname, design = dclus1, svymean, keep.var = FALSE)
-      min       lq     mean   median       uq      max neval
- 9427.043 10587.81 11269.22 10938.55 11219.24 17620.25   100
+                                                 expr      min       lq
+ svyby(~api00, by = ~cname, design = dclus1, svymean) 10180.47 12102.61
+     mean   median       uq      max neval
+ 12734.43 12421.93 12788.55 17242.35   100
 ```
 
 **Julia**
 ```julia
 using Survey, BenchmarkTools      
 data(api)
-dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
+dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
 @benchmark svyby(:api00, :cname, dclus1, svymean)
 ```
 
 ```julia
 BenchmarkTools.Trial: 10000 samples with 1 evaluation.
- Range (min … max):  43.567 μs …   5.905 ms  ┊ GC (min … max): 0.00% … 90.27%
- Time  (median):     53.680 μs               ┊ GC (median):    0.00%
- Time  (mean ± σ):   58.090 μs ± 125.671 μs  ┊ GC (mean ± σ):  4.36% ±  2.00%
+ Range (min … max):  54.464 μs …   6.070 ms  ┊ GC (min … max): 0.00% … 94.01%
+ Time  (median):     72.468 μs               ┊ GC (median):    0.00%
+ Time  (mean ± σ):   81.833 μs ± 190.657 μs  ┊ GC (mean ± σ):  7.62% ±  3.23%
  ```
 
-The julia code is about 198 times faster than R. 
+The julia code is about 171 times faster than R. 
 
 We increase the complexity to grouby two variables and then perform the same operations.
-
 **R**
 
 ```R
-> library(survey)
-> library(microbenchmark)
-> data(api)
-> dclus1 <- svydesign(id = ~dnum, weights = ~pw, data = apiclus1, fpc = ~fpc)
-> microbenchmark(svyby(~api00, by = ~cname+meals, design = dclus1, svymean, keep.var = FALSE), units = "us")
+library(survey)
+library(microbenchmark)
+data(api)
+dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
+microbenchmark(svyby(~api00, by = ~cname+meals, design = dclus1, svymean, keep.var = FALSE), units = "us")
 ```
 
 ```R
 Unit: microseconds
-                                                                                expr
- svyby(~api00, by = ~cname + meals, design = dclus1, svymean,      keep.var = FALSE)
-      min       lq     mean   median       uq      max neval
- 120823.6 131472.8 141797.3 134375.8 140818.3 263964.3   100
+                                                         expr      min     lq
+ svyby(~api00, by = ~cname + meals, design = dclus1, svymean) 132468.1 149914
+     mean   median       uq      max neval
+ 166121.9 160571.3 172301.6 304979.2   100
 ```
 
 **Julia**
 ```julia
 using Survey, BenchmarkTools      
 data(api)
-dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
+dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
 @benchmark svyby(:api00, [:cname, :meals], dclus1, svymean)
 ```
 
 ```julia
 BenchmarkTools.Trial: 10000 samples with 1 evaluation.
- Range (min … max):  64.591 μs …   6.559 ms  ┊ GC (min … max): 0.00% … 77.46%
- Time  (median):     78.204 μs               ┊ GC (median):    0.00%
- Time  (mean ± σ):   89.447 μs ± 235.344 μs  ┊ GC (mean ± σ):  8.48% ±  3.19%
+ Range (min … max):  219.387 μs …   8.284 ms  ┊ GC (min … max):  0.00% … 90.94%
+ Time  (median):     265.214 μs               ┊ GC (median):     0.00%
+ Time  (mean ± σ):   325.100 μs ± 513.020 μs  ┊ GC (mean ± σ):  14.23% ±  8.58%
  ```
 
-The julia code is about 1718 times faster than R. 
+The julia code is about 605 times faster than R. 
 
 ## Strategic goals
 

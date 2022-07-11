@@ -47,12 +47,12 @@ A ```svydesign``` object can be constructed with the following command:
 
 **R**
 ```r
-dclus1 <-svydesign(id = ~dnum, weights = ~pw, data = apiclus1, fpc = ~fpc)
+dclus1 <-svydesign(id = ~1, weights = ~pw, data = apiclus1, fpc = ~fpc)
 ```
 
 **Julia**
 ```julia
-dclus1 = svydesign(id = :dnum, weights = :pw, data = apiclus1, fpc = :fpc)
+dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1, fpc = :fpc)
 ```
 
 ## svyby
