@@ -28,7 +28,6 @@ check_strat: true
 """
 struct svydesign
     id
-    strata::Symbol
     variables::DataFrame
     nest::Bool
     check_strat::Bool
@@ -78,6 +77,10 @@ function get_strata(data, strata::Symbol)
 	return data[!, String(strata)]
 end
 
+function get_strata(data, strata::Vector)
+	return strata
+end
+
 function get_strata(data, strata::Nothing)
 	return repeat([1], nrow(data))
 end
@@ -102,7 +105,7 @@ function Base.show(io::IO, design::svydesign)
         printstyled("\nid: "; bold = true)
         print(design.id)
         printstyled("\nstrata: "; bold = true)
-        print(design.variables.strata)
+        print_short(design.variables.strata)
         printstyled("\nprobs: "; bold = true)
         print_short(design.variables.probs)
         printstyled("\nfpc: "; bold = true)
