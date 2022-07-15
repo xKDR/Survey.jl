@@ -2,7 +2,7 @@
 
 In the following examples, we'll compare Julia's performance to R's on the same set of operations.
 
-## Installing and loading the package 
+## Installing and loading the package
 **R**
 
 ```r
@@ -17,7 +17,7 @@ Pkg.add(url = "https://github.com/xKDR/Survey.jl.git")
 using Survey
 ```
 
-The following command in the Pkg REPL may also be used to install the package. 
+The following command in the Pkg REPL may also be used to install the package.
 ```
 add "https://github.com/xKDR/Survey.jl.git"
 ```
@@ -26,13 +26,13 @@ add "https://github.com/xKDR/Survey.jl.git"
 
 The Academic Performance Index is computed for all California schools based on standardised testing of students. The [data sets](https://cran.r-project.org/web/packages/survey/survey.pdf) contain information for all schools with at least 100 students and for various probability samples of the data. apiclus1 is a cluster sample of school districts, apistrat is a sample stratified by stype.
 
-In the following examples, we'll use the apiclus1 data from the api dataset. 
+In the following examples, we'll use the apiclus1 data from the api dataset.
 
 The api dataset can be loaded using the following command:
 
 **R**
 ```r
-data(api) 
+data(api)
 ```
 
 **Julia**
@@ -59,7 +59,7 @@ dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1, fpc = :fpc)
 The `svyby` function can be used to generate stratified estimates.
 
 ### Mean
-Weighted mean of a variable by strata can be computed using the following command: 
+Weighted mean of a variable by strata can be computed using the following command:
 
 **R**
 ```r
@@ -72,7 +72,7 @@ svyby(:api00, :cname, dclus1, svymean)
 ```
 
 ### Sum
-Weighted sum of a variable by strata can be computed using the following command: 
+Weighted sum of a variable by strata can be computed using the following command:
 
 **R**
 ```r
@@ -85,12 +85,13 @@ svyby(:api00, :cname, dclus1, svytotal)
 ```
 
 ### Quantile
-Weighted quantile of a variable by strata can be computed using the following command: 
+Weighted quantile of a variable by strata can be computed using the following command:
 
 **R**
 ```r
 svyby(~api00, by = ~cname, design = dclus1, svyquantile, quantile = 0.63)
 ```
+
 **Julia**
 ```julia
 svyby(:api00, :cname, dclus1, svyquantile, 0.63)
