@@ -27,25 +27,3 @@ svyby(:api00, :cname, dclus1, svymean)
   10 │ San Joaquin  551.189  11.578
   11 │ Santa Clara  732.077  12.2291
 ```
-
-## R code
-
-```R
-> library(survey)
-> data(api)
-> dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
-> svyby(~api00, by = ~cname, design = dclus1, svymean)
-
-                  cname    api00       se
-Alameda         Alameda 669.0000 16.20930
-Fresno           Fresno 472.0000  9.84401
-Kern               Kern 452.5000 29.42544
-Los Angeles Los Angeles 647.2667 23.50738
-Mendocino     Mendocino 623.2500 24.19443
-Merced           Merced 519.2500 10.48320
-Orange           Orange 710.5625 28.90751
-Plumas           Plumas 709.5556 13.21311
-San Diego     San Diego 659.4364 12.20777
-San Joaquin San Joaquin 551.1892 11.57730
-Santa Clara Santa Clara 732.0769 12.22800
-
