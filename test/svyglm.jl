@@ -12,7 +12,7 @@ function genWts(data,chaos)
 end
 
 @testset "svyglm.jl" begin
-    rtol=0.1 #rtol which test uses is diffrent from 
+    rtol=0.1 #rtol which test uses is diffrent from
     data(api)
 
     rcoef = [19.852539307789417, 0.016802996766905515]
