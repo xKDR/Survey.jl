@@ -92,8 +92,8 @@ mutable struct svyglm
         svyglm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)
     end
 
-    svyglm(formula;design,dist,link) = svyglm(formula,design,dist,link)
-    svyglm(;formula,design,dist,link) = svyglm(formula,design,dist,link)
+    svyglm(formula; design, dist=Normal(), link=canonicallink(dist)) = svyglm(formula,design,dist,link)
+    svyglm(;formula, design, dist=Normal(), link=canonicallink(dist)) = svyglm(formula,design,dist,link)
     
 end
 
