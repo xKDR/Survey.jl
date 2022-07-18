@@ -15,7 +15,8 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Comparison with R" => "R_comparison.md", 
+        "Examples" => "examples.md",
+        "Comparison with R" => "R_comparison.md",
         "Performance" => "performance.md",
     ],
 )

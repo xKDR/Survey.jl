@@ -1,6 +1,6 @@
 # Performance
 
-## Grouping by a single column  
+## Grouping by a single column
 **R**
 
 ```R
@@ -21,7 +21,7 @@ Unit: microseconds
 
 **Julia**
 ```julia
-using Survey, BenchmarkTools      
+using Survey, BenchmarkTools
 data(api)
 dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
 @benchmark svyby(:api00, :cname, dclus1, svymean)
@@ -34,7 +34,7 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
  Time  (mean ± σ):   58.090 μs ± 125.671 μs  ┊ GC (mean ± σ):  4.36% ±  2.00%
 ```
 
-**The median time is about 198 times lower in Julia as compared to R.** 
+**The median time is about 198 times lower in Julia as compared to R.**
 
 ## Grouping by two columns.
 
@@ -58,7 +58,7 @@ Unit: microseconds
 
 **Julia**
 ```julia
-using Survey, BenchmarkTools      
+using Survey, BenchmarkTools
 data(api)
 dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
 @benchmark svyby(:api00, [:cname, :meals], dclus1, svymean)
@@ -71,4 +71,4 @@ BenchmarkTools.Trial: 10000 samples with 1 evaluation.
  Time  (mean ± σ):   89.447 μs ± 235.344 μs  ┊ GC (mean ± σ):  8.48% ±  3.19%
 ```
 
- **The median time is about 1718 times lower in Julia as compared to R.** 
+ **The median time is about 1718 times lower in Julia as compared to R.**

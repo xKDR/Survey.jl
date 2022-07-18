@@ -32,4 +32,3 @@ export
     CloglogLink,
     SqrtLink
 end
-

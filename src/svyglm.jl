@@ -1,7 +1,7 @@
 function nullformula(f)
     FormulaTerm(f.lhs,ConstantTerm(1))
 end
- 
+
 mutable struct control
     rtol
     atol
@@ -16,11 +16,11 @@ svyglm(formula, design, dist, link)
 The `svyglm` function can be used to fit glms on svydesign.
 
 ```jldoctest
-julia> using Survey      
+julia> using Survey
 
-julia> data(api); 
+julia> data(api);
 
-julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1); 
+julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1);
 
 julia> svyglm(@formula(ell~meals),dclus1,Normal(),IdentityLink())
 
@@ -34,7 +34,7 @@ mutable struct svyglm
     aic
     family
     rank
-    formula 
+    formula
     model #subset of data as described in formula
     deviance
     offset
@@ -86,7 +86,7 @@ mutable struct svyglm
         atol = 1e-8
         maxiter = 30
         weights = 1 ./ data.probs
-        
+
         glmout = glm(formula, data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
         nullglm = glm(nullformula(formula), data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
         svyglm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)

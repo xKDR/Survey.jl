@@ -15,9 +15,9 @@ julia> data(api);
 
 julia> dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |> print
 Survey Design:
-variables: 183x43 DataFrame
+variables: 183x44 DataFrame
 id: dnum
-strata:
+strata: 1, 1, 1 ... (length = 183)
 probs: 0.029544719150814778, 0.029544719150814778, 0.029544719150814778 ... (length = 183)
 fpc:
     popsize: 757, 757, 757 ... (length = 183)
