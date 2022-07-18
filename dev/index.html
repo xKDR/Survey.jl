@@ -5,40 +5,19 @@ julia&gt; data(api);
 
 julia&gt; dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |&gt; print
 Survey Design:
-variables: 183x43 DataFrame
+variables: 183x44 DataFrame
 id: dnum
-strata:
+strata: 1, 1, 1 ... (length = 183)
 probs: 0.029544719150814778, 0.029544719150814778, 0.029544719150814778 ... (length = 183)
 fpc:
     popsize: 757, 757, 757 ... (length = 183)
     sampsize: 183, 183, 183 ... (length = 183)
 nest: false
-check_strat: true</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/7222701619d40fd8e475e5c5925f529a60aca46d/src/svydesign.jl#L8-L28">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyglm" href="#Survey.svyglm"><code>Survey.svyglm</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">svyglm(formula, design, dist, link)</code></pre><p>The <code>svyglm</code> function can be used to fit glms on svydesign.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey
+check_strat: true</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/7eed86fa713dd8ee0770fd133217d2a85630ffd8/src/svydesign.jl#L8-L28">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyglm" href="#Survey.svyglm"><code>Survey.svyglm</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">svyglm(formula, design, dist, link)</code></pre><p>The <code>svyglm</code> function can be used to fit glms on svydesign.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey
 
 julia&gt; data(api);
 
 julia&gt; dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1);
 
 julia&gt; svyglm(@formula(ell~meals),dclus1,Normal(),IdentityLink())
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/7222701619d40fd8e475e5c5925f529a60aca46d/src/svyglm.jl#L11-L28">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.svyby" href="#Survey.svyby"><code>Survey.svyby</code></a> — <span class="docstring-category">Function</span></header><section><div><p>The <code>svyby</code> function can be used to generate stratified estimates.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey
-
-julia&gt; data(api);
-
-julia&gt; dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1);
-
-julia&gt; svyby(:api00, :cname, dclus1, svymean)
-11×3 DataFrame
- Row │ cname        mean     SE
-     │ String15     Float64  Float64
-─────┼────────────────────────────────
-   1 │ Alameda      669.0    16.2135
-   2 │ Fresno       472.0     9.85278
-   3 │ Kern         452.5    29.5049
-   4 │ Los Angeles  647.267  23.5116
-   5 │ Mendocino    623.25   24.216
-   6 │ Merced       519.25   10.4925
-   7 │ Orange       710.562  28.9123
-   8 │ Plumas       709.556  13.2174
-   9 │ San Diego    659.436  12.2082
-  10 │ San Joaquin  551.189  11.578
-  11 │ Santa Clara  732.077  12.2291</code></pre><p>julia&gt; svyby(:api00, [:cname, :meals], dclus1, svymean);</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/7222701619d40fd8e475e5c5925f529a60aca46d/src/svyby.jl#L24-L53">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="examples/">Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.21 on <span class="colophon-date" title="Saturday 16 July 2022 08:10">Saturday 16 July 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/7eed86fa713dd8ee0770fd133217d2a85630ffd8/src/svyglm.jl#L11-L28">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="examples/">Examples »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.21 on <span class="colophon-date" title="Monday 18 July 2022 04:47">Monday 18 July 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
