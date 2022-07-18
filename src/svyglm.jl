@@ -99,4 +99,9 @@ end
 
 function Base.show(io::IO, g::svyglm)
     print(g.glm)
+    println("")
+    println("Degrees of Freedom: $(g.df_null) (i.e. Null); $(g.df_residual) Residual")
+    println("Null Deviance: $(g.null_deviance)")
+    println("Residual Deviance: $(g.deviance)")
+    println("AIC: $(g.aic)")
 end
