@@ -1,4 +1,3 @@
-
 function svymean(x, w, popsize, sampsize)
     # popsize correction isn't implemented yet
     ss = maximum(sampsize)
@@ -16,7 +15,6 @@ svyquantile = function(x, w, popsize, sampsize, q)
     rename!(df,:tmp => Symbol(string(q) .* "th percentile"))
     return df
 end
-
 
 svytotal = function(x, w, popsize, sampsize)
     df = DataFrame(total = wsum(Float32.(x), weights(1 ./ w)))
