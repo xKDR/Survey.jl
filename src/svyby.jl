@@ -22,7 +22,7 @@ svytotal = function(x, w, popsize, sampsize)
 end
 
 """
-The `svyby` function can be used to generate stratified estimates.
+The `svyby` function can be used to generate subsets of a survey design.
 
 ```jldoctest
 julia> using Survey
@@ -48,8 +48,6 @@ julia> svyby(:api00, :cname, dclus1, svymean)
   10 │ San Joaquin  551.189  11.578
   11 │ Santa Clara  732.077  12.2291
 ```
-
-julia> svyby(:api00, [:cname, :meals], dclus1, svymean);
 """
 function svyby(formula::Symbol, by, design::svydesign, func::Function, params = [])
     gdf = groupby(design.variables, by)
