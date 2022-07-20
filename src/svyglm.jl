@@ -80,7 +80,7 @@ mutable struct svyglm
         out
     end
 
-    function svyglm(formula, design, dist, link)
+    function svyglm(formula, design, dist=Normal(), link=canonicallink(dist))
         data = design.variables
         rtol = 1e-8
         atol = 1e-8
@@ -91,8 +91,16 @@ mutable struct svyglm
         nullglm = glm(nullformula(formula), data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
         svyglm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)
     end
+
+    svyglm(;formula, design, dist=Normal(), link=canonicallink(dist)) = svyglm(formula,design,dist,link)
+
 end
 
 function Base.show(io::IO, g::svyglm)
     print(g.glm)
+    println("")
+    println("Degrees of Freedom: $(g.df_null) (i.e. Null); $(g.df_residual) Residual")
+    println("Null Deviance: $(g.null_deviance)")
+    println("Residual Deviance: $(g.deviance)")
+    println("AIC: $(g.aic)")
 end
