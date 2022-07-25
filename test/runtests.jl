@@ -17,3 +17,4 @@ using Test
 end
 
 include("svyglm.jl")
+include("svyhist.jl")
