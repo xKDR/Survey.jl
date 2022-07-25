@@ -11,6 +11,7 @@ include("svydesign.jl")
 include("svyby.jl")
 include("example.jl")
 include("svyglm.jl")
+include("svyhist.jl")
 
 export svydesign, svyby, svyglm
 export data, api, apiclus1, apiclus2, apipop, apistrat, apisrs
