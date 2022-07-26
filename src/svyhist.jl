@@ -10,7 +10,6 @@ sturges(design::svydesign, var::Symbol) = sturges(design.variables, var)
 """
 Histogram plot of a survey design variable.
 """
-
 function svyhist(design::svydesign, var::Symbol; bins = sturges(design, var),
 				normalization = :density,
 				weights::AbstractVector = ones(size(design.variables, 1)), kwargs...)
