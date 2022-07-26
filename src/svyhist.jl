@@ -1,7 +1,3 @@
-using Survey
-using CairoMakie
-using DataFrames
-
 sturges(n::Integer) = ceil(Int, log2(n)) + 1
 
 sturges(vec::AbstractVector) = ceil(Int, log2(length(vec))) + 1
