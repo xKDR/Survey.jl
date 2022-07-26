@@ -6,6 +6,7 @@ using StatsBase
 using CSV
 using GLM
 using LinearAlgebra
+using CairoMakie
 
 include("svydesign.jl")
 include("svyby.jl")
@@ -17,6 +18,7 @@ export svydesign, svyby, svyglm
 export data, api, apiclus1, apiclus2, apipop, apistrat, apisrs
 export svymean, svytotal, svyquantile
 export @formula
+export svyhist
 export
     #families
     Normal,
