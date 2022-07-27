@@ -18,7 +18,7 @@ export svydesign, svyby, svyglm
 export data, api, apiclus1, apiclus2, apipop, apistrat, apisrs
 export svymean, svytotal, svyquantile
 export @formula
-export svyhist
+export svyhist, sturges, freedman_diaconis
 export
     #families
     Normal,
