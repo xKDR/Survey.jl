@@ -21,6 +21,7 @@ export data, api, apiclus1, apiclus2, apipop, apistrat, apisrs
 export svymean, svytotal, svyquantile
 export @formula
 export svyhist, sturges, freedman_diaconis
+export svyplot
 export dim, colnames, dimnames
 export
     #families
