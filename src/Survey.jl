@@ -13,6 +13,7 @@ include("svyby.jl")
 include("example.jl")
 include("svyglm.jl")
 include("svyhist.jl")
+include("svyplot.jl")
 include("dimnames.jl")
 
 export svydesign, svyby, svyglm
