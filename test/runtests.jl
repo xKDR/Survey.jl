@@ -18,6 +18,7 @@ end
 
 include("svyglm.jl")
 include("svyhist.jl")
-include("svyplot.jl") 
+include("svyplot.jl")
 include("dimnames.jl")
 include("svyplot.jl")
+include("svyboxplot.jl")
