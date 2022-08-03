@@ -12,7 +12,7 @@ For the complete argument list see [Makie.scatter](https://makie.juliaplots.org/
 ```@example svyplot
 julia> using Survey
 
-julia> (; apistrat) = load_data(api);;
+julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 

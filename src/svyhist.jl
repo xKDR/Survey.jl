@@ -48,7 +48,7 @@ Calculate the number of bins for a survey design variable.
 
 # Examples
 ```jldoctest
-julia> (; apistrat) = load_data(api);
+julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 
@@ -95,7 +95,7 @@ Calculate the number of bins for a survey design variable.
 
 # Examples
 ```jldoctest
-julia> (; apistrat) = load_data(api);
+julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 
@@ -128,7 +128,7 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 ```@example e1
 julia> using Survey
 
-julia> (; apistrat) = load_data(api);
+julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 

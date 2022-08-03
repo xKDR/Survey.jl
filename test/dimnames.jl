@@ -2,7 +2,7 @@ using Survey
 using Test
 
 @testset "dimnames.jl" begin
-	(; apistrat) = load_data(api)
+	apistrat = load_data("apistrat")
 	dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
 
 	@test dim(dstrat)[1] == 200

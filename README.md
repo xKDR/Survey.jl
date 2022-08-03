@@ -21,7 +21,7 @@ In the following example, we will load the Academic Performance Index dataset fo
 ```julia
 using Survey
 
-(; apiclus1) = load_data(api)
+apiclus1 = load_data("apiclus1")
 ## This function loads a commonly used dataset, Academic Performance Index (API), as an example.
 ## Any DataFrame object can be used with this package.
 
@@ -70,7 +70,7 @@ microbenchmark(svyby(~api00, by = ~cname, design = dclus1, svymean), units = "us
 **Julia**
 ```julia
 using Survey, BenchmarkTools
-(; apiclus1) = load_data(api)
+apiclus1 = load_data("apiclus1")
 dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
 @benchmark svyby(:api00, :cname, dclus1, svymean)
 ```
@@ -106,7 +106,7 @@ Unit: microseconds
 **Julia**
 ```julia
 using Survey, BenchmarkTools
-(; apiclus1) = load_data(api)
+apiclus1 = load_data("apiclus1")
 dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
 @benchmark svyby(:api00, [:cname, :meals], dclus1, svymean)
 ```
