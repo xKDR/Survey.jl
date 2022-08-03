@@ -1,32 +1,39 @@
-""" The Academic Performance Index is computed for all California schools based on standardised testing of students. The data sets contain information for all schools with at least 100 students and for various probability samples of the data.
+"""
+The Academic Performance Index is computed for all California schools based on standardised testing of students.
+The data sets contain information for all schools with at least 100 students and for various probability samples of the data.
 
-The ```data(api)``` function loads 3 dataframes: apiclus1, apiclus2, apipop.
+Use `load_data(api)` to load API data. 
+
+```julia
+# load all five dataframes
+(; apiclus1, apiclus2, apipop, apistrat, apisrs) = load_data(api)
+# load a selection of dataframes
+(; apiclus1, apipop) = load_data(api)
+``` 
 
 Details about the columns of the dataset can be found here: https://r-survey.r-forge.r-project.org/survey/html/api.html
 
 The API program has been discontinued at the end of 2018. Information is archived at https:
 //www.cde.ca.gov/re/pr/api.asp
 """
-
 struct API
     filenames
 end
 
 api = API(["apiclus1", "apiclus2", "apipop"])
 
-function data(dataset::API)
+const PKG_DIR = joinpath(pathof(Survey), "..", "..") |> normpath
+asset_path(file) = joinpath(PKG_DIR, "assets", file)
+
+function load_data(dataset::API)
     package_path = pathof(Survey)
     path_len = length(package_path)
-    assets_path = package_path[1:path_len-14] * "/assets"
-    apiclus1_path = assets_path * "/apiclus1.csv"
-    global apiclus1 = CSV.read(apiclus1_path, DataFrame,missingstring="NA")
-    apiclus2_path = assets_path * "/apiclus2.csv"
-    global apiclus2 = CSV.read(apiclus2_path, DataFrame,missingstring="NA")
-    apipop_path = assets_path * "/apipop.csv"
-    global apipop = CSV.read(apipop_path, DataFrame,missingstring="NA")
-    apistrat_path = assets_path * "/apistrat.csv"
-    global apistrat = CSV.read(apistrat_path, DataFrame,missingstring="NA")
-    apisrs_path = assets_path * "/apisrs.csv"
-    global apisrs = CSV.read(apisrs_path, DataFrame,missingstring="NA")
-    return apiclus1, apiclus2, apipop, apistrat, apisrs
+
+    apiclus1 = CSV.read(asset_path("apiclus1.csv"), DataFrame, missingstring="NA")
+    apiclus2 = CSV.read(asset_path("apiclus2.csv"), DataFrame, missingstring="NA")
+    apipop   = CSV.read(asset_path("apipop.csv"),   DataFrame, missingstring="NA")
+    apistrat = CSV.read(asset_path("apistrat.csv"), DataFrame, missingstring="NA")
+    apisrs   = CSV.read(asset_path("apisrs.csv"),   DataFrame, missingstring="NA")
+
+    (; apiclus1, apiclus2, apipop, apistrat, apisrs)
 end
