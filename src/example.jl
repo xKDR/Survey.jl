@@ -26,9 +26,6 @@ const PKG_DIR = joinpath(pathof(Survey), "..", "..") |> normpath
 asset_path(file) = joinpath(PKG_DIR, "assets", file)
 
 function load_data(dataset::API)
-    package_path = pathof(Survey)
-    path_len = length(package_path)
-
     apiclus1 = CSV.read(asset_path("apiclus1.csv"), DataFrame, missingstring="NA")
     apiclus2 = CSV.read(asset_path("apiclus2.csv"), DataFrame, missingstring="NA")
     apipop   = CSV.read(asset_path("apipop.csv"),   DataFrame, missingstring="NA")
