@@ -2,10 +2,10 @@ using Survey
 using Test
 
 @testset "Survey.jl" begin
-    (; apiclus1, apiclus2, apipop, apistrat, apisrs) = load_data(api)
+    apiclus1 = load_data("apiclus1")
     @test size(apiclus1) == (183, 40)
-    @test size(apiclus2) == (126, 41)
-    @test size(apipop)   == ((6194, 38))
+    @test size(load_data("apiclus2")) == (126, 41)
+    @test size(load_data("apipop"))   == ((6194, 38))
     dclus1 = svydesign(id=:1, strata=:stype, weights=:pw, data = apiclus1, fpc=:fpc)
 	@test dclus1.variables.strata[1] == "H"
     @test length(dclus1.variables.probs) == 183

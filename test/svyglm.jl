@@ -13,7 +13,11 @@ end
 
 @testset "svyglm.jl" begin
     rtol=0.1 #rtol which test uses is diffrent from
-    (; apiclus1, apiclus2, apipop, apistrat, apisrs) = load_data(api)
+    apiclus1 = load_data("apiclus1")
+    apiclus2 = load_data("apiclus2")
+    apipop = load_data("apipop")
+    apistrat = load_data("apistrat")
+    apisrs = load_data("apisrs")
 
     rcoef = [19.852539307789417, 0.016802996766905515]
     apistrat.wts = genWts(apistrat,1)
