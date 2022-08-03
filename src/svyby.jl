@@ -27,7 +27,7 @@ The `svyby` function can be used to generate subsets of a survey design.
 ```jldoctest
 julia> using Survey
 
-julia> data(api);
+julia> (; apiclus1) = load_data(api);
 
 julia> dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1);
 

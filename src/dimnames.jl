@@ -5,7 +5,7 @@ Get the dimensions of a survey design.
 ```jldoctest
 julia> using Survey
 
-julia> data(api);
+julia> (; apistrat) = load_data(api);
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 
@@ -22,7 +22,7 @@ Get the column names of a survey design.
 ```jldoctest
 julia> using Survey
 
-julia> data(api);
+julia> (; apistrat) = load_data(api);
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 
@@ -59,7 +59,7 @@ Get the names of the rows and columns of a survey design.
 ```jldoctest
 julia> using Survey
 
-julia> data(api);
+julia> (; apistrat) = load_data(api);
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 

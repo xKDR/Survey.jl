@@ -2,7 +2,7 @@ using Survey
 using Test
 
 @testset "Survey.jl" begin
-    data(api)
+    (; apiclus1, apiclus2, apipop, apistrat, apisrs) = load_data(api)
     @test size(apiclus1) == (183, 40)
     @test size(apiclus2) == (126, 41)
     @test size(apipop)   == ((6194, 38))

@@ -2,7 +2,7 @@ using Survey
 using Test
 
 @testset "svyhist.jl" begin
-	data(api)
+	(; apistrat) = load_data(api)
 	dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
 
 	@test Survey.sturges(10) == 5

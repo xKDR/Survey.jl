@@ -22,7 +22,7 @@ Unit: microseconds
 **Julia**
 ```julia
 using Survey, BenchmarkTools
-data(api)
+(; apiclus1) = load_data(api)
 dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
 @benchmark svyby(:api00, :cname, dclus1, svymean)
 ```
@@ -59,7 +59,7 @@ Unit: microseconds
 **Julia**
 ```julia
 using Survey, BenchmarkTools
-data(api)
+(; apiclus1) = load_data(api)
 dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1, fpc=:fpc)
 @benchmark svyby(:api00, [:cname, :meals], dclus1, svymean)
 ```
