@@ -17,7 +17,7 @@ include("svyplot.jl")
 include("dimnames.jl")
 
 export svydesign, svyby, svyglm
-export data, api, apiclus1, apiclus2, apipop, apistrat, apisrs
+export load_data
 export svymean, svytotal, svyquantile
 export @formula
 export svyhist, sturges, freedman_diaconis
