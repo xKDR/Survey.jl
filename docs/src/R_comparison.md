@@ -37,7 +37,7 @@ data(api)
 
 **Julia**
 ```julia
-(; apiclus1, apiclus2, apipop, apistrat, apisrs) = load_data(api)
+apiclus1 = load_data("apiclus1")
 ```
 
 ## svydesign
