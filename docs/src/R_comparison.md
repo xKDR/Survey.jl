@@ -37,7 +37,7 @@ data(api)
 
 **Julia**
 ```julia
-data(api)
+apiclus1 = load_data("apiclus1")
 ```
 
 ## svydesign

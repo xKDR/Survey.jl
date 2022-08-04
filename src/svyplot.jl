@@ -10,9 +10,9 @@ keyword argument `weights`.
 For the complete argument list see [Makie.scatter](https://makie.juliaplots.org/stable/examples/plotting_functions/scatter/index.html#scatter).
 
 ```@example svyplot
-julia> using survey
+julia> using Survey
 
-julia> data(api);
+julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 

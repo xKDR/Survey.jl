@@ -11,7 +11,7 @@ The `svydesign` object combines a data frame and all the survey design informati
 ```jldoctest
 julia> using Survey;
 
-julia> data(api);
+julia> apiclus1 = load_data("apiclus1");
 
 julia> dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |> print
 Survey Design:
