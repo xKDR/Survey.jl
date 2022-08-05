@@ -92,6 +92,7 @@ function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata 
     end
     df = data
     df.probs = ProbabilityWeights(get_probs(data, wt, probs))
+	df.weights = FrequencyWeights(get_weights(data, weights))
     df.popsize = get_fpc(data, fpc)
     df.sampsize = repeat([nrow(data)], nrow(data))
 	df.strata = get_strata(data, strata)
