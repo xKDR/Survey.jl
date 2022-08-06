@@ -4,8 +4,8 @@ using Survey
 data(api)
 
 # Horvitz Thompson Estimator
-myround(x) = trunc(x,sigdigits=3)
-function hte(y, wts, n)
+function hte_se(y, wts)
+	n=length(y)
 	pi = 1.0 ./ wts
 	prob = 1 .- ((1 .- pi) .^ (1/n))
 
@@ -23,25 +23,14 @@ function hte(y, wts, n)
 		end
 	end
 	
-	return first_sum + second_sum
+	return sqrt(abs(first_sum + second_sum))
 end
-
-function hte_se(y, pw, n)
-	return sqrt(abs(hte(y, pw, n)))
-	#return abs(hte(y, pw, n))
-end
-
 
 ds = select(apiclus1, [:cname, :api00, :pw])
 gd = groupby(ds, :cname)
 
-# hte(apiclus1.api00, apiclus1.pw, length(apiclus1.api00))
 y = gd[2].api00
 w = gd[2].pw
-n = length(y)
 
-hte(y, w, n)
-hte_se(y, w, n)
-function dostuff()
-combine(gd, [:api00, :pw] => ((x, w) -> hte_se(x, w, length(x))) => :se)
-end
+combine(gd, [:api00, :pw] => ((x, w) -> hte_se(x, w)) => :se)
+
