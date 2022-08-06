@@ -16,8 +16,36 @@ svyquantile = function(x, w, popsize, sampsize, q)
     return df
 end
 
+function hte_se(y, wts)
+    try
+        n=length(y)
+        pi = 1.0 ./ wts
+        
+        prob = 1 .- ((1 .- pi ) .^ (1/n))
+    
+        first_sum = sum((1 .- pi) ./ (pi .^ 2) .* (y .^ 2))
+        second_sum = 0
+        pimat = zeros(length(pi),length(pi))
+        coefmat=zeros(length(pi),length(pi))
+        for i in 1:length(pi)
+            for j in 1:length(pi)
+                if i != j
+                    pimat[i,j] = pi[i] + pi[j] - (1 - ((1 - prob[i] - prob[j] ) ^ n))
+                    coefmat[i,j] = ((pimat[i,j] - ( pi[i] * pi[j]) ) / (pi[i] * pi[j] * pimat[i,j]))
+                    second_sum += coefmat[i,j] * y[i] * y[j]
+                end
+            end
+        end
+        
+        return sqrt(abs(first_sum + second_sum))
+    catch
+        return -1
+    end
+    
+end
+
 svytotal = function(x, w, popsize, sampsize)
-    df = DataFrame(total = wsum(Float32.(x), weights(1 ./ w)))
+    df = DataFrame(total = wsum(Float32.(x), weights(1 ./ w)), SE=hte_se(x,w))
     return df
 end
 
