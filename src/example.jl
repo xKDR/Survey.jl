@@ -11,7 +11,7 @@ being the name of the dataset.
 
 ```julia
 df = load_data("apiclus1")
-``` 
+```
 
 Details about the columns of the dataset can be found here: https://r-survey.r-forge.r-project.org/survey/html/api.html
 
@@ -19,6 +19,11 @@ The API program has been discontinued at the end of 2018. Information is archive
 //www.cde.ca.gov/re/pr/api.asp
 """
 function load_data(name)
-    @assert name ∈ ["apiclus1", "apiclus2", "apipop", "apistrat", "apisrs"]
-    CSV.read(asset_path(name * ".csv"), DataFrame, missingstring="NA")
+	name = name * ".csv"
+	path_len = length(pathof(Survey))
+	termination_len = length("src/Survey.jl")
+	assets_path = pathof(Survey)[1:path_len - termination_len] * "assets"
+    @assert name ∈ readdir(assets_path)
+
+    CSV.read(asset_path(name), DataFrame, missingstring="NA")
 end
