@@ -140,25 +140,17 @@ julia> h = svyhist(dstrat, :enroll)
 function svyhist(design::svydesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
 				 normalization = :density,
-				 weights::Union{Symbol, AbstractVector} = ones(size(design.variables, 1)),
 				 kwargs...
-				)
-	if isa(weights, Symbol)
-		weights = design.variables[!, weights]
-	end
-
-	hist(design.variables[!, var]; bins = bins, normalization = normalization, weights = weights, kwargs...)
+    			)
+	hist = histogram(bins = bins, normalization = normalization, kwargs...)
+	data(design.variables) * mapping(var, weights = :weights) * hist |> draw
 end
 
-function svyhist(design::svydesign, var::Symbol,
-				 bins::Function = freedman_diaconis;
-				 normalization = :density,
-				 weights::Union{Symbol, AbstractVector} = ones(size(design.variables, 1)),
-				 kwargs...
-				)
-	if isa(weights, Symbol)
-		weights = design.variables[!, weights]
-	end
-
-	hist(design.variables[!, var]; bins = bins(design, var), normalization = normalization, weights = weights, kwargs...)
-end
+# function svyhist(design::svydesign, var::Symbol,
+# 				 bins::Function = freedman_diaconis;
+# 				 normalization = :density,
+# 				 kwargs...
+#     			)
+# 	hist = histogram(bins = bins(design, var), normalization = normalization, kwargs...)
+# 	data(design.variables) * mapping(var, weights = :weights) * hist |> draw
+# end
