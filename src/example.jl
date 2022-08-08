@@ -20,9 +20,7 @@ The API program has been discontinued at the end of 2018. Information is archive
 """
 function load_data(name)
 	name = name * ".csv"
-	path_len = length(pathof(Survey))
-	termination_len = length("src/Survey.jl")
-	assets_path = pathof(Survey)[1:path_len - termination_len] * "assets"
+	assets_path = joinpath(PKG_DIR, "assets")
     @assert name ∈ readdir(assets_path)
 
     CSV.read(asset_path(name), DataFrame, missingstring="NA")
