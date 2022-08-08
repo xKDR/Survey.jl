@@ -19,8 +19,8 @@ The API program has been discontinued at the end of 2018. Information is archive
 //www.cde.ca.gov/re/pr/api.asp
 """
 function load_data(name)
-	name = name * ".csv"
-	assets_path = joinpath(PKG_DIR, "assets")
+    name = name * ".csv"
+    assets_path = joinpath(PKG_DIR, "assets")
     @assert name ∈ readdir(assets_path)
 
     CSV.read(asset_path(name), DataFrame, missingstring="NA")
