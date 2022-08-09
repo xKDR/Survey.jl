@@ -1,5 +1,5 @@
 const PKG_DIR = joinpath(pathof(Survey), "..", "..") |> normpath
-asset_path(file) = joinpath(PKG_DIR, "assets", file)
+asset_path(args...) = joinpath(PKG_DIR, "assets", args...)
 
 """
 The Academic Performance Index is computed for all California schools based on standardised testing of students.
@@ -20,8 +20,7 @@ The API program has been discontinued at the end of 2018. Information is archive
 """
 function load_data(name)
     name = name * ".csv"
-    assets_path = joinpath(PKG_DIR, "assets")
-    @assert name ∈ readdir(assets_path)
+    @assert name ∈ readdir(asset_path())
 
     CSV.read(asset_path(name), DataFrame, missingstring="NA")
 end
