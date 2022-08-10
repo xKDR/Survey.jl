@@ -9,22 +9,14 @@ using Test
 	@test Survey.sturges([1, 2, 5, 10, 15, 17, 20]) == 4
 
 	h = svyhist(dstrat, :enroll)
-	@test getindex(h.plot.bins) == 15
-	@test getindex(h.plot.weights) == ones(length(dstrat.variables.pw))
-
-	h = svyhist(dstrat, :enroll)
-	@test getindex(h.plot.bins) == 15
-	@test getindex(h.plot.weights) == dstrat.variables.pw
+	@test h.grid[1].entries[1].positional[2] |> length == 16
 
 	h = svyhist(dstrat, :enroll, 9)
-	@test getindex(h.plot.bins) == 9
-	@test getindex(h.plot.weights) == dstrat.variables.pw
+	@test h.grid[1].entries[1].positional[2] |> length == 7
 
 	h = svyhist(dstrat, :enroll, Survey.sturges)
-	@test getindex(h.plot.bins) == 9
-	@test getindex(h.plot.weights) == dstrat.variables.pw
+	@test h.grid[1].entries[1].positional[2] |> length == 7
 
-	h = svyhist(dstrat, :enroll, [0, 1000, 2000, 3000];)
-	@test getindex(h.plot.bins) == [0, 1000, 2000, 3000]
-	@test getindex(h.plot.weights) == dstrat.variables.pw
+	h = svyhist(dstrat, :enroll, [0, 1000, 2000, 3000])
+	@test h.grid[1].entries[1].positional[2] |> length == 3
 end

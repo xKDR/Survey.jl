@@ -146,11 +146,9 @@ function svyhist(design::svydesign, var::Symbol,
 	data(design.variables) * mapping(var, weights = :weights) * hist |> draw
 end
 
-# function svyhist(design::svydesign, var::Symbol,
-# 				 bins::Function = freedman_diaconis;
-# 				 normalization = :density,
-# 				 kwargs...
-#     			)
-# 	hist = histogram(bins = bins(design, var), normalization = normalization, kwargs...)
-# 	data(design.variables) * mapping(var, weights = :weights) * hist |> draw
-# end
+function svyhist(design::svydesign, var::Symbol,
+				 bins::Function;
+				 kwargs...
+    			)
+    svyhist(design, var, bins(design, var); kwargs...)
+end
