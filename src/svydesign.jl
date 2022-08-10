@@ -15,7 +15,7 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |> print
 Survey Design:
-variables: 183x44 DataFrame
+variables: 183x45 DataFrame
 id: dnum
 strata: 1, 1, 1 ... (length = 183)
 probs: 0.029544719150814778, 0.029544719150814778, 0.029544719150814778 ... (length = 183)
