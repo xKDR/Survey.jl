@@ -6,7 +6,6 @@ using StatsBase
 using CSV
 using GLM
 using LinearAlgebra
-using CairoMakie
 using AlgebraOfGraphics
 
 include("svydesign.jl")
