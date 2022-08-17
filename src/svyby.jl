@@ -1,3 +1,18 @@
+function svymean(y, design::svydesign)
+    # popsize correction isn't implemented yet
+    ss = maximum(design.variables.sampsize)
+    w = design.variables.probs
+    x = design.variables[!, y]
+    function SE(x, w, ss)
+        f = sqrt(1 - 1 / length(x) + 1 / ss)
+        var = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
+        sd = sqrt(var / (length(x) - 1))
+        return f * sd
+    end
+
+   return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
+end
+
 function svymean(x, w, popsize, sampsize)
     # popsize correction isn't implemented yet
     ss = maximum(sampsize)
@@ -10,14 +25,29 @@ function svymean(x, w, popsize, sampsize)
    return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
 end
 
-svyquantile = function(x, w, popsize, sampsize, q)
+function svyquantile(var, design::svydesign, q)
+    x = design.variables[!, var]
+    w = design.variables.probs
     df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
     rename!(df,:tmp => Symbol(string(q) .* "th percentile"))
     return df
 end
 
-svytotal = function(x, w, popsize, sampsize)
-    df = DataFrame(total = wsum(Float32.(x), weights(1 ./ w)))
+function svyquantile(x, w, popsize, sampsize, q)
+    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
+    rename!(df,:tmp => Symbol(string(q) .* "th percentile"))
+    return df
+end
+
+function svytotal(var, design::svydesign)
+    w = design.variables.probs;
+    x = design.variables[!, var];
+    df = DataFrame(total = wsum(Float32.(x), weights(1 ./ w)));
+    return df
+end
+
+function svytotal(var, w, popsize, sampsize)
+    df =  DataFrame(total = wsum(Float32.(var), weights(1 ./ w)))
     return df
 end
 
