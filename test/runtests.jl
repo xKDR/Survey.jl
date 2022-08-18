@@ -16,6 +16,7 @@ using Test
     @test api00_by_cname_meals[1,3] ≈ 608.0
 end
 
+include("SurveyDesign.jl")
 include("svyglm.jl")
 include("svyhist.jl")
 include("svyplot.jl")
