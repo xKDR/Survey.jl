@@ -1,3 +1,4 @@
+# Helper function for nice printing
 function print_short(x)
     if length(x) < 3
         print(x)
@@ -5,6 +6,7 @@ function print_short(x)
         print( x[1], ", ", x[2], ", ", x[3], " ...", " (length = ", length(x), ")")
     end
 end
+
 """
 The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
 
