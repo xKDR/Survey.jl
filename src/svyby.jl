@@ -1,58 +1,45 @@
-function svymean(y, design::svydesign)
-    # popsize correction isn't implemented yet
-    ss = maximum(design.variables.sampsize)
-    w = design.variables.probs
-    x = design.variables[!, y]
-    function SE(x, w, ss)
-        f = sqrt(1 - 1 / length(x) + 1 / ss)
-        var = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
-        sd = sqrt(var / (length(x) - 1))
-        return f * sd
-    end
+"""
+The `svyby` function can be used to generate subsets of a survey design.
 
-   return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
-end
+```jldoctest
+julia> using Survey
 
-function svymean(x, w, popsize, sampsize)
-    # popsize correction isn't implemented yet
-    ss = maximum(sampsize)
-    function SE(x, w, ss)
-        f = sqrt(1 - 1/length(x) + 1/ss)
-        var = sum(w.*(x.- sum(w.*x)/sum(w)).^2)/sum(w)
-        sd = sqrt(var / (length(x) -1))
-        return f * sd
-    end
-   return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
-end
+julia> apisrs = load_data("apisrs");
 
-function svyquantile(var, design::svydesign, q)
-    x = design.variables[!, var]
-    w = design.variables.probs
-    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
-    rename!(df,:tmp => Symbol(string(q) .* "th percentile"))
-    return df
-end
+julia> srs = SimpleRandomSample(apisrs);
 
-function svyquantile(x, w, popsize, sampsize, q)
-    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
-    rename!(df,:tmp => Symbol(string(q) .* "th percentile"))
-    return df
-end
-
-function svytotal(var, design::svydesign)
-    w = design.variables.probs;
-    x = design.variables[!, var];
-    df = DataFrame(total = wsum(Float32.(x), weights(1 ./ w)));
-    return df
-end
-
-function svytotal(var, w, popsize, sampsize)
-    df =  DataFrame(total = wsum(Float32.(var), weights(1 ./ w)))
-    return df
+julia> svyby(:api00, :cname, srs, svytotal)
+38×2 DataFrame
+ Row │ cname            total
+     │ String15         Float64
+─────┼──────────────────────────
+   1 │ Kern              5736.0
+   2 │ Los Angeles      29617.0
+   3 │ Orange            6744.0
+   4 │ San Luis Obispo    739.0
+   5 │ San Francisco     1675.0
+   6 │ Modoc              671.0
+   7 │ Alameda           7437.0
+   8 │ Solano            1869.0
+  ⋮  │        ⋮            ⋮
+  32 │ Kings              939.0
+  33 │ Shasta            1508.0
+  34 │ Yolo               475.0
+  35 │ Calaveras          790.0
+  36 │ Napa              1454.0
+  37 │ Lake               804.0
+  38 │ Merced             595.0
+                 23 rows omitted
+```
+"""
+function svyby(formula::Symbol, by, design::SurveyDesign, func::Function, params = [])
+    gdf = groupby(design.data, by)
+    return combine(gdf, [formula, :probs, :sampsize] => ((a, b, c) -> func(a, b, c, params...)) => AsTable)
 end
 
 """
-The `svyby` function can be used to generate subsets of a survey design.
+The `svyby` function can also be used in a manner similar to R, with a
+`svydesign` object.
 
 ```jldoctest
 julia> using Survey
@@ -81,5 +68,5 @@ julia> svyby(:api00, :cname, dclus1, svymean)
 """
 function svyby(formula::Symbol, by, design::svydesign, func::Function, params = [])
     gdf = groupby(design.variables, by)
-    return combine(gdf, [formula, :probs, :popsize, :sampsize] => ((a, b, c, d) -> func(a, b, c, d, params...)) => AsTable)
+    return combine(gdf, [formula, :probs, :sampsize] => ((a, b, c) -> func(a, b, c, params...)) => AsTable)
 end
