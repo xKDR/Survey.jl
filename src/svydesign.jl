@@ -90,6 +90,7 @@ end
 function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata = nothing, fpc = nothing, nest = false, check_strat = !nest, weights = nothing)
     wt = get_weights(data, weights)
     if isnothing(probs) & isnothing(weights)
+        # THIS WARNING IS NOT NECESSARY
         @warn "No weights or probabilities supplied, assuming equal probability"
     end
     df = data
