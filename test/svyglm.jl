@@ -1,6 +1,3 @@
-using Survey
-using Test
-
 function genWts(data,chaos)
     if chaos==1
         wts = ones(size(data)[1])
