@@ -42,6 +42,23 @@ julia> sturges(df, :b)
 sturges(df::DataFrame, var::Symbol) = ceil(Int, log2(size(df[!, var], 1))) + 1
 
 """
+    sturges(design::SurveyDesign, var::Symbol)
+
+Calculate the number of bins for a `SurveyDesign`.
+
+# Examples
+```jldoctest
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs);
+
+julia> sturges(srs, :enroll)
+9
+```
+"""
+sturges(design::SurveyDesign, var::Symbol) = sturges(design.data, var)
+
+"""
     sturges(design::svydesign, var::Symbol)
 
 Calculate the number of bins for a survey design variable.
@@ -89,6 +106,23 @@ julia> freedman_diaconis(df, :b)
 freedman_diaconis(df::DataFrame, var::Symbol) = freedman_diaconis(df[!, var])
 
 """
+    freedman_diaconis(design::SurveyDesign, var::Symbol)
+
+Calculate the number of bins for a `SurveyDesign`.
+
+# Examples
+```jldoctest
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs);
+
+julia> freedman_diaconis(srs, :enroll)
+18
+```
+"""
+freedman_diaconis(design::SurveyDesign, var::Symbol) = freedman_diaconis(design.data[!, var])
+
+"""
     freedman_diaconis(design::svydesign, var::Symbol)
 
 Calculate the number of bins for a survey design variable.
@@ -120,22 +154,50 @@ The normalization can be set to `:none`, `:density`, `:probability` or `:pdf`.
 See [Makie.hist](https://makie.juliaplots.org/stable/examples/plotting_functions/hist/)
 for more information.
 
-The `weights` argument can be an `AbstractVector` or a `Symbol` specifying a
-design variable.
+The `weights` argument should be a `Symbol` specifying a design variable.
 
 For the complete argument list see [Makie.hist](https://makie.juliaplots.org/stable/examples/plotting_functions/hist/).
 
-```@example e1
+```julia
 julia> using Survey
 
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs);
+
+julia> h = svyhist(srs, :enroll)
+```
+
+![](./assets/hist.png)
+
+The histogram plot also supports the old design.
+
+```julia
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
 
-julia> h = svyhist(dstrat, :enroll)
+julia> h_old = svyhist(dstrat, :enroll)
 ```
+"""
+function svyhist(design::SurveyDesign, var::Symbol,
+				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
+				 normalization = :density,
+				 kwargs...
+    			)
+	hist = histogram(bins = bins, normalization = normalization, kwargs...)
+	data(design.data) * mapping(var, weights = :weights) * hist |> draw
+end
 
-![](./assets/hist.png)
+function svyhist(design::SurveyDesign, var::Symbol,
+				 bins::Function;
+				 kwargs...
+    			)
+    svyhist(design, var, bins(design, var); kwargs...)
+end
+
+"""
+Methods for `svydesign`.
 """
 function svyhist(design::svydesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
