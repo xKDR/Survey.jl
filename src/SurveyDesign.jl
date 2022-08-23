@@ -7,18 +7,18 @@ abstract type SurveyDesign end
 """
 A `SimpleRandomSample` object contains survey design information needed to
 analyse surveys sampled by simple random sampling.
+TODO: documentation about user making a copy
+TODO: add fpc
 """
 struct SimpleRandomSample <: SurveyDesign
     data::DataFrame
     function SimpleRandomSample(data::DataFrame; weights = ones(nrow(data)), probs = 1 ./ weights)
-        # make a copy of the original data frame to not alter it
-        data_copy = copy(data)
         # add frequency weights, probability weights and sample size columns
-        data_copy[!, :weights] = weights
-        data_copy[!, :probs] = probs
-        data_copy[!, :sampsize] = repeat([nrow(data_copy)], nrow(data_copy))
+        data[!, :weights] = weights
+        data[!, :probs] = probs
+        data[!, :sampsize] = repeat([nrow(data)], nrow(data))
 
-        new(data_copy)
+        new(data)
     end
 end
 

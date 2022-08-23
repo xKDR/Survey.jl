@@ -2,7 +2,11 @@
     # Simple random sampling tests
     apisrs = load_data("apisrs")
 
-    srs_new = SimpleRandomSample(apisrs)
+    # make a copy to not modify the original dataset
+    apisrs_copy = copy(apisrs)
+    srs_new = SimpleRandomSample(apisrs_copy)
+    # make a new copy to use for the old design
+    apisrs_copy = copy(apisrs)
     srs_old = svydesign(id = :1, data = apisrs)
     # `dim`
 	@test dim(srs_new)[1] == dim(srs_old)[1]

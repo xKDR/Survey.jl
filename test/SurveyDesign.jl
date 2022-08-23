@@ -3,7 +3,6 @@
     apisrs = load_data("apisrs")
 
     srs = SimpleRandomSample(apisrs)
-    @test size(srs.data, 2) - size(apisrs, 2) == 3
     @test srs.data.weights == ones(size(apisrs, 1))
     @test srs.data.weights == srs.data.probs
     # THIS NEEDS TO BE CHANGED WHEN `sampsize` IS UPDATED

@@ -16,6 +16,7 @@ julia> svyquantile(:enroll, srs, 0.5)
    1 │            453.0
 ```
 """
+# TODO: modify for SimpleRandomSample
 function svyquantile(var, design::SurveyDesign, q)
     x = design.data[!, var]
     w = design.data.probs
