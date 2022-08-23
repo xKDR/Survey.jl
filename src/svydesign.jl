@@ -1,3 +1,4 @@
+# Helper function for nice printing
 function print_short(x)
     if length(x) < 3
         print(x)
@@ -5,6 +6,7 @@ function print_short(x)
         print( x[1], ", ", x[2], ", ", x[3], " ...", " (length = ", length(x), ")")
     end
 end
+
 """
 The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
 
@@ -88,6 +90,7 @@ end
 function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata = nothing, fpc = nothing, nest = false, check_strat = !nest, weights = nothing)
     wt = get_weights(data, weights)
     if isnothing(probs) & isnothing(weights)
+        # THIS WARNING IS NOT NECESSARY
         @warn "No weights or probabilities supplied, assuming equal probability"
     end
     df = data

@@ -9,7 +9,11 @@ using LinearAlgebra
 using CairoMakie
 using AlgebraOfGraphics
 
+include("SurveyDesign.jl")
 include("svydesign.jl")
+include("svymean.jl")
+include("svyquantile.jl")
+include("svytotal.jl")
 include("svyby.jl")
 include("example.jl")
 include("svyglm.jl")
@@ -18,6 +22,7 @@ include("svyplot.jl")
 include("dimnames.jl")
 include("svyboxplot.jl")
 
+export SurveyDesign, SimpleRandomSample
 export svydesign, svyby, svyglm
 export load_data
 export svymean, svytotal, svyquantile

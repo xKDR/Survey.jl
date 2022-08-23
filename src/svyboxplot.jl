@@ -12,15 +12,26 @@ The keyword arguments are all the arguments that can be passed to `mapping` in
 ```@example svyboxplot
 julia> using survey
 
-julia> data(api);
+julia> apisrs = load_data("apisrs");
 
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
+julia> srs = SimpleRandomSample(apisrs);
 
-julia> bp = svyboxplot(dstrat, :stype, :enroll; weights = :pw)
+julia> bp = svyboxplot(srs, :stype, :enroll; weights = :pw)
 ```
 
 ![](./assets/boxplot.png)
 """
+function svyboxplot(design::SurveyDesign, x::Symbol, y::Symbol; kwargs...)
+	map = mapping(x, y; kwargs...)
+	data = AlgebraOfGraphics.data(design.data)
+
+	data * visual(BoxPlot) * map |> draw
+end
+
+"""
+Method for `svydesign`.
+"""
+# TODO: change function, make it a wrapper
 function svyboxplot(design::svydesign, x::Symbol, y::Symbol; kwargs...)
 	map = mapping(x, y; kwargs...)
 	data = AlgebraOfGraphics.data(design.variables)

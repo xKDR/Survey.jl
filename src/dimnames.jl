@@ -1,6 +1,22 @@
 """
 	dim(design)
-Get the dimensions of a survey design.
+Get the dimensions of a `SurveyDesign`.
+
+```jldoctest
+julia> using Survey
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs);
+
+julia> dim(srs)
+(200, 43)
+```
+"""
+dim(design::SurveyDesign) = size(design.data)
+
+"""
+Method for `svydesign` object.
 
 ```jldoctest
 julia> using Survey
@@ -17,7 +33,43 @@ dim(design::svydesign) = size(design.variables)
 
 """
 	colnames(design)
-Get the column names of a survey design.
+Get the column names of a `SurveyDesign`.
+
+```jldoctest
+julia> using Survey
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs);
+
+julia> colnames(srs)
+43-element Vector{String}:
+ "Column1"
+ "cds"
+ "stype"
+ "name"
+ "sname"
+ "snum"
+ "dname"
+ "dnum"
+ "cname"
+ "cnum"
+ ⋮
+ "full"
+ "emer"
+ "enroll"
+ "api.stu"
+ "pw"
+ "fpc"
+ "weights"
+ "probs"
+ "sampsize"
+```
+"""
+colnames(design::SurveyDesign) = names(design.data)
+
+"""
+Method for `svydesign` objects.
 
 ```jldoctest
 julia> using Survey
@@ -54,7 +106,25 @@ colnames(design::svydesign) = names(design.variables)
 
 """
 	dimnames(design)
-Get the names of the rows and columns of a survey design.
+Get the names of the rows and columns of a `SurveyDesign`.
+
+```jldoctest
+julia> using Survey
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs);
+
+julia> dimnames(srs)
+2-element Vector{Vector{String}}:
+ ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"  …  "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"]
+ ["Column1", "cds", "stype", "name", "sname", "snum", "dname", "dnum", "cname", "cnum"  …  "avg.ed", "full", "emer", "enroll", "api.stu", "pw", "fpc", "weights", "probs", "sampsize"]
+```
+"""
+dimnames(design::SurveyDesign) = [string.(1:size(design.data, 1)), names(design.data)]
+
+"""
+Method for `svydesign` objects.
 
 ```jldoctest
 julia> using Survey

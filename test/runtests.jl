@@ -6,19 +6,25 @@ using Test
     @test size(apiclus1) == (183, 40)
     @test size(load_data("apiclus2")) == (126, 41)
     @test size(load_data("apipop"))   == ((6194, 38))
+    # WRONG DESIGN FOR CLUSTER SAMPLE
     dclus1 = svydesign(id=:1, strata=:stype, weights=:pw, data = apiclus1, fpc=:fpc)
 	@test dclus1.variables.strata[1] == "H"
     @test length(dclus1.variables.probs) == 183
     @test dclus1.id == 1
+    # THESE SHOULD BE MOVED TO `test/svyby.jl`/REMOVED, SINCE THE DESIGN IS WRONG
     api00_by_cname = svyby(:api00, :cname, dclus1, svymean).mean
     @test api00_by_cname ≈ [669.0000000000001, 472.00000000000006, 452.5, 647.2666666666668, 623.25, 519.25, 710.5625000000001, 709.5555555555557, 659.4363636363635, 551.1891891891892, 732.0769230769226]
     api00_by_cname_meals = svyby(:api00, [:cname, :meals], dclus1, svymean)
     @test api00_by_cname_meals[1,3] ≈ 608.0
 end
 
-include("svyglm.jl")
-include("svyhist.jl")
-include("svyplot.jl")
+include("SurveyDesign.jl")
+include("svytotal.jl")
+include("svyquantile.jl")
+include("svymean.jl")
+include("svyby.jl")
 include("dimnames.jl")
+include("svyglm.jl")
 include("svyplot.jl")
+include("svyhist.jl")
 include("svyboxplot.jl")
