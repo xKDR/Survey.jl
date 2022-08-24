@@ -24,6 +24,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
 
     function SimpleRandomSample(data::DataFrame; weights = ones(nrow(data)), probs = 1 ./ weights)
         # add frequency weights, probability weights and sample size columns
+        # TODO: make lines 28 & 29 use a helper function?
         data[!, :weights] = weights
         data[!, :probs] = probs
         # TODO: change `sampsize` and `popsize`
@@ -35,6 +36,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
 end
 
 # `show` method for printing information about a `SimpleRandomSample` after construction
+# TODO: change `show` to 3 argument method
 function Base.show(io::IO, design::SimpleRandomSample)
     printstyled("Simple Random Sample:\n")
     printstyled("data: "; bold = true)
