@@ -36,6 +36,26 @@ function svytotal(var, design::SimpleRandomSample)
     DataFrame(total = wsum(Float32.(x), weights(1 ./ wts)), SE = SE(x, wts));
 end
 
+# TODO: standard error
+function svytotal(var, design::StratifiedSample)
+    wts = design.data.probs;  # probability weights
+    x = design.data[!, var];  # column for which the total is calculated
+    strata = design.data.strata
+    # standard error of total - SHOULD BE AN EXTERNAL FUNCTION
+    # change SE to account for stratification
+    function SE(x, w)
+        # remove the warning once the function is fixed
+        # DON'T FORGET TO REMOVE FROM DOCTEST
+        @warn "this is the standard error of the mean"
+        var = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
+        sd = sqrt(var / (length(x) - 1))
+        return sd
+    end
+
+    # return the weighted sum and standard error as a data frame
+    DataFrame(total = wsum(Float32.(x), weights(1 ./ wts)), SE = SE(x, wts));
+end
+
 """
 The `svytotal` function can also be used with a `svydesign` object.
 """

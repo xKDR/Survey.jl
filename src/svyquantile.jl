@@ -17,7 +17,17 @@ julia> svyquantile(:enroll, srs, 0.5)
 ```
 """
 # TODO: modify for SimpleRandomSample
-function svyquantile(var, design::SurveyDesign, q)
+function svyquantile(var, design::SimpleRandomSample, q)
+    x = design.data[!, var]
+    w = design.data.probs
+    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
+    rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
+
+    return df
+end
+
+# TODO: modify for StratifiedSample
+function svyquantile(var, design::StratifiedSample, q)
     x = design.data[!, var]
     w = design.data.probs
     df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))

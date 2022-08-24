@@ -20,7 +20,7 @@ julia> s = svyplot(srs, :api99, :api00)
 # TODO: change the plot image and example
 ![](./assets/scatter.png)
 """
-function svyplot(design::SurveyDesign, x::Symbol, y::Symbol; kwargs...)
+function svyplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
     data(design.data) * mapping(x, y, markersize = :weights) * visual(Scatter, marker = '￮') |> draw
 end
 

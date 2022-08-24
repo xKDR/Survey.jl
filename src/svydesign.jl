@@ -1,11 +1,11 @@
-# Helper function for nice printing
-function print_short(x)
-    if length(x) < 3
-        print(x)
-    else
-        print( x[1], ", ", x[2], ", ", x[3], " ...", " (length = ", length(x), ")")
-    end
-end
+# # Helper function for nice printing
+# function print_short(x)
+#     if length(x) < 3
+#         print(x)
+#     else
+#         print( x[1], ", ", x[2], ", ", x[3], " ...", " (length = ", length(x), ")")
+#     end
+# end
 
 """
 The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
@@ -106,19 +106,19 @@ function Base.show(io::IO, design::svydesign)
     printstyled("Survey Design:\n")
     printstyled("variables: "; bold = true)
     print(size(design.variables)[1], "x", size(design.variables)[2], " DataFrame")
-        printstyled("\nid: "; bold = true)
-        print(design.id)
-        printstyled("\nstrata: "; bold = true)
-        print_short(design.variables.strata)
-        printstyled("\nprobs: "; bold = true)
-        print_short(design.variables.probs)
-        printstyled("\nfpc: "; bold = true)
-        print("\n    popsize: ")
-        print_short(design.variables.popsize)
-        print("\n    sampsize: ")
-        print_short(design.variables.sampsize)
-        printstyled("\nnest: "; bold = true)
-        print(design.nest)
-        printstyled("\ncheck_strat: "; bold = true)
-        print(design.check_strat)
+    printstyled("\nid: "; bold = true)
+    print(design.id)
+    printstyled("\nstrata: "; bold = true)
+    print_short(design.variables.strata)
+    printstyled("\nprobs: "; bold = true)
+    print_short(design.variables.probs)
+    printstyled("\nfpc: "; bold = true)
+    print("\n    popsize: ")
+    print_short(design.variables.popsize)
+    print("\n    sampsize: ")
+    print_short(design.variables.sampsize)
+    printstyled("\nnest: "; bold = true)
+    print(design.nest)
+    printstyled("\ncheck_strat: "; bold = true)
+    print(design.check_strat)
 end
