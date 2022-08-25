@@ -33,22 +33,22 @@ function svymean(var, design::SimpleRandomSample)
     return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
 end
 
-# TODO
-# function svymean(var, design::StratifiedSample)
-#     # popsize correction isn't implemented yet
-#     ss = maximum(design.data.sampsize)
-#     w = design.data.probs
-#     x = design.data[!, var]
-#     strata = groupby(design.data.strata)
-#     function SE(x, w, ss)
-#         f = sqrt(1 - 1 / length(x) + 1 / ss)
-#         x1 = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
-#         sd = sqrt(x1 / (length(x) - 1))
-#         return f * sd
-#     end
+function svymean(var, design::StratifiedSample)
+    # popsize correction isn't implemented yet
+    ss = maximum(design.data.sampsize)
+    w = design.data.probs
+    x = design.data[!, var]
+    strata = design.data.strata
+    # TODO: modify SE to account for stratification
+    function SE(x, w, ss)
+        f = sqrt(1 - 1 / length(x) + 1 / ss)
+        x1 = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
+        sd = sqrt(x1 / (length(x) - 1))
+        return f * sd
+    end
 
-#     return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
-# end
+    return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
+end
 
 """
 Method for designs of type `svydesign`.

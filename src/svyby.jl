@@ -32,7 +32,7 @@ julia> svyby(:api00, :cname, srs, svytotal)
                  23 rows omitted
 ```
 """
-function svyby(formula::Symbol, by, design::SurveyDesign, func::Function, params = [])
+function svyby(formula::Symbol, by, design::AbstractSurveyDesign, func::Function, params = [])
     gdf = groupby(design.data, by)
     return combine(gdf, [formula, :probs, :sampsize] => ((a, b, c) -> func(a, b, c, params...)) => AsTable)
 end

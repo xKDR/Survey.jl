@@ -22,14 +22,15 @@ include("svyplot.jl")
 include("dimnames.jl")
 include("svyboxplot.jl")
 
-export SurveyDesign, SimpleRandomSample
-export svydesign, svyby, svyglm
 export load_data
+export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
+export svydesign
+export svyby, svyglm
+export dim, colnames, dimnames
 export svymean, svytotal, svyquantile
 export @formula
-export svyhist, sturges, freedman_diaconis
 export svyplot
-export dim, colnames, dimnames
+export svyhist, sturges, freedman_diaconis
 export svyboxplot
 export
     #families

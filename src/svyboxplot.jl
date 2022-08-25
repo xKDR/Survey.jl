@@ -21,7 +21,7 @@ julia> bp = svyboxplot(srs, :stype, :enroll; weights = :pw)
 
 ![](./assets/boxplot.png)
 """
-function svyboxplot(design::SurveyDesign, x::Symbol, y::Symbol; kwargs...)
+function svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 	map = mapping(x, y; kwargs...)
 	data = AlgebraOfGraphics.data(design.data)
 

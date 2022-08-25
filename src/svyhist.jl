@@ -56,7 +56,7 @@ julia> sturges(srs, :enroll)
 9
 ```
 """
-sturges(design::SurveyDesign, var::Symbol) = sturges(design.data, var)
+sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data, var)
 
 """
     sturges(design::svydesign, var::Symbol)
@@ -120,7 +120,7 @@ julia> freedman_diaconis(srs, :enroll)
 18
 ```
 """
-freedman_diaconis(design::SurveyDesign, var::Symbol) = freedman_diaconis(design.data[!, var])
+freedman_diaconis(design::AbstractSurveyDesign, var::Symbol) = freedman_diaconis(design.data[!, var])
 
 """
     freedman_diaconis(design::svydesign, var::Symbol)
@@ -180,7 +180,7 @@ julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :
 julia> h_old = svyhist(dstrat, :enroll)
 ```
 """
-function svyhist(design::SurveyDesign, var::Symbol,
+function svyhist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
 				 normalization = :density,
 				 kwargs...
@@ -189,7 +189,7 @@ function svyhist(design::SurveyDesign, var::Symbol,
 	data(design.data) * mapping(var, weights = :weights) * hist |> draw
 end
 
-function svyhist(design::SurveyDesign, var::Symbol,
+function svyhist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Function;
 				 kwargs...
     			)
