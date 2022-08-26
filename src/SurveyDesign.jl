@@ -37,8 +37,8 @@ end
 
 # `show` method for printing information about a `SimpleRandomSample` after construction
 # TODO: change `show` to 3 argument method
-function Base.show(io::IO, design::SimpleRandomSample)
-    printstyled("Simple Random Sample:\n")
+function Base.show(io::IO, ::MIME"text/plain", design::SimpleRandomSample)
+    printstyled("Simple Random Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data)[1], "x", size(design.data)[2], " DataFrame")
     printstyled("\nprobs: "; bold = true)
@@ -71,8 +71,8 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 # `show` method for printing information about a `StratifiedSample` after construction
-function Base.show(io::IO, design::StratifiedSample)
-    printstyled("Stratified Sample:\n")
+function Base.show(io::IO, ::MIME"text/plain", design::StratifiedSample)
+    printstyled("Stratified Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data)[1], "x", size(design.data)[2], " DataFrame")
     printstyled("\nprobs: "; bold = true)
@@ -96,8 +96,8 @@ struct ClusterSample <: AbstractSurveyDesign
 end
 
 # `show` method for printing information about a `ClusterSample` after construction
-function Base.show(io::IO, design::ClusterSample)
-    printstyled("Simple Random Sample:\n")
+function Base.show(io::IO, ::MIME"text/plain", design::ClusterSample)
+    printstyled("Simple Random Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data)[1], "x", size(design.data)[2], " DataFrame")
     printstyled("\nprobs: "; bold = true)
