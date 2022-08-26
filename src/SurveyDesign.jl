@@ -8,15 +8,22 @@ function print_short(x::AbstractVector)
 end
 
 """
-Supertype for every survey design type: `SimpleRandomSample`, `ClusterSample`
-and `StratifiedSample`.
+    AbstractSurveyDesign
+
+Supertype for survey designs. `SimpleRandomSample`, `ClusterSample`
+and `StratifiedSample` are subtypes of this.
+
+!!! note
+    When passing data to a survey design, the user should make a copy of the
+    data. The constructors modify the data passed as argument.
 """
 abstract type AbstractSurveyDesign end
 
 """
+    SimpleRandomSample
+
 A `SimpleRandomSample` object contains survey design information needed to
-analyse surveys sampled by simple random sampling.
-TODO: documentation about user making a copy
+analyse simple random sample surveys.
 TODO: add fpc
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
