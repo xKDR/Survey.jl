@@ -23,7 +23,7 @@ include("dimnames.jl")
 include("svyboxplot.jl")
 
 export load_data
-export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
+export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample, ClusterSample
 export svydesign
 export svyby, svyglm
 export dim, colnames, dimnames
