@@ -20,7 +20,7 @@ julia> svymean(:enroll, srs)
 # TODO: use more descriprive variable names
 function svymean(var, design::SimpleRandomSample)
     # popsize correction isn't implemented yet
-    ss = maximum(design.data.sampsize)
+    ss = design.sample_size
     w = design.data.probs
     x = design.data[!, var]
     function SE(x, w, ss)

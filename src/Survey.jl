@@ -14,7 +14,6 @@ include("svydesign.jl")
 include("svymean.jl")
 include("svyquantile.jl")
 include("svytotal.jl")
-include("svyby.jl")
 include("example.jl")
 include("svyglm.jl")
 include("svyhist.jl")
@@ -25,7 +24,7 @@ include("svyboxplot.jl")
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
 export svydesign
-export svyby, svyglm
+export svyglm
 export dim, colnames, dimnames
 export svymean, svytotal, svyquantile
 export @formula
