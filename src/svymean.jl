@@ -15,59 +15,23 @@ julia> svymean(:enroll, srs)
 ─────┼──────────────────
    1 │  584.61  27.8212
 ```
+Variance of x̄ in SRS, V̂(x̄) = (1-n/N) / n * s²ₓ 
+SE of x̄ in SRS = sqrt(V̂(x̄))
 """
-# TODO: modify documentation to account for SimpleRandomSample
-# TODO: use more descriprive variable names
-function svymean(var, design::SimpleRandomSample)
-    # popsize correction isn't implemented yet
-    ss = design.sample_size
-    w = design.data.probs
-    x = design.data[!, var]
-    function SE(x, w, ss)
-        f = sqrt(1 - 1 / length(x) + 1 / ss)
-        x1 = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
-        sd = sqrt(x1 / (length(x) - 1))
-        return f * sd
-    end
-
-    return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
+function var_of_mean(variable,design::SimpleRandomSample)
+    return design.fpc / design.sample_size * var(design.data[!, variable])
 end
 
-function svymean(var, design::StratifiedSample)
-    # popsize correction isn't implemented yet
-    ss = maximum(design.data.sampsize)
-    w = design.data.probs
-    x = design.data[!, var]
-    strata = design.data.strata
-    # TODO: modify SE to account for stratification
-    function SE(x, w, ss)
-        f = sqrt(1 - 1 / length(x) + 1 / ss)
-        x1 = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
-        sd = sqrt(x1 / (length(x) - 1))
-        return f * sd
-    end
-
-    return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
+function standardErrorOfMean(variable,design::SimpleRandomSample)
+    return sqrt(var_of_mean(variable,design))
 end
 
-"""
-Method for designs of type `svydesign`.
-"""
-function svymean(y, design::svydesign)
-    # popsize correction isn't implemented yet
-    ss = maximum(design.variables.sampsize)
-    w = design.variables.probs
-    x = design.variables[!, y]
-    function SE(x, w, ss)
-        f = sqrt(1 - 1 / length(x) + 1 / ss)
-        var = sum(w .* (x .- sum(w .* x) / sum(w)).^2) / sum(w)
-        sd = sqrt(var / (length(x) - 1))
-        return f * sd
-    end
-
-    return DataFrame(mean = mean(x, weights(w)), SE = SE(x, w, ss))
+# Dont use var as name of variable as it is function for variance.
+function svymean(variable,design::SimpleRandomSample)
+    return DataFrame(mean = mean(design.data[!, variable]), SE = standardErrorOfMean(variable,design::SimpleRandomSample)  )
 end
 
+# TODO: this need work
 """
 Inner function used by `svyby`.
 """
