@@ -1,5 +1,7 @@
 """
-Estimate the population total for the variable specified by `var`.
+    svytotal(x, design)
+
+Estimate the population total for the variable specified by `x`.
 
 ```jldoctest
 julia> using Survey
@@ -9,36 +11,27 @@ julia> apisrs = load_data("apisrs");
 julia> srs = SimpleRandomSample(apisrs);
 
 julia> svytotal(:enroll, srs)
-┌ Warning: this is the standard error of the mean
-└ @ Survey ~/GSoC/Survey.jl/src/svytotal.jl:25
 1×2 DataFrame
- Row │ total     SE
+ Row │ total     se_total
      │ Float64   Float64
-─────┼───────────────────
-   1 │ 116922.0  27.8212
+─────┼────────────────────
+   1 │ 116922.0   5564.24
 ```
-Yt = N * mean
-var of total = N ^2 * V(ȳ)
 """
-function var_of_total(variable,design::SimpleRandomSample)
-    return design.pop_size ^2 * design.fpc / design.sample_size * var(design.data[!, variable])
+function var_of_total(x::Symbol, design::SimpleRandomSample)
+    return design.popsize^2 * design.fpc / design.sampsize * var(design.data[!, x])
 end
 
-function standardErrorOfTotal(variable,design::SimpleRandomSample)
-    return sqrt(var_of_total(variable,design))
+function se_tot(x::Symbol, design::SimpleRandomSample)
+    return sqrt(var_of_total(x, design))
 end
 
-# Dont use var as name of variable as it is function for variance.
-function svytotal(variable,design::SimpleRandomSample)
+function svytotal(x::Symbol, design::SimpleRandomSample)
     # total = design.pop_size * mean(design.data[!, variable])
-    total = wsum(design.data[!, variable] , weights(design.data.weights)  )
-    print(total)
-    return DataFrame(total = total , SE = standardErrorOfTotal(variable,design::SimpleRandomSample)  )
+    total = wsum(design.data[!, x] , weights(design.data.weights)  )
+    return DataFrame(total = total , se_total = se_tot(x, design::SimpleRandomSample))
 end
-# TODO: check later
-"""
-Internal method used by `svyby`.
-"""
-function svytotal(var, wts, _)
-    DataFrame(total = wsum(Float32.(var), weights(1 ./ wts)))
+
+function svytotal(x::Symbol, design::svydesign)
+    # TODO
 end
