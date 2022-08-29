@@ -7,7 +7,8 @@
     @test srs.data.weights == ones(size(apisrs_original, 1))
     @test srs.data.weights == srs.data.probs
     # THIS NEEDS TO BE CHANGED WHEN `sampsize` IS UPDATED
-    @test srs.data.sampsize[1] == size(apisrs_original, 1)
+    # Write meaningful test for sample_size later
+    @test srs.sample_size > 0
 
     srs_freq = SimpleRandomSample(apisrs; weights = fill(0.3, size(apisrs_original, 1)))
     @test srs_freq.data.weights[1] == 0.3

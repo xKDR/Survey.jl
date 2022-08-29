@@ -25,20 +25,20 @@ abstract type AbstractSurveyDesign end
 A `SimpleRandomSample` object contains survey design information needed to
 analyse simple random sample surveys.
 TODO: add fpc
+By default popsize is same sampsize, unless explicitly provided
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::DataFrame
-
-    function SimpleRandomSample(data::DataFrame; weights = ones(nrow(data)), probs = 1 ./ weights)
+    sample_size::Int
+    pop_size::Int
+    function SimpleRandomSample(data::DataFrame; sample_size = nrow(data), pop_size = nrow(data),
+                                weights = ones(nrow(data)), probs = 1 ./ weights)
         # add frequency weights, probability weights and sample size columns
         # TODO: make lines 28 & 29 use a helper function?
         data[!, :weights] = weights
         data[!, :probs] = probs
-        # TODO: change `sampsize` and `popsize`
-        data[!, :popsize] = repeat([nrow(data)], nrow(data))
-        data[!, :sampsize] = repeat([nrow(data)], nrow(data))
 
-        new(data)
+        new(data, sample_size, pop_size)
     end
 end
 
@@ -51,10 +51,10 @@ function Base.show(io::IO, ::MIME"text/plain", design::SimpleRandomSample)
     print_short(design.data.probs)
     # TODO: change fpc
     printstyled("\nfpc: "; bold = true)
-    printstyled("\n    popsize: "; bold = true)
-    print_short(design.data.popsize)
-    printstyled("\n    sampsize: "; bold = true)
-    print_short(design.data.sampsize)
+    print("\n    popsize: ")
+    print(design.pop_size)
+    print("\n    sampsize: ")
+    print(design.sample_size)
 end
 
 """

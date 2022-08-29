@@ -1,5 +1,5 @@
 @testset "dimnames.jl" begin
-    # Simple random sampling tests
+    ########### Simple random sampling tests
     apisrs = load_data("apisrs")
     # make a copy to not modify the original dataset
     apisrs_copy = copy(apisrs)
@@ -9,7 +9,7 @@
     srs_old = svydesign(id = :1, data = apisrs)
     # `dim`
     @test dim(srs_new)[1] == dim(srs_old)[1]
-    @test dim(srs_new)[2] == 44
+    @test dim(srs_new)[2] == 42
     @test dim(srs_old)[2] == 45
     # `colnames`
     @test length(colnames(srs_new)) == dim(srs_new)[2]
@@ -20,7 +20,7 @@
     @test length(dimnames(srs_old)[1]) == parse(Int, last(dimnames(srs_old)[1]))
     @test dimnames(srs_old)[2] == colnames(srs_old)
 
-    # Stratified sampling tests
+    ########## Stratified sampling tests
     apistrat = load_data("apistrat")
     # make a copy to not modify the original dataset
     apistrat_copy = copy(apistrat)
