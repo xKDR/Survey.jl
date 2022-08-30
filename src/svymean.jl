@@ -23,5 +23,5 @@ function sem(x, design::SimpleRandomSample)
 end
 
 function svymean(x, design::SimpleRandomSample)
-    return DataFrame(mean = mean(design.data[!, x]), SE = sem(x, design::SimpleRandomSample))
+    return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
 end
