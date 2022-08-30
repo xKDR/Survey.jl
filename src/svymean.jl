@@ -1,7 +1,5 @@
 """
-    svymean(x, design)
-
-Compute the mean and standard error of the survey variable `x`.
+Compute the mean of the survey variable `var`.
 
 ```jldoctest
 julia> using Survey
@@ -12,12 +10,20 @@ julia> srs = SimpleRandomSample(apisrs);
 
 julia> svymean(:enroll, srs)
 1×2 DataFrame
- Row │ mean     sem
+ Row │ mean     SE
      │ Float64  Float64
 ─────┼──────────────────
    1 │  584.61  27.8212
 ```
 """
-function svymean(x::Symbol, design::SimpleRandomSample)
-    return DataFrame(mean = mean(design.data[!, x]), sem = StatsBase.sem(design.data[!, x]))
+function var_of_mean(x::Symbol, design::SimpleRandomSample)
+    return design.fpc / design.sampsize * var(design.data[!, x])
+end
+
+function sem(x, design::SimpleRandomSample)
+    return sqrt(var_of_mean(x, design))
+end
+
+function svymean(x, design::SimpleRandomSample)
+    return DataFrame(mean = mean(design.data[!, x]), SE = sem(x, design::SimpleRandomSample))
 end
