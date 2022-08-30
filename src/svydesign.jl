@@ -19,11 +19,11 @@ julia> dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |
 Survey Design:
 variables: 183x45 DataFrame
 id: dnum
-strata: 1, 1, 1 ... (length = 183)
-probs: 0.029544719150814778, 0.029544719150814778, 0.029544719150814778 ... (length = 183)
+strata: 1, 1, 1 ... 1
+probs: 0.029544719150814778, 0.029544719150814778, 0.029544719150814778 ... 0.029544719150814778
 fpc:
-    popsize: 757, 757, 757 ... (length = 183)
-    sampsize: 183, 183, 183 ... (length = 183)
+    popsize: 757, 757, 757 ... 757
+    sampsize: 183, 183, 183 ... 183
 nest: false
 check_strat: true
 ```
