@@ -159,8 +159,6 @@ The `weights` argument should be a `Symbol` specifying a design variable.
 For the complete argument list see [Makie.hist](https://makie.juliaplots.org/stable/examples/plotting_functions/hist/).
 
 ```julia
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);

@@ -3,14 +3,12 @@
 Get the dimensions of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
 
 julia> dim(srs)
-(200, 44)
+(200, 42)
 ```
 """
 dim(design::AbstractSurveyDesign) = size(design.data)
@@ -19,8 +17,6 @@ dim(design::AbstractSurveyDesign) = size(design.data)
 Method for `svydesign` object.
 
 ```jldoctest
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
@@ -36,14 +32,12 @@ dim(design::svydesign) = size(design.variables)
 Get the column names of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
 
 julia> colnames(srs)
-44-element Vector{String}:
+42-element Vector{String}:
  "Column1"
  "cds"
  "stype"
@@ -55,6 +49,8 @@ julia> colnames(srs)
  "cname"
  "cnum"
  ⋮
+ "avg.ed"
+ "full"
  "emer"
  "enroll"
  "api.stu"
@@ -62,8 +58,6 @@ julia> colnames(srs)
  "fpc"
  "weights"
  "probs"
- "popsize"
- "sampsize"
 ```
 """
 colnames(design::AbstractSurveyDesign) = names(design.data)
@@ -72,8 +66,6 @@ colnames(design::AbstractSurveyDesign) = names(design.data)
 Method for `svydesign` objects.
 
 ```jldoctest
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
@@ -109,8 +101,6 @@ colnames(design::svydesign) = names(design.variables)
 Get the names of the rows and columns of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
@@ -118,7 +108,7 @@ julia> srs = SimpleRandomSample(apisrs);
 julia> dimnames(srs)
 2-element Vector{Vector{String}}:
  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"  …  "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"]
- ["Column1", "cds", "stype", "name", "sname", "snum", "dname", "dnum", "cname", "cnum"  …  "full", "emer", "enroll", "api.stu", "pw", "fpc", "weights", "probs", "popsize", "sampsize"]
+ ["Column1", "cds", "stype", "name", "sname", "snum", "dname", "dnum", "cname", "cnum"  …  "grad.sch", "avg.ed", "full", "emer", "enroll", "api.stu", "pw", "fpc", "weights", "probs"]
 ```
 """
 dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names(design.data)]
@@ -127,8 +117,6 @@ dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names
 Method for `svydesign` objects.
 
 ```jldoctest
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
