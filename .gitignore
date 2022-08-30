@@ -5,9 +5,3 @@
 /docs/Manifest.toml
 /docs/build/
 /test/Manifest.toml
-.DS_Store
-.vscode/
-docs/.DS_Store
-apiclus1.jl
-srs_design.jl
-srs_design.sh
