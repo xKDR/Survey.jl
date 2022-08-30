@@ -42,13 +42,13 @@ struct SimpleRandomSample <: AbstractSurveyDesign
     popsize::Union{UInt,Nothing}
     sampfraction::Real
     fpc::Real
-    nofpc::Bool
+    ignorefpc::Bool
     function SimpleRandomSample(data::DataFrame;
                                 popsize = nothing,
                                 sampsize = nrow(data),
                                 weights = ones(nrow(data)), # Check the defaults
                                 probs = nothing,
-                                nofpc = true
+                                ignorefpc = true
                                 )
         if isa(weights, Symbol)
             weights = data[!, weights]
@@ -64,9 +64,9 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         # set sampling fraction
         sampfraction = sampsize / popsize
         # set fpc
-        fpc = nofpc ? 1 : 1 - (sampsize / popsize)
+        fpc = ignorefpc ? 1 : 1 - (sampsize / popsize)
 
-        new(data, sampsize, popsize, sampfraction, fpc, nofpc)
+        new(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
 end
 
