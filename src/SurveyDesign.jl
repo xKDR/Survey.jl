@@ -1,6 +1,10 @@
 # Helper function for nice printing
-# TODO: write short for Float64
 function print_short(x)
+    # write floats in short form
+    if isa(x[1], Float64)
+        x = round.(x, sigdigits = 3)
+    end
+    # print short vectors or single values as they are, compress otherwise
     if length(x) < 3
         print(x)
     else
@@ -46,12 +50,15 @@ struct SimpleRandomSample <: AbstractSurveyDesign
                                 probs = nothing,
                                 nofpc = true
                                 )
+        if isa(weights, Symbol)
+            weights = data[!, weights]
+        end
         # set population size if it is not given; `weights` and `sampsize` must be given
         if isnothing(popsize)
             popsize = round(sum(weights)) |> UInt
         end
         # add frequency weights column to `data`
-        isa(weights, Symbol) ? data[!, :weights] = data.weights : data[!, :weights] = weights
+        data[!, :weights] = weights
         # add probability weights column to `data`
         data[!, :probs] = 1 ./ data[!, :weights]
         # set sampling fraction
@@ -68,6 +75,8 @@ function Base.show(io::IO, ::MIME"text/plain", design::SimpleRandomSample)
     printstyled("Simple Random Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold = true)
+    print_short(design.data.weights)
     printstyled("\nprobs: "; bold = true)
     print_short(design.data.probs)
     printstyled("\nfpc: "; bold = true)
@@ -108,6 +117,8 @@ function Base.show(io::IO, design::StratifiedSample)
     printstyled("Stratified Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold = true)
+    print_short(design.data.weights)
     printstyled("\nprobs: "; bold = true)
     print_short(design.data.probs)
     printstyled("\nstrata: "; bold = true)
@@ -134,6 +145,8 @@ function Base.show(io::IO, design::ClusterSample)
     printstyled("Cluster Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold = true)
+    print_short(design.data.weights)
     printstyled("\nprobs: "; bold = true)
     print_short(design.data.probs)
     printstyled("\nfpc: "; bold = true)
