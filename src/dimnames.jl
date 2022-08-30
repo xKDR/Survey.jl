@@ -3,8 +3,6 @@
 Get the dimensions of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
@@ -19,8 +17,6 @@ dim(design::AbstractSurveyDesign) = size(design.data)
 Method for `svydesign` object.
 
 ```jldoctest
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
@@ -36,8 +32,6 @@ dim(design::svydesign) = size(design.variables)
 Get the column names of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
@@ -72,8 +66,6 @@ colnames(design::AbstractSurveyDesign) = names(design.data)
 Method for `svydesign` objects.
 
 ```jldoctest
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
@@ -109,8 +101,6 @@ colnames(design::svydesign) = names(design.variables)
 Get the names of the rows and columns of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
@@ -127,8 +117,6 @@ dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names
 Method for `svydesign` objects.
 
 ```jldoctest
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);

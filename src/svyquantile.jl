@@ -2,8 +2,6 @@
 Estimate quantiles for `SurveyDesign`s.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);

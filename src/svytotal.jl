@@ -4,8 +4,6 @@
 Estimate the population total for the variable specified by `x`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);

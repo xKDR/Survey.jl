@@ -16,8 +16,6 @@ svyglm(formula, design, dist, link)
 The `svyglm` function can be used to fit glms on svydesign.
 
 ```jldoctest
-julia> using Survey
-
 julia> apiclus1 = load_data("apiclus1");
 
 julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1);

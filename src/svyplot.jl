@@ -8,8 +8,6 @@ The plot takes into account the frequency weights specified by the user
 in the design.
 
 ```@example svyplot
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
@@ -34,8 +32,6 @@ The plot takes into account the frequency weights specified by the user
 in the design.
 
 ```@example svyplot
-julia> using Survey
-
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);

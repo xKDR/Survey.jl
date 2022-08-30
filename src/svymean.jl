@@ -2,8 +2,6 @@
 Compute the mean of the survey variable `var`.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);
