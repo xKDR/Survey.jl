@@ -21,14 +21,6 @@ instead of the original.
 """
 abstract type AbstractSurveyDesign end
 
-# N = pop_size
-# n = sample_size
-# In SRS, sampling weights, weightsᵢ = 1 / πᵢ = N/n
-# Sampling fraction (aka 'probs') = f = πᵢ = n/N = 1 / weightsᵢ
-# If pop_size N is not given, then N estimated using N̂ = n * weightsᵢ = n / πᵢ, typecasted to Int
-# Variance of variable x, s²ₓ = 1/ (n-1) * Σ(xᵢ - x̄)²
-# Variance of x̄ in SRS, V̂(x̄) = (1-n/N) * s²ₓ / n
-# SE of x̄ in SRS = sqrt(V̂(x̄))
 """
     SimpleRandomSample <: AbstractSurveyDesign
 
