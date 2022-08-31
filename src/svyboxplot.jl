@@ -10,8 +10,6 @@ The keyword arguments are all the arguments that can be passed to `mapping` in
 [AlgebraOfGraphics](https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.7/).
 
 ```@example svyboxplot
-julia> using survey
-
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs);

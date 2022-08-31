@@ -1,12 +1,6 @@
 name: Documentation
 
-on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+on: [push, pull_request]
     # can add tags if needed
 jobs:
     build:

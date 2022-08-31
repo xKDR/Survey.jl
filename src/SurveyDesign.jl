@@ -1,62 +1,96 @@
 # Helper function for nice printing
-function print_short(x::AbstractVector)
+function print_short(x)
+    # write floats in short form
+    if isa(x[1], Float64)
+        x = round.(x, sigdigits = 3)
+    end
+    # print short vectors or single values as they are, compress otherwise
     if length(x) < 3
         print(x)
     else
-        print( x[1], ", ", x[2], ", ", x[3], " ...", " (length = ", length(x), ")")
+        print( x[1], ", ", x[2], ", ", x[3], " ... ", last(x))
     end
 end
 
 """
 Supertype for every survey design type: `SimpleRandomSample`, `ClusterSample`
 and `StratifiedSample`.
+
+The data to a survey constructor is modified. To avoid this pass a copy of the data
+instead of the original.
 """
 abstract type AbstractSurveyDesign end
 
 """
-A `SimpleRandomSample` object contains survey design information needed to
-analyse surveys sampled by simple random sampling.
-TODO: documentation about user making a copy
-TODO: add fpc
-By default popsize is same sampsize, unless explicitly provided
+    SimpleRandomSample <: AbstractSurveyDesign
+
+Survey design sampled by simple random sampling.
+
+The population size is equal to the sample size unless `popsize` is explicitly provided.
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::DataFrame
-    sample_size::Int
-    pop_size::Int
-    function SimpleRandomSample(data::DataFrame; sample_size = nrow(data), pop_size = nrow(data), 
-                                weights = ones(nrow(data)), probs = 1 ./ weights)
-        # add frequency weights, probability weights and sample size columns
-        # TODO: make lines 28 & 29 use a helper function?
+    sampsize::UInt
+    popsize::Union{UInt,Nothing}
+    sampfraction::Real
+    fpc::Real
+    ignorefpc::Bool
+    function SimpleRandomSample(data::DataFrame;
+                                popsize = nothing,
+                                sampsize = nrow(data),
+                                weights = ones(nrow(data)), # Check the defaults
+                                probs = nothing,
+                                ignorefpc = true
+                                )
+        if isa(weights, Symbol)
+            weights = data[!, weights]
+        end
+        # set population size if it is not given; `weights` and `sampsize` must be given
+        if isnothing(popsize)
+            popsize = round(sum(weights)) |> UInt
+        end
+        # add frequency weights column to `data`
         data[!, :weights] = weights
-        data[!, :probs] = probs
+        # add probability weights column to `data`
+        data[!, :probs] = 1 ./ data[!, :weights]
+        # set sampling fraction
+        sampfraction = sampsize / popsize
+        # set fpc
+        fpc = ignorefpc ? 1 : 1 - (sampsize / popsize)
 
-        new(data, sample_size, pop_size)
+        new(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
 end
 
 # `show` method for printing information about a `SimpleRandomSample` after construction
-# TODO: change `show` to 3 argument method
-function Base.show(io::IO, design::SimpleRandomSample)
-    printstyled("Simple Random Sample:\n")
+function Base.show(io::IO, ::MIME"text/plain", design::SimpleRandomSample)
+    printstyled("Simple Random Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
-    print(size(design.data)[1], "x", size(design.data)[2], " DataFrame")
+    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold = true)
+    print_short(design.data.weights)
     printstyled("\nprobs: "; bold = true)
     print_short(design.data.probs)
-    # TODO: change fpc
     printstyled("\nfpc: "; bold = true)
-    print("\n    popsize: ")
-    print(design.pop_size)
-    print("\n    sampsize: ")
-    print(design.sample_size)
+    print_short(design.fpc)
+    printstyled("\n    popsize: "; bold = true)
+    print(design.popsize)
+    printstyled("\n    sampsize: "; bold = true)
+    print(design.sampsize)
 end
 
 """
-A `StratifiedSample` object holds information necessary for surveys sampled by
-stratification.
+    StratifiedSample <: AbstractSurveyDesign
+
+Survey design sampled by stratification.
 """
 struct StratifiedSample <: AbstractSurveyDesign
     data::DataFrame
+    sampsize::UInt
+    popsize::Union{UInt,Nothing}
+    sampfraction::Real
+    fpc::Real
+    nofpc::Bool
     function StratifiedSample(data::DataFrame, strata::AbstractVector; weights = ones(nrow(data)), probs = 1 ./ weights)
         # add frequency weights, probability weights and sample size columns
         data[!, :weights] = weights
@@ -72,24 +106,27 @@ end
 
 # `show` method for printing information about a `StratifiedSample` after construction
 function Base.show(io::IO, design::StratifiedSample)
-    printstyled("Stratified Sample:\n")
+    printstyled("Stratified Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
-    print(size(design.data)[1], "x", size(design.data)[2], " DataFrame")
+    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold = true)
+    print_short(design.data.weights)
     printstyled("\nprobs: "; bold = true)
     print_short(design.data.probs)
     printstyled("\nstrata: "; bold = true)
     print_short(design.data.strata)
-    # TODO: change fpc
     printstyled("\nfpc: "; bold = true)
-    print("\n    popsize: ")
-    print_short(design.data.popsize)
-    print("\n    sampsize: ")
-    print_short(design.data.sampsize)
+    print_short(design.fpc)
+    printstyled("\n    popsize: "; bold = true)
+    print(design.popsize)
+    printstyled("\n    sampsize: "; bold = true)
+    print(design.sampsize)
 end
 
 """
-A `ClusterSample` object holds information necessary for surveys sampled by
-clustering.
+    ClusterSample <: AbstractSurveyDesign
+
+Survey design sampled by clustering.
 """
 struct ClusterSample <: AbstractSurveyDesign
     data::DataFrame
@@ -97,15 +134,17 @@ end
 
 # `show` method for printing information about a `ClusterSample` after construction
 function Base.show(io::IO, design::ClusterSample)
-    printstyled("Simple Random Sample:\n")
+    printstyled("Cluster Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
-    print(size(design.data)[1], "x", size(design.data)[2], " DataFrame")
+    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold = true)
+    print_short(design.data.weights)
     printstyled("\nprobs: "; bold = true)
     print_short(design.data.probs)
-    # TODO: change fpc
     printstyled("\nfpc: "; bold = true)
-    print("\n    popsize: ")
-    print_short(design.data.popsize)
-    print("\n    sampsize: ")
-    print_short(design.data.sampsize)
+    print_short(design.fpc)
+    printstyled("\n    popsize: "; bold = true)
+    print(design.popsize)
+    printstyled("\n    sampsize: "; bold = true)
+    print(design.sampsize)
 end
