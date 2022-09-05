@@ -73,10 +73,14 @@ function Base.show(io::IO, ::MIME"text/plain", design::SimpleRandomSample)
     print_short(design.data.probs)
     printstyled("\nfpc: "; bold = true)
     print_short(design.fpc)
-    printstyled("\n    popsize: "; bold = true)
+    printstyled("\npopsize: "; bold = true)
     print(design.popsize)
-    printstyled("\n    sampsize: "; bold = true)
+    printstyled("\nsampsize: "; bold = true)
     print(design.sampsize)
+    printstyled("\nsampfraction: "; bold = true)
+    print_short(design.sampfraction)
+    printstyled("\nignorefpc: "; bold = true)
+    print(design.ignorefpc)
 end
 
 """
