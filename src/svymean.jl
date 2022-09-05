@@ -22,7 +22,7 @@ function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
     return design.fpc / design.sampsize * var(x)
 end
 
-function sem(x, design::SimpleRandomSample)
+function sem(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
@@ -30,7 +30,7 @@ function sem(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
-function svymean(x, design::SimpleRandomSample)
+function svymean(x::Symbol, design::SimpleRandomSample)
     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
 end
 
