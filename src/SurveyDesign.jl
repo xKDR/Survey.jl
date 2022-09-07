@@ -29,13 +29,13 @@ Survey design sampled by simple random sampling.
 The population size is equal to the sample size unless `popsize` is explicitly provided.
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
-    data::DataFrame
+    data::AbstractDataFrame
     sampsize::UInt
     popsize::Union{UInt,Nothing}
     sampfraction::Real
     fpc::Real
     ignorefpc::Bool
-    function SimpleRandomSample(data::DataFrame;
+    function SimpleRandomSample(data::AbstractDataFrame;
                                 popsize = nothing,
                                 sampsize = nrow(data),
                                 weights = ones(nrow(data)), # Check the defaults
