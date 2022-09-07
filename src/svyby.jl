@@ -31,6 +31,7 @@ julia> svyby(:api00, :cname, srs, svytotal)
   38 │ Merced             595.0
                  23 rows omitted
 ```
+TODO: functionality for `formula::AbstractVector`
 """
 function svyby(formula::Symbol, by::Symbol, design::AbstractSurveyDesign, func::Function, params = [])
     gdf = groupby(design.data, by)
