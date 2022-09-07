@@ -18,9 +18,6 @@ function var_of_mean(x::Symbol, design::SimpleRandomSample)
     return design.fpc / design.sampsize * var(design.data[!, x])
 end
 
-"""
-Inner method for `svyby`.
-"""
 function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
     return design.fpc / design.sampsize * var(x)
 end
@@ -29,21 +26,14 @@ function sem(x, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
-"""
-Inner method for `svyby`.
-"""
 function sem(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
-function svymean(x::Symbol, design::SimpleRandomSample)
+function svymean(x, design::SimpleRandomSample)
     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
 end
 
-"""
-Inner method for `svyby`.
-"""
-# TODO: results not matching for `sem`
-function svymean(x::AbstractVector, design::SimpleRandomSample, _)
+function svymean(x::AbstractVector , design::SimpleRandomSample)
     return DataFrame(mean = mean(x), sem = sem(x, design::SimpleRandomSample))
 end
