@@ -1,15 +1,29 @@
 # Examples
 
-The following examples use the [Academic Performance Index](https://r-survey.r-forge.r-project.org/survey/html/api.html) (API) dataset for Californian schools.
+The following examples use the
+[Academic Performance Index](https://r-survey.r-forge.r-project.org/survey/html/api.html)
+(API) dataset for Californian schools. The data sets contain information for all schools
+with at least 100 students and for various probability samples of the data.
+
+Details about the columns of the dataset can be found here:
+https://r-survey.r-forge.r-project.org/survey/html/api.html
+
+The API program has been discontinued at the end of 2018. Information is archived at
+https://www.cde.ca.gov/re/pr/api.asp
 
 ## Simple Random Sample
 
-The most basic survey design is a simple random sample design. A
-[`SimpleRandomSample`](@ref) can be instantianted by calling the constructor:
+Firstly, a survey design needs a dataset from which to gather information. A dataset
+can be loaded as a `DataFrame` using the `load_data` function:
 
 ```julia
 julia> apisrs = load_data("apisrs");
+```
 
+Next, we can build a design. The most basic survey design is a simple random sample design.
+A [`SimpleRandomSample`](@ref) can be instantianted by calling the constructor:
+
+```julia
 julia> srs = SimpleRandomSample(apisrs)
 Simple Random Sample:
 data: 200x42 DataFrame
