@@ -23,7 +23,7 @@ include("svyboxplot.jl")
 include("svyby.jl")
 
 export load_data
-export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample, ClusterSample
+export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
 export svydesign
 export svyglm
 export svyby
