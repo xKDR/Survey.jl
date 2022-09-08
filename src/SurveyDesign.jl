@@ -28,21 +28,23 @@ Survey design sampled by simple random sampling.
 The population size is equal to the sample size unless `popsize` is explicitly provided.
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
-    data::DataFrame
-    sampsize::Union{Nothing,Unsigned}
-    popsize::Union{Nothing,Unsigned}
+    data::AbstractDataFrame
+    sampsize::UInt
+    popsize::Union{UInt,Nothing}
     sampfraction::Real
     fpc::Real
     ignorefpc::Bool
-    function SimpleRandomSample(data::DataFrame;
-        popsize=nothing,
-        sampsize=nrow(data),
-        weights=nothing, # Check the defaults
-        probs=nothing,
-        ignorefpc=false
-    )
-        # If popsize is a column in data, vectorise sampsize and calc the sampling weights, elseif
-        # set population size as sum of weights if it is not given;
+    function SimpleRandomSample(data::AbstractDataFrame;
+                                popsize = nothing,
+                                sampsize = nrow(data),
+                                weights = ones(nrow(data)), # Check the defaults
+                                probs = nothing,
+                                ignorefpc = true
+                                )
+        if isa(weights, Symbol)
+            weights = data[!, weights]
+        end
+        # set population size if it is not given; `weights` and `sampsize` must be given
         if isnothing(popsize)
             if typeof(weights) <: Vector{<:Real}
                 if !all(y -> y == first(weights), weights) # SRS by definition is equi-weighted
