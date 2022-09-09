@@ -13,14 +13,13 @@ function print_short(x)
 end
 
 """
-    AbstractSurveyDesign
-
-Supertype for survey designs. `SimpleRandomSample`, `ClusterSample`
-and `StratifiedSample` are subtypes of this.
+Supertype for every survey design type: `SimpleRandomSample`, `ClusterSample`
+and `StratifiedSample`.
 
 !!! note
-    When passing data to a survey design, the user should make a copy of the
-    data. The constructors modify the data passed as argument.
+
+    The data passed to a survey constructor is modified. To avoid this pass a copy of the data
+    instead of the original.
 """
 abstract type AbstractSurveyDesign end
 
@@ -32,13 +31,13 @@ Survey design sampled by simple random sampling.
 The population size is equal to the sample size unless `popsize` is explicitly provided.
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
-    data::DataFrame
+    data::AbstractDataFrame
     sampsize::UInt
     popsize::Union{UInt,Nothing}
     sampfraction::Real
     fpc::Real
     ignorefpc::Bool
-    function SimpleRandomSample(data::DataFrame;
+    function SimpleRandomSample(data::AbstractDataFrame;
                                 popsize = nothing,
                                 sampsize = nrow(data),
                                 weights = ones(nrow(data)), # Check the defaults
@@ -108,7 +107,7 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 # `show` method for printing information about a `StratifiedSample` after construction
-function Base.show(io::IO, ::MIME"text/plain", design::StratifiedSample)
+function Base.show(io::IO, design::StratifiedSample)
     printstyled("Stratified Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
@@ -133,22 +132,11 @@ Survey design sampled by clustering.
 """
 struct ClusterSample <: AbstractSurveyDesign
     data::DataFrame
-    function ClusterSample(data::DataFrame, id::Symbol; weights = ones(nrow(data)), probs = 1 ./ weights)
-        # add frequency weights, probability weights and sample size columns
-        data[!, :weights] = weights
-        data[!, :probs] = probs
-        # TODO: change `sampsize` and `popsize`
-        data[!, :popsize] = repeat([nrow(data)], nrow(data))
-        data[!, :sampsize] = repeat([nrow(data)], nrow(data))
-        data[!, :id] = data[!, id]
-
-        new(data)
-    end
 end
 
 # `show` method for printing information about a `ClusterSample` after construction
-function Base.show(io::IO, ::MIME"text/plain", design::ClusterSample)
-    printstyled("Simple Random Sample:\n"; bold = true)
+function Base.show(io::IO, design::ClusterSample)
+    printstyled("Cluster Sample:\n"; bold = true)
     printstyled("data: "; bold = true)
     print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
     printstyled("\nweights: "; bold = true)
