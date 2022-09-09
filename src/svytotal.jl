@@ -20,6 +20,13 @@ function var_of_total(x::Symbol, design::SimpleRandomSample)
     return design.popsize^2 * design.fpc / design.sampsize * var(design.data[!, x])
 end
 
+"""
+Inner method for `svyby`.
+"""
+function var_of_total(x::AbstractVector, design::SimpleRandomSample)
+    return design.popsize^2 * design.fpc / design.sampsize * var(x)
+end
+
 function se_tot(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_total(x, design))
 end
