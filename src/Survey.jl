@@ -8,6 +8,7 @@ using GLM
 using LinearAlgebra
 using CairoMakie
 using AlgebraOfGraphics
+using CategoricalArrays # For CategoricalArray support
 
 include("SurveyDesign.jl")
 include("svydesign.jl")

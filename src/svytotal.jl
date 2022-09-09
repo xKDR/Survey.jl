@@ -24,8 +24,20 @@ function se_tot(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_total(x, design))
 end
 
+function total(x::Symbol, design::SimpleRandomSample)
+    return wsum(design.data[!, x] , weights(design.data.weights)  )
+end
+
 function svytotal(x::Symbol, design::SimpleRandomSample)
-    # total = design.pop_size * mean(design.data[!, variable])
+    print("Yolo")
+    # Support behaviour like R for CategoricalArray type data
+    if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
+        print("Yolo")
+        gdf = groupby(design.data, :x)
+        print("Yolo")
+        return combine(gdf, (:x,design) => total => :total, (:x , design) => se_tot => :se_total )
+    end
+    # total = design.pop_size * mean(design.data[!, variable]) # This also returns correct answer and is more simpler to understand than wsum
     total = wsum(design.data[!, x] , weights(design.data.weights)  )
     return DataFrame(total = total , se_total = se_tot(x, design::SimpleRandomSample))
 end

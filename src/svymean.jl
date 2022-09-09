@@ -15,11 +15,11 @@ julia> svymean(:enroll, srs)
 ```
 """
 function var_of_mean(x::Symbol, design::SimpleRandomSample)
-    return design.fpc / design.sampsize * var(design.data[!, x])
+    return design.fpc ./ design.sampsize .* var(design.data[!, x])
 end
 
 function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
-    return design.fpc / design.sampsize * var(x)
+    return design.fpc ./ design.sampsize .* var(x)
 end
 
 function sem(x, design::SimpleRandomSample)
@@ -31,9 +31,26 @@ function sem(x::AbstractVector, design::SimpleRandomSample)
 end
 
 function svymean(x, design::SimpleRandomSample)
+    # Support behaviour like R for CategoricalArray type data
+    if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
+        print("Yolo")
+        gdf = groupby(design.data, x)
+        print("Yolo")
+        test = combine(gdf, x => mean => :mean, (x , design) => sem => :sem ) |> DataFrame
+        # show(test)
+        # delay(50000)
+        return ["Yolo"]
+    end
     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
 end
 
 function svymean(x::AbstractVector , design::SimpleRandomSample)
     return DataFrame(mean = mean(x), sem = sem(x, design::SimpleRandomSample))
 end
+
+""" mean for Categorical variables 
+"""
+
+# function svymean(x::, design::SimpleRandomSample)
+#     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
+# end
