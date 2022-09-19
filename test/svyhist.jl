@@ -4,7 +4,7 @@
 
     # SimpleRandomSample
     apisrs = load_data("apisrs")
-    srs = SimpleRandomSample(apisrs)
+    srs = SimpleRandomSample(apisrs,ignorefpc = true)
 
     h = svyhist(srs, :enroll)
     @test h.grid[1].entries[1].positional[2] |> length == 21
@@ -19,28 +19,28 @@
     @test h.grid[1].entries[1].positional[2] |> length == 3
 
     # StratifiedSample
-    apistrat = load_data("apistrat")
-    dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
-    apistrat = load_data("apistrat")
-    strat = StratifiedSample(apistrat, apistrat.stype)
+    # apistrat = load_data("apistrat")
+    # dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
+    # apistrat = load_data("apistrat")
+    # strat = StratifiedSample(apistrat, apistrat.stype)
 
-    h = svyhist(strat, :enroll)
-    @test h.grid[1].entries[1].positional[2] |> length == 16
-    h = svyhist(dstrat, :enroll)
-    @test h.grid[1].entries[1].positional[2] |> length == 16
+    # h = svyhist(strat, :enroll)
+    # @test h.grid[1].entries[1].positional[2] |> length == 16
+    # h = svyhist(dstrat, :enroll)
+    # @test h.grid[1].entries[1].positional[2] |> length == 16
 
-    h = svyhist(strat, :enroll, 9)
-    @test h.grid[1].entries[1].positional[2] |> length == 7
-    h = svyhist(dstrat, :enroll, 9)
-    @test h.grid[1].entries[1].positional[2] |> length == 7
+    # h = svyhist(strat, :enroll, 9)
+    # @test h.grid[1].entries[1].positional[2] |> length == 7
+    # h = svyhist(dstrat, :enroll, 9)
+    # @test h.grid[1].entries[1].positional[2] |> length == 7
 
-    h = svyhist(strat, :enroll, Survey.sturges)
-    @test h.grid[1].entries[1].positional[2] |> length == 7
-    h = svyhist(dstrat, :enroll, Survey.sturges)
-    @test h.grid[1].entries[1].positional[2] |> length == 7
+    # h = svyhist(strat, :enroll, Survey.sturges)
+    # @test h.grid[1].entries[1].positional[2] |> length == 7
+    # h = svyhist(dstrat, :enroll, Survey.sturges)
+    # @test h.grid[1].entries[1].positional[2] |> length == 7
 
-    h = svyhist(strat, :enroll, [0, 1000, 2000, 3000])
-    @test h.grid[1].entries[1].positional[2] |> length == 3
-    h = svyhist(dstrat, :enroll, [0, 1000, 2000, 3000])
-    @test h.grid[1].entries[1].positional[2] |> length == 3
+    # h = svyhist(strat, :enroll, [0, 1000, 2000, 3000])
+    # @test h.grid[1].entries[1].positional[2] |> length == 3
+    # h = svyhist(dstrat, :enroll, [0, 1000, 2000, 3000])
+    # @test h.grid[1].entries[1].positional[2] |> length == 3
 end

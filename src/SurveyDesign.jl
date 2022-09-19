@@ -24,27 +24,30 @@ abstract type AbstractSurveyDesign end
     SimpleRandomSample <: AbstractSurveyDesign
 
 Survey design sampled by simple random sampling.
-
-The population size is equal to the sample size unless `popsize` is explicitly provided.
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::AbstractDataFrame
-    sampsize::UInt
-    popsize::Union{UInt,Nothing}
+    sampsize::Union{Nothing,Unsigned}
+    popsize::Union{Nothing,Unsigned}
     sampfraction::Real
     fpc::Real
     ignorefpc::Bool
     function SimpleRandomSample(data::AbstractDataFrame;
-                                popsize = nothing,
-                                sampsize = nrow(data),
-                                weights = ones(nrow(data)), # Check the defaults
-                                probs = nothing,
-                                ignorefpc = true
-                                )
+        popsize=nothing,
+        sampsize=nrow(data),
+        weights=nothing, # Check the defaults
+        probs=nothing,
+        ignorefpc=false
+    )
+        # Functionality: weights arg can be passed as Symbol instead of vector
         if isa(weights, Symbol)
             weights = data[!, weights]
         end
-        # set population size if it is not given; `weights` and `sampsize` must be given
+        # Set population size if it is not given; `weights` and `sampsize` must be given
+        if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
+            @warn "Assuming equal weights"
+            weights = ones(nrow(data))
+        end
         if isnothing(popsize)
             if typeof(weights) <: Vector{<:Real}
                 if !all(y -> y == first(weights), weights) # SRS by definition is equi-weighted
@@ -70,11 +73,14 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             # If all weights are equal then estimate
             equal_weight = first(weights)
             popsize = round(sampsize .* equal_weight) |> UInt
+            if sampsize > popsize
+                error("You have either given wrong or not enough keyword args. sampsize cannot be greate than popsize. Check given inputs. eg if weights given then popsize must be given (for now)")
+            end
         elseif typeof(popsize) <: Vector{<:Real}
             if !all(y -> y == first(popsize), popsize) # SRS by definition is equi-weighted
                 error("Simple Random Sample must be equi-weighted. Different sampling weights detected in vectors")
             end
-            weights = popsize ./ sampsize
+            weights = popsize ./ sampsize # This line is ratio estimator, we may need to change it when doing compley surveys
             popsize = first(popsize) |> UInt
         else
             error("If popsize not given then either sampling weights or sampling probabilities must be given")
@@ -96,6 +102,10 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             data[!, :probs] = 1 ./ data[!, :weights]
         end
         new(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
+    end
+    function SimpleRandomSample(data::AbstractDataFrame)
+        ignorefpc = true
+        return SimpleRandomSample(data; popsize=nothing,sampsize=nrow(data), weights=nothing, probs=nothing, ignorefpc=ignorefpc)
     end
 end
 
@@ -141,7 +151,7 @@ struct StratifiedSample <: AbstractSurveyDesign
         data[!, :sampsize] = repeat([nrow(data)], nrow(data))
         data[!, :strata] = strata
 
-        new(data)
+        new(data,sampsize,popsize,sampfraction,fpc,nofpc)
     end
 end
 

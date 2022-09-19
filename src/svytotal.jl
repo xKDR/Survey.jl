@@ -17,7 +17,7 @@ julia> svytotal(:enroll, srs)
 ```
 """
 function var_of_total(x::Symbol, design::SimpleRandomSample)
-    return design.popsize^2 * design.fpc / design.sampsize * var(design.data[!, x])
+    return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize 
 end
 
 """
@@ -44,11 +44,13 @@ function svytotal(x::Symbol, design::SimpleRandomSample)
         print("Yolo")
         return combine(gdf, (:x,design) => total => :total, (:x , design) => se_tot => :se_total )
     end
-    # total = design.pop_size * mean(design.data[!, variable]) # This also returns correct answer and is more simpler to understand than wsum
-    total = wsum(design.data[!, x] , weights(design.data.weights)  )
+    total = design.popsize * mean(design.data[!, x]) # This also returns correct answer and is more simpler to understand than wsum
+    # @show("\n",total)
+    # @show(sum())
+    # total = wsum(design.data[!, x] , design.data.weights  )
     return DataFrame(total = total , se_total = se_tot(x, design::SimpleRandomSample))
 end
 
-function svytotal(x::Symbol, design::svydesign)
-    # TODO
-end
+# function svytotal(x::Symbol, design::svydesign)
+#     # TODO
+# end

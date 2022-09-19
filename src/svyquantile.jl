@@ -15,12 +15,11 @@ julia> svyquantile(:enroll, srs, 0.5)
 ```
 """
 # TODO: modify for SimpleRandomSample
-function svyquantile(var, design::SimpleRandomSample, q)
+function svyquantile(var, design::SimpleRandomSample, q; kwargs...)
     x = design.data[!, var]
-    w = design.data.probs
-    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
+    # w = design.data.probs
+    df = DataFrame(tmp = quantile(Float32.(x), q; kwargs...)) # Define Lumley quantile
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
-
     return df
 end
 
