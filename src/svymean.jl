@@ -40,8 +40,8 @@ function svymean(x, design::SimpleRandomSample)
     # Support behaviour like R for CategoricalArray type data
     if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
         gdf = groupby(design.data, x)
-        p = combine(gdf, nrow => :count )
-        p.proportion = p.count ./ sum(p.count)
+        p = combine(gdf, nrow => :counts )
+        p.proportion = p.counts ./ sum(p.counts)
         p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # Formula for variance of proportion
         p.se = sqrt.(p.var)
         return p
