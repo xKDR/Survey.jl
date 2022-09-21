@@ -17,7 +17,7 @@ julia> svytotal(:enroll, srs)
 ```
 """
 function var_of_total(x::Symbol, design::SimpleRandomSample)
-    return design.popsize^2 * design.fpc / design.sampsize * var(design.data[!, x])
+    return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize 
 end
 
 """
@@ -31,28 +31,27 @@ function se_tot(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_total(x, design))
 end
 
-"""
-Inner method for `svyby`.
-"""
-function se_tot(x::AbstractVector, design::SimpleRandomSample)
-    return sqrt(var_of_total(x, design))
+function total(x::Symbol, design::SimpleRandomSample)
+    return wsum(design.data[!, x] , weights(design.data.weights)  )
 end
 
 function svytotal(x::Symbol, design::SimpleRandomSample)
-    # total = design.pop_size * mean(design.data[!, variable])
-    total = wsum(design.data[!, x], weights(design.data.weights))
-    return DataFrame(total = total, se_total = se_tot(x, design::SimpleRandomSample))
-end
-
-"""
-Inner method for `svyby`.
-"""
-# TODO: results not matching for `sem`
-function svytotal(x::AbstractArray, design::SimpleRandomSample, wts)
-    total = wsum(x, weights(wts))
+    # Support behaviour like R for CategoricalArray type data
+    if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
+        gdf = groupby(design.data, x)
+        p = combine(gdf, nrow => :count )
+        p.total = design.popsize .* p.count ./ sum(p.count)
+        p.proportion = p.total ./ design.popsize
+        p = select!(p, Not(:count)) # Drop the count column as not really desired for svytotal
+        p.var = design.popsize^2 .* design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* Formula for variance of proportion
+        p.se = sqrt.(p.var)
+        return p
+    end
+    total = design.popsize * mean(design.data[!, x]) # This also returns correct answer and is more simpler to understand than wsum
+    # total = wsum(design.data[!, x] , design.data.weights  )
     return DataFrame(total = total , se_total = se_tot(x, design::SimpleRandomSample))
 end
 
-function svytotal(x::Symbol, design::svydesign)
-    # TODO
-end
+# function svytotal(x::Symbol, design::svydesign)
+#     # TODO
+# end
