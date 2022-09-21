@@ -39,13 +39,12 @@ end
 function svymean(x, design::SimpleRandomSample)
     # Support behaviour like R for CategoricalArray type data
     if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
-        print("Yolo")
         gdf = groupby(design.data, x)
-        print("Yolo")
-        test = combine(gdf, x => mean => :mean, (x , design) => sem => :sem ) |> DataFrame
-        # show(test)
-        # delay(50000)
-        return ["Yolo"]
+        p = combine(gdf, nrow => :count )
+        p.proportion = p.count ./ sum(p.count)
+        p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # Formula for variance of proportion
+        p.se = sqrt.(p.var)
+        return p
     end
     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
 end
