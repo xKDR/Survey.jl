@@ -36,17 +36,18 @@ function total(x::Symbol, design::SimpleRandomSample)
 end
 
 function svytotal(x::Symbol, design::SimpleRandomSample)
-    print("Yolo")
     # Support behaviour like R for CategoricalArray type data
     if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
-        print("Yolo")
-        gdf = groupby(design.data, :x)
-        print("Yolo")
-        return combine(gdf, (:x,design) => total => :total, (:x , design) => se_tot => :se_total )
+        gdf = groupby(design.data, x)
+        p = combine(gdf, nrow => :count )
+        p.total = design.popsize .* p.count ./ sum(p.count)
+        p.proportion = p.total ./ design.popsize
+        p = select!(p, Not(:count)) # Drop the count column as not really desired for svytotal
+        p.var = design.popsize^2 .* design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* Formula for variance of proportion
+        p.se = sqrt.(p.var)
+        return p
     end
     total = design.popsize * mean(design.data[!, x]) # This also returns correct answer and is more simpler to understand than wsum
-    # @show("\n",total)
-    # @show(sum())
     # total = wsum(design.data[!, x] , design.data.weights  )
     return DataFrame(total = total , se_total = se_tot(x, design::SimpleRandomSample))
 end
