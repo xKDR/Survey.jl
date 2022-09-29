@@ -15,6 +15,10 @@ julia> svyquantile(:enroll, srs, 0.5)
 ```
 """
 # TODO: modify for SimpleRandomSample
+function svyquantile(var, design::AbstractSurveyDesign)
+    return error("Please specify q quantile as a vector or float")
+end
+
 function svyquantile(var, design::SimpleRandomSample, q; kwargs...)
     x = design.data[!, var]
     # w = design.data.probs
