@@ -116,17 +116,26 @@ StratifiedSample functions
 # end
 function svymean(x::Symbol, design::StratifiedSample)
     # Support behaviour like R for CategoricalArray type data
-    # print("Yolo")
-    # if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
-    #     print("Yolo")
-    #     gdf = groupby(design.data, x)
-    #     p = combine(gdf, nrow => :counts )
-    #     @show p
-    #     p.proportion = p.counts ./ sum(p.counts)
-    #     p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # Formula for variance of proportion
-    #     p.se = sqrt.(p.var)
-    #     return p
-    # end
+    print("Yolo")
+    if x == design.strata
+        gdf = groupby(design.data, x)
+        # nₕ = combine(gdf, nrow => :counts )
+        p = combine(gdf, :weights => sum => :Nₕ )
+        p.Wₕ = p.Nₕ ./ sum(p.Nₕ)
+        p = select!(p, Not(:Nₕ))
+        # p.proportion = p.counts ./ sum(p.counts)
+        # @show nₕ , Nₕ , Wₕ
+        return p 
+    elseif isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
+        print("Yolo")
+        gdf = groupby(design.data, x)
+        p = combine(gdf, nrow => :counts )
+        # @show p
+        p.proportion = p.counts ./ sum(p.counts)
+        p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # Formula for variance of proportion
+        p.se = sqrt.(p.var)
+        return p
+    end
     gdf = groupby(design.data,design.strata)
     
     ȳₕ = combine(gdf, x => mean => :mean).mean
