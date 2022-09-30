@@ -62,6 +62,10 @@ StratifiedSample functions
 
 function svytotal(x::Symbol, design::StratifiedSample)
     # # Support behaviour like R for CategoricalArray type data
+    if x == design.strata
+        gdf = groupby(design.data, x)
+        return combine(gdf, :weights => sum => :Nₕ )    
+    end
     # if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
     #     gdf = groupby(design.data, x)
     #     p = combine(gdf, nrow => :count )
