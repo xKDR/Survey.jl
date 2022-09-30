@@ -105,7 +105,7 @@ combine(gdf, [:api00, :pw] => ((a, b) -> svymean(a, srs_design, b)) => AsTable)
         # return 0
 
 ##  21.09.22 Stratified test 1
-# Ideally you should stratify on a CategoricalArray, alternatively, convert the StringX to categorical value before running stratifiedSample
+# Ideally you should stratify on a CategoricalArray, alternatively, convert the StringX to categorical value before running StratifiedSample
 using Revise
 using Survey
 using DataFrames
