@@ -22,12 +22,14 @@ include("svyplot.jl")
 include("dimnames.jl")
 include("svyboxplot.jl")
 include("svyby.jl")
+include("ht.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
 export svydesign
 export svyglm
 export svyby
+export ht_calc
 export dim, colnames, dimnames
 export svymean, svytotal, svyquantile
 export @formula

@@ -36,7 +36,7 @@ function sem(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
-function svymean(x, design::SimpleRandomSample)
+function svymean(x::Symbol, design::SimpleRandomSample)
     # Support behaviour like R for CategoricalArray type data
     if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
         gdf = groupby(design.data, x)
@@ -47,6 +47,18 @@ function svymean(x, design::SimpleRandomSample)
         return p
     end
     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
+end
+
+function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
+    means_list = []
+    for i in x
+        push!(means_list, svymean(i,design))
+    end
+    # df = DataFrame(names = String.(x))
+    df = vcat( means_list...)
+    # df.names = String.(x)
+    insertcols!(df,1, :names => String.(x))   # df[!,[3,1,2]]
+    return df
 end
 
 """
@@ -92,6 +104,52 @@ end
 """ mean for Categorical variables 
 """
 
+"""
+StratifiedSample functions
+"""
+
 # function svymean(x::, design::SimpleRandomSample)
 #     return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
 # end
+# function strata_sample_variance(y)
+#     1 / ()
+# end
+function svymean(x::Symbol, design::StratifiedSample)
+    # Support behaviour like R for CategoricalArray type data
+    print("Yolo")
+    if x == design.strata
+        gdf = groupby(design.data, x)
+        # nₕ = combine(gdf, nrow => :counts )
+        p = combine(gdf, :weights => sum => :Nₕ )
+        p.Wₕ = p.Nₕ ./ sum(p.Nₕ)
+        p = select!(p, Not(:Nₕ))
+        # p.proportion = p.counts ./ sum(p.counts)
+        # @show nₕ , Nₕ , Wₕ
+        return p 
+    elseif isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
+        print("Yolo")
+        gdf = groupby(design.data, x)
+        p = combine(gdf, nrow => :counts )
+        # @show p
+        p.proportion = p.counts ./ sum(p.counts)
+        p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # Formula for variance of proportion
+        p.se = sqrt.(p.var)
+        return p
+    end
+    gdf = groupby(design.data,design.strata)
+    
+    ȳₕ = combine(gdf, x => mean => :mean).mean
+    Nₕ = combine(gdf, :weights => sum => :Nₕ ).Nₕ
+    nₕ = combine(gdf, nrow => :nₕ).nₕ
+    fₕ = nₕ ./ Nₕ
+    Wₕ = Nₕ ./ sum(Nₕ)
+    Ȳ̂ = sum(Wₕ .* ȳₕ)
+    # Ȳ̂ = mean(ȳₕ, Wₕ ) # Is also correct 
+
+    s²ₕ = combine(gdf, x => var => :s²h ).s²h
+    V̂Ȳ̂ = sum( (Wₕ .^2) .* (1 .- fₕ) .* s²ₕ ./ nₕ )
+    SE = sqrt(V̂Ȳ̂)
+    
+    # @show nₕ , Nₕ , fₕ , ȳₕ , Wₕ , Ȳ̂ , s²ₕ
+    return DataFrame(Ȳ̂ = Ȳ̂ , SE = SE) # , sem = sem(x, design::SimpleRandomSample))
+end
