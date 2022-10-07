@@ -54,10 +54,8 @@ function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
     for i in x
         push!(means_list, svymean(i,design))
     end
-    # df = DataFrame(names = String.(x))
-    df = vcat( means_list...)
-    # df.names = String.(x)
-    insertcols!(df,1, :names => String.(x))   # df[!,[3,1,2]]
+    df = reduce(vcat, means_list)
+    insertcols!(df,1, :names => String.(x))
     return df
 end
 

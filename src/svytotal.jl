@@ -95,3 +95,14 @@ function svytotal(x::Symbol, design::StratifiedSample)
     SE = sqrt(V̂Ȳ̂)
     return DataFrame(grand_total = grand_total, SE = SE) # , sem = sem(x, design::SimpleRandomSample))
 end
+
+
+function svytotal(x::Vector{Symbol}, design::SimpleRandomSample)
+    totals_list = []
+    for i in x
+        push!(totals_list, svytotal(i,design))
+    end
+    df = reduce(vcat, totals_list)
+    insertcols!(df,1, :names => String.(x))
+    return df
+end
