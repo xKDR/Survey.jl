@@ -35,72 +35,57 @@ struct SimpleRandomSample <: AbstractSurveyDesign
     function SimpleRandomSample(data::AbstractDataFrame;
         popsize=nothing,
         sampsize=nrow(data),
-        weights=nothing, # Check the defaults
+        weights=nothing,
         probs=nothing,
         ignorefpc=false
     )
-        # Functionality: weights arg can be passed as Symbol instead of vector
         if isa(weights, Symbol)
             weights = data[!, weights]
         end
-        # Set population size if it is not given; `weights` and `sampsize` must be given
-        if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
-            @warn "Assuming equal weights"
+        if isa(probs, Symbol)
+            probs = data[!, probs]
+        end
+
+        if ignorefpc
+            @warn "assuming equal weights"
             weights = ones(nrow(data))
         end
+
+        # set population size if it is not given; `weights` and `sampsize` must be given
         if isnothing(popsize)
+            # check that all weights are equal (SRS is by definition equi-weighted)
             if typeof(weights) <: Vector{<:Real}
-                if !all(y -> y == first(weights), weights) # SRS by definition is equi-weighted
-                    error("Simple Random Sample must be equi-weighted. Different sampling weights detected in vectors")
-                end
-            elseif isa(weights, Symbol)
-                weights = data[!, weights]
-                if !all(y -> y == first(weights), weights) # SRS by definition is equi-weighted
-                    error("Simple Random Sample must be equi-weighted. Different sampling weights detected in vectors")
+                if !all(w -> w == first(weights), weights)
+                    error("all frequency weights must be equal for Simple Random Sample")
                 end
             elseif typeof(probs) <: Vector{<:Real}
-                if !all(y -> y == first(probs), probs) # SRS by definition is equi-weighted
-                    error("Simple Random Sample must be equi-weighted. Different sampling probabilities detected in vector")
-                end
-                weights = 1 ./ probs
-            elseif isa(probs, Symbol)
-                probs = data[!, probs]
-                if !all(y -> y == first(probs), probs) # SRS by definition is equi-weighted
-                    error("Simple Random Sample must be equi-weighted. Different sampling probabilities detected in vector")
+                if !all(p -> p == first(probs), probs)
+                    error("all probability weights must be equal for Simple Random Sample")
                 end
                 weights = 1 ./ probs
             end
-            # If all weights are equal then estimate
-            equal_weight = first(weights)
-            popsize = round(sampsize .* equal_weight) |> UInt
+            # estimate population size
+            popsize = round(sampsize .* first(weights)) |> UInt
             if sampsize > popsize
-                error("You have either given wrong or not enough keyword args. sampsize cannot be greate than popsize. Check given inputs. eg if weights given then popsize must be given (for now)")
+                error("sample size cannot be greater than population size")
             end
         elseif typeof(popsize) <: Vector{<:Real}
             if !all(y -> y == first(popsize), popsize) # SRS by definition is equi-weighted
                 error("Simple Random Sample must be equi-weighted. Different sampling weights detected in vectors")
             end
-            weights = popsize ./ sampsize # This line is ratio estimator, we may need to change it when doing compley surveys
+            weights = popsize ./ sampsize # ratio estimator for SRS
             popsize = first(popsize) |> UInt
         else
-            error("If popsize not given then either sampling weights or sampling probabilities must be given")
+            error("either population size or frequency/probability weights must be specified")
         end
         # set sampling fraction
         sampfraction = sampsize ./ popsize
         # set fpc
         fpc = ignorefpc ? 1 : 1 .- (sampsize ./ popsize)
-        # Add columns for weights and probs in data -- Check if really needed to add them as columns
-        if !isnothing(probs)
-            # add probability weights column to `data`
-            data[!, :probs] = probs
-            # add frequency weights column to `data`
-            data[!, :weights] = 1 ./ data[!, :probs]
-        else # else weights were specified
-            # add frequency weights column to `data`
-            data[!, :weights] = weights
-            # add probability weights column to `data`
-            data[!, :probs] = 1 ./ data[!, :weights]
-        end
+        # add columns for frequency and probability weights to `data`
+        data[!, :weights] = weights
+        data[!, :probs] = 1 ./ data[!, :weights]
+
         new(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
     function SimpleRandomSample(data::AbstractDataFrame)
