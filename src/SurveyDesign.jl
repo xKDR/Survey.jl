@@ -94,27 +94,6 @@ struct SimpleRandomSample <: AbstractSurveyDesign
     end
 end
 
-# `show` method for printing information about a `SimpleRandomSample` after construction
-function Base.show(io::IO, ::MIME"text/plain", design::SimpleRandomSample)
-    printstyled("Simple Random Sample:\n"; bold=true)
-    printstyled("data: "; bold=true)
-    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
-    printstyled("\nweights: "; bold=true)
-    print_short(design.data.weights)
-    printstyled("\nprobs: "; bold=true)
-    print_short(design.data.probs)
-    printstyled("\nfpc: "; bold=true)
-    print_short(design.fpc)
-    printstyled("\npopsize: "; bold=true)
-    print_short(design.popsize)
-    printstyled("\nsampsize: "; bold=true)
-    print_short(design.sampsize)
-    printstyled("\nsampfraction: "; bold=true)
-    print_short(design.sampfraction)
-    printstyled("\nignorefpc: "; bold=true)
-    print(design.ignorefpc)
-end
-
 """
     StratifiedSample <: AbstractSurveyDesign
 
@@ -182,25 +161,6 @@ struct StratifiedSample <: AbstractSurveyDesign
         end
         new(data, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
-end
-
-# `show` method for printing information about a `StratifiedSample` after construction
-function Base.show(io::IO, design::StratifiedSample)
-    printstyled("Stratified Sample:\n"; bold=true)
-    printstyled("data: "; bold=true)
-    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
-    printstyled("\nstrata: "; bold=true)
-    print(design.strata)
-    printstyled("\ndata.weights: "; bold=true)
-    print_short(design.data.weights)
-    printstyled("\ndata.probs: "; bold=true)
-    print_short(design.data.probs)
-    printstyled("\nfpc: "; bold=true)
-    print_short(design.fpc)
-    printstyled("\npopsize: "; bold=true)
-    print_short(design.popsize)
-    printstyled("\nsampsize: "; bold=true)
-    print_short(design.sampsize)
 end
 
 """
@@ -271,9 +231,10 @@ struct GeneralSample <: AbstractSurveyDesign
     end
 end
 
-# `show` method for printing information about a `ClusterSample` after construction
-function Base.show(io::IO, design::GeneralSample)
-    printstyled("Cluster Sample:\n"; bold=true)
+"`show` method for printing information about a survey design"
+function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
+    type = typeof(design)
+    printstyled("$type:\n"; bold=true)
     printstyled("data: "; bold=true)
     print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
     printstyled("\nweights: "; bold=true)
@@ -282,8 +243,13 @@ function Base.show(io::IO, design::GeneralSample)
     print_short(design.data.probs)
     printstyled("\nfpc: "; bold=true)
     print_short(design.fpc)
-    printstyled("\n    popsize: "; bold=true)
-    print(design.popsize)
-    printstyled("\n    sampsize: "; bold=true)
-    print(design.sampsize)
+    printstyled("\npopsize: "; bold=true)
+    print_short(design.popsize)
+    printstyled("\nsampsize: "; bold=true)
+    print_short(design.sampsize)
+    printstyled("\nsampfraction: "; bold=true)
+    print_short(design.sampfraction)
+    printstyled("\nignorefpc: "; bold=true)
+    print(design.ignorefpc)
 end
+
