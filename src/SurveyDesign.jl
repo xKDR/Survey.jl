@@ -1,4 +1,4 @@
-# Helper function for nice printing
+"helper function for nice printing"
 function print_short(x)
     # write floats in short form
     if isa(x[1], Float64)
@@ -10,6 +10,28 @@ function print_short(x)
     else
         print(x[1], ", ", x[2], ", ", x[3], " ... ", last(x))
     end
+end
+
+"`show` method for printing information about a survey design"
+function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
+    type = typeof(design)
+    printstyled("$type:\n"; bold=true)
+    printstyled("data: "; bold=true)
+    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printstyled("\nweights: "; bold=true)
+    print_short(design.data.weights)
+    printstyled("\nprobs: "; bold=true)
+    print_short(design.data.probs)
+    printstyled("\nfpc: "; bold=true)
+    print_short(design.fpc)
+    printstyled("\npopsize: "; bold=true)
+    print_short(design.popsize)
+    printstyled("\nsampsize: "; bold=true)
+    print_short(design.sampsize)
+    printstyled("\nsampfraction: "; bold=true)
+    print_short(design.sampfraction)
+    printstyled("\nignorefpc: "; bold=true)
+    print(design.ignorefpc)
 end
 
 """
@@ -230,26 +252,3 @@ struct GeneralSample <: AbstractSurveyDesign
         new(data, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
 end
-
-"`show` method for printing information about a survey design"
-function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
-    type = typeof(design)
-    printstyled("$type:\n"; bold=true)
-    printstyled("data: "; bold=true)
-    print(size(design.data, 1), "x", size(design.data, 2), " DataFrame")
-    printstyled("\nweights: "; bold=true)
-    print_short(design.data.weights)
-    printstyled("\nprobs: "; bold=true)
-    print_short(design.data.probs)
-    printstyled("\nfpc: "; bold=true)
-    print_short(design.fpc)
-    printstyled("\npopsize: "; bold=true)
-    print_short(design.popsize)
-    printstyled("\nsampsize: "; bold=true)
-    print_short(design.sampsize)
-    printstyled("\nsampfraction: "; bold=true)
-    print_short(design.sampfraction)
-    printstyled("\nignorefpc: "; bold=true)
-    print(design.ignorefpc)
-end
-
