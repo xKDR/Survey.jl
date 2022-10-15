@@ -11,6 +11,7 @@ using AlgebraOfGraphics
 using CategoricalArrays
 
 include("SurveyDesign.jl")
+include("show.jl")
 include("svydesign.jl")
 include("svymean.jl")
 include("svyquantile.jl")
