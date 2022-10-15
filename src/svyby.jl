@@ -31,9 +31,9 @@ julia> svyby(:api00, :cname, srs, svytotal)
   38 │ Merced             595.0   NaN
                            23 rows omitted
 ```
-TODO: functionality for `formula::AbstractVector`
 """
 function svyby(formula::Symbol, by::Symbol, design::AbstractSurveyDesign, func::Function, params = [])
+    # TODO: add functionality for `formula::AbstractVector`
     gdf = groupby(design.data, by)
     return combine(gdf, [formula, :weights] => ((a, b) -> func(a, design, b, params...)) => AsTable)
 end
