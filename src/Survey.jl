@@ -8,9 +8,10 @@ using GLM
 using LinearAlgebra
 using CairoMakie
 using AlgebraOfGraphics
-using CategoricalArrays # For CategoricalArray support
+using CategoricalArrays
 
 include("SurveyDesign.jl")
+include("show.jl")
 include("svydesign.jl")
 include("svymean.jl")
 include("svyquantile.jl")
