@@ -2,8 +2,10 @@
 Supertype for every survey design type: `SimpleRandomSample`, `ClusterSample`
 and `StratifiedSample`.
 
-The data to a survey constructor is modified. To avoid this pass a copy of the data
-instead of the original.
+!!! note
+
+    The data passed to a survey constructor is modified. To avoid this pass a copy of the data
+    instead of the original.
 """
 abstract type AbstractSurveyDesign end
 

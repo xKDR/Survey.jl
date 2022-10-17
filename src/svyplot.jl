@@ -1,7 +1,6 @@
 """
-```
 	svyplot(design, x, y; kwargs...)
-```
+
 Scatter plot of survey design variables `x` and `y`.
 
 The plot takes into account the frequency weights specified by the user

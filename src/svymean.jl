@@ -27,7 +27,7 @@ function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
     return design.fpc ./ design.sampsize .* var(x)
 end
 
-function sem(x, design::SimpleRandomSample)
+function sem(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
@@ -38,6 +38,11 @@ function sem(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
+"""
+    svymean(x, design)
+
+Compute the mean and SEM of the variable `x`.
+"""
 function svymean(x::Symbol, design::SimpleRandomSample)
     if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)

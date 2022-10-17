@@ -1,7 +1,6 @@
 """
-```
 	svyboxplot(design, x, y; kwargs...)
-```
+
 Box plot of survey design variable `y` grouped by column `x`.
 
 Weights can be specified by a Symbol using the keyword argument `weights`.
