@@ -10,7 +10,7 @@ abstract type AbstractSurveyDesign end
 """
     SimpleRandomSample <: AbstractSurveyDesign
 
-Survey design sampled by simple random sampling.
+    Survey design sampled by simple random sampling.
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::AbstractDataFrame
@@ -49,10 +49,10 @@ struct SimpleRandomSample <: AbstractSurveyDesign
                 if !all(p -> p == first(probs), probs)
                     error("all probability weights must be equal for Simple Random Sample")
                 end
-                weights = 1 ./ probs
+                weights = 1 / probs
             end
             # estimate population size
-            popsize = round(sampsize .* first(weights)) |> UInt
+            popsize = round(sampsize * first(weights)) |> UInt
             if sampsize > popsize
                 error("sample size cannot be greater than population size")
             end
@@ -66,13 +66,13 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             error("either population size or frequency/probability weights must be specified")
         end
         # set sampling fraction
-        sampfraction = sampsize ./ popsize
+        sampfraction = sampsize / popsize
         # set fpc
-        fpc = ignorefpc ? 1 : 1 .- (sampsize ./ popsize)
+        fpc = ignorefpc ? 1 : 1 - (sampsize / popsize)
         # add columns for frequency and probability weights to `data`
         data[!, :weights] = weights
         if isnothing(probs)
-            probs = 1 ./ data[!, :weights] 
+            probs = 1 ./ data[!, :weights]
         end
         data[!, :probs] = probs
 
@@ -88,14 +88,14 @@ Survey design sampled by stratification.
 struct StratifiedSample <: AbstractSurveyDesign
     data::AbstractDataFrame
     strata::Symbol
-    sampsize::Vector{Union{Nothing,Float64}}
-    popsize::Vector{Union{Nothing,Float64}}
+    sampsize::Union{Nothing,Vector{Real}}
+    popsize::Union{Nothing,Vector{Real}}
     sampfraction::Vector{Real}
     fpc::Vector{Real}
     ignorefpc::Bool
     function StratifiedSample(data::AbstractDataFrame, strata::Symbol;
         popsize=nothing,
-        sampsize= transform(groupby(data,strata), nrow => :counts ).counts ,
+        sampsize=transform(groupby(data, strata), nrow => :counts).counts,
         weights=nothing,
         probs=nothing,
         ignorefpc=false
@@ -129,7 +129,7 @@ struct StratifiedSample <: AbstractSurveyDesign
         elseif typeof(popsize) <: Vector{<:Real}
             # TODO: change `elseif` condition
             weights = popsize ./ sampsize # expansion estimator
-            # TODO: add probability weights
+        # TODO: add probability weights
         else
             error("either population size or frequency/probability weights must be specified")
         end
@@ -150,69 +150,104 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 """
-    GeneralSample <: AbstractSurveyDesign
+    SurveyDesign <: AbstractSurveyDesign
+    
+    Survey design with arbitrary design weights
 
-Survey design sampled by clustering.
+    clusters: can be passed as `Symbol`, Vector{Symbol}, Vector{Real} or Nothing
+    strata: can be passed as `Symbol`, Vector{Symbol}, Vector{Real} or Nothing
+    sampsize: can be passed as `Symbol`, Vector{Symbol}, Vector{Real} or Nothing
+    popsize: can be passed as `Symbol`, Vector{Symbol}, Vector{Real} or Nothing
 """
-struct GeneralSample <: AbstractSurveyDesign
+struct SurveyDesign <: AbstractSurveyDesign
     data::AbstractDataFrame
-    strata::Symbol
-    sampsize::Vector{Union{Nothing,Float64}}
-    popsize::Vector{Union{Nothing,Float64}}
-    sampfraction::Vector{Real}
-    fpc::Vector{Real}
+    clusters::Union{Symbol,Vector{Symbol},Nothing}
+    strata::Union{Symbol,Vector{Symbol},Nothing}
+    sampsize::Union{Real,Vector{Real},Nothing}
+    popsize::Union{Real,Vector{Real},Nothing}
+    sampfraction::Union{Real,Vector{Real}}
+    fpc::Union{Real,Vector{Real}}
     ignorefpc::Bool
-    # TODO: change entire struct body
-    function GeneralSample(data::AbstractDataFrame, strata::Symbol;
+    # TODO: struct body still work in progress
+    function SurveyDesign(data::AbstractDataFrame;
+        clusters=nothing,
+        strata=nothing,
         popsize=nothing,
-        sampsize= transform(groupby(data,strata), nrow => :counts ).counts ,
+        sampsize=nothing,
         weights=nothing,
         probs=nothing,
         ignorefpc=false
     )
-        if isa(weights, Symbol)
-            weights = data[!, weights]
-        end
-        if isa(probs, Symbol)
-            probs = data[!, probs]
-        end
+        # TODO: Do the other case where clusters are given
+        if isnothing(clusters)
+            if isnothing(sampsize)
+                if isnothing(strata)
+                    sampsize = nrow(data)
+                else
+                    sampsize = transform(groupby(data, strata), nrow => :counts).counts
+                end
 
-        if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
-            @warn "Assuming equal weights"
-            weights = ones(nrow(data))
-        end
-
-        # set population size if it is not given; `weights` and `sampsize` must be given
-        if isnothing(popsize)
-            # TODO: add probability weights if `weights` is not `nothing`
-            if typeof(probs) <: Vector{<:Real}
-                weights = 1 ./ probs
             end
-            # estimate population size
-            popsize = sampsize .* weights
 
-            if sampsize > popsize
-                error("sample size cannot be greater than population size")
+            if isa(weights, Symbol)
+                weights = data[!, weights]
             end
-        elseif typeof(popsize) <: Vector{<:Real}
-            # TODO: change `elseif` condition
-            weights = popsize ./ sampsize # expansion estimator
+            if isa(probs, Symbol)
+                probs = data[!, probs]
+            end
+            if isa(popsize, Symbol)
+                popsize = data[!, popsize]
+            end
+
+            if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
+                @warn "Assuming equal weights"
+                weights = ones(nrow(data))
+            end
+
+            # set population size if it is not given; `weights` and `sampsize` must be given
+            if isnothing(popsize)
+                # TODO: add probability weights if `weights` is not `nothing`
+                if typeof(probs) <: Vector{<:Real}
+                    weights = 1 ./ probs
+                end
+                # estimate population size
+                popsize = sampsize .* weights
+
+                if sampsize > popsize
+                    error("sample size cannot be greater than population size")
+                end
+            elseif typeof(popsize) <: Vector{<:Real}
+                # TODO: change `elseif` condition
+                weights = popsize ./ sampsize # expansion estimator
             # TODO: add probability weights
+            else
+                error("either population size or frequency/probability weights must be specified")
+            end
+            # TODO: for now support SRS within SurveyDesign. Later, just call SimpleRandomSample??
+            if typeof(sampsize) <: Real && typeof(popsize) <: Vector{<:Real} # Eg when SRS
+                if !all(y -> y == first(popsize), popsize) # SRS by definition is equi-weighted
+                    error("Simple Random Sample must be equi-weighted. Different sampling weights detected in vectors")
+                end
+                popsize = first(popsize) |> Real
+            end
+
+            # set sampling fraction
+            sampfraction = sampsize ./ popsize
+            # set fpc
+            fpc = ignorefpc ? 1 : 1 .- (sampsize ./ popsize)
+            # add columns for frequency and probability weights to `data`
+            if !isnothing(probs)
+                data[!, :probs] = probs
+                data[!, :weights] = 1 ./ data[!, :probs]
+            else
+                data[!, :weights] = weights
+                data[!, :probs] = 1 ./ data[!, :weights]
+            end
+            # @show clusters, strata, sampsize,popsize, sampfraction, fpc, ignorefpc
+            new(data, clusters, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
         else
-            error("either population size or frequency/probability weights must be specified")
+            print("TODO Cluster sampling")
         end
-        # set sampling fraction
-        sampfraction = sampsize ./ popsize
-        # set fpc
-        fpc = ignorefpc ? 1 : 1 .- (sampsize ./ popsize)
-        # add columns for frequency and probability weights to `data`
-        if !isnothing(probs)
-            data[!, :probs] = probs
-            data[!, :weights] = 1 ./ data[!, :probs]
-        else
-            data[!, :weights] = weights
-            data[!, :probs] = 1 ./ data[!, :weights]
-        end
-        new(data, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
+
     end
 end
