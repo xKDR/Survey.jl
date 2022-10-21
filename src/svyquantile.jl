@@ -14,20 +14,13 @@ julia> svyquantile(:enroll, srs, 0.5)
    1 │            453.0
 ```
 """
-# TODO: modify for SimpleRandomSample
-function svyquantile(var, design::AbstractSurveyDesign)
-    return error("Please specify q quantile as a vector or float")
-end
-
 function svyquantile(var, design::SimpleRandomSample, q; kwargs...)
     x = design.data[!, var]
-    # w = design.data.probs
-    df = DataFrame(tmp = quantile(Float32.(x), q; kwargs...)) # Define Lumley quantile
+    df = DataFrame(tmp = quantile(Float32.(x), q; kwargs...))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
     return df
 end
 
-# TODO: modify for StratifiedSample
 function svyquantile(var, design::StratifiedSample, q)
     x = design.data[!, var]
     w = design.data.probs

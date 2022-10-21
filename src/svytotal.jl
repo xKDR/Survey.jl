@@ -1,3 +1,5 @@
+# SimpleRandomSample
+
 """
     svytotal(x, design)
 
@@ -17,7 +19,7 @@ julia> svytotal(:enroll, srs)
 ```
 """
 function var_of_total(x::Symbol, design::SimpleRandomSample)
-    return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize 
+    return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize
 end
 
 """
@@ -31,67 +33,54 @@ function se_tot(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_total(x, design))
 end
 
-# function total(x::Symbol, design::SimpleRandomSample)
-#     return wsum(design.data[!, x] , weights(design.data.weights)  )
-# end
-
 function svytotal(x::Symbol, design::SimpleRandomSample)
-    # Support behaviour like R for CategoricalArray type data
-    if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
+    if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
-        p = combine(gdf, nrow => :count )
+        p = combine(gdf, nrow => :count)
         p.total = design.popsize .* p.count ./ sum(p.count)
         p.proportion = p.total ./ design.popsize
-        p = select!(p, Not(:count)) # Drop the count column as not really desired for svytotal
-        p.var = design.popsize^2 .* design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* Formula for variance of proportion
+        p = select!(p, Not(:count)) # count column is not necessary for `svytotal`
+        p.var = design.popsize^2 .* design.fpc .* p.proportion .*
+                (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* variance of proportion
         p.se = sqrt.(p.var)
         return p
     end
-    total = design.popsize * mean(design.data[!, x]) # This also returns correct answer and is more simpler to understand than wsum
-    # total = wsum(design.data[!, x] , design.data.weights  )
-    return DataFrame(total = total , se_total = se_tot(x, design::SimpleRandomSample))
+    total = design.popsize * mean(design.data[!, x])
+    return DataFrame(total = total, se_total = se_tot(x, design::SimpleRandomSample))
 end
 
-# function svytotal(x::Symbol, design::svydesign)
-#     # TODO
-# end
 
-"""
-StratifiedSample functions
-"""
+# StratifiedSample
 
 function svytotal(x::Symbol, design::StratifiedSample)
-    # # Support behaviour like R for CategoricalArray type data
     if x == design.strata
         gdf = groupby(design.data, x)
-        return combine(gdf, :weights => sum => :Nₕ )    
+        return combine(gdf, :weights => sum => :Nₕ)
     end
-    # if isa(x,Symbol) && isa(design.data[!,x], CategoricalArray)
-    #     gdf = groupby(design.data, x)
-    #     p = combine(gdf, nrow => :count )
-    #     p.total = design.popsize .* p.count ./ sum(p.count)
-    #     p.proportion = p.total ./ design.popsize
-    #     p = select!(p, Not(:count)) # Drop the count column as not really desired for svytotal
-    #     p.var = design.popsize^2 .* design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* Formula for variance of proportion
-    #     p.se = sqrt.(p.var)
-    #     return p
-    # end
-    gdf = groupby(design.data,design.strata)
-    # wsum(design.data[!, x] , weights(design.data.weights)  )
-    grand_total = sum(combine(gdf, [x,:weights] => ( (a,b) -> wsum(a,b) ) => :total).total) # works
-    # grand_total = wsum( combine(gdf, x => mean => :mean).mean, weights(combine(gdf, :weights => sum => :Nₕ ).Nₕ ) ) # Also works but above is simpler
-
-    ### Variance estimation using closed-form formula
+    gdf = groupby(design.data, design.strata)
+    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total) # works
+    # variance estimation using closed-form formula
     ȳₕ = combine(gdf, x => mean => :mean).mean
-    Nₕ = combine(gdf, :weights => sum => :Nₕ ).Nₕ
+    Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
     nₕ = combine(gdf, nrow => :nₕ).nₕ
     fₕ = nₕ ./ Nₕ
     Wₕ = Nₕ ./ sum(Nₕ)
     Ȳ̂ = sum(Wₕ .* ȳₕ)
-    # Ȳ̂ = mean(ȳₕ, Wₕ ) # Is also correct 
 
-    s²ₕ = combine(gdf, x => var => :s²h ).s²h
-    V̂Ȳ̂ = sum( (Nₕ .^2) .* (1 .- fₕ) .* s²ₕ ./ nₕ ) # Only difference between total and mean variance is the Nₕ instead of Wₕ
+    s²ₕ = combine(gdf, x => var => :s²h).s²h
+    # the only difference between total and mean variance is the Nₕ instead of Wₕ
+    V̂Ȳ̂ = sum((Nₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-    return DataFrame(grand_total = grand_total, SE = SE) # , sem = sem(x, design::SimpleRandomSample))
+    return DataFrame(grand_total = grand_total, SE = SE)
+end
+
+
+function svytotal(x::Vector{Symbol}, design::SimpleRandomSample)
+    totals_list = []
+    for i in x
+        push!(totals_list, svytotal(i, design))
+    end
+    df = reduce(vcat, totals_list)
+    insertcols!(df, 1, :names => String.(x))
+    return df
 end

@@ -8,9 +8,10 @@ using GLM
 using LinearAlgebra
 using CairoMakie
 using AlgebraOfGraphics
-using CategoricalArrays # For CategoricalArray support
+using CategoricalArrays
 
 include("SurveyDesign.jl")
+include("show.jl")
 include("svydesign.jl")
 include("svymean.jl")
 include("svyquantile.jl")
@@ -26,6 +27,7 @@ include("ht.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
+export SurveyDesign
 export svydesign
 export svyglm
 export svyby
@@ -36,6 +38,7 @@ export @formula
 export svyplot
 export svyhist, sturges, freedman_diaconis
 export svyboxplot
+export ht_svytotal, ht_svymean
 export
     #families
     Normal,

@@ -1,32 +1,50 @@
 @testset "SurveyDesign.jl" begin
-    # SimpleRandomSample tests
-    apisrs_original = load_data("apisrs")
-    apisrs = copy(apisrs_original)
+    ##### SimpleRandomSample tests
+    # Load API datasets
+    apisrs_original   = load_data("apisrs")
+    apistrat_original = load_data("apistrat")
+    apiclus1_original = load_data("apiclus1")
+    apiclus2_original = load_data("apiclus2")
+    # Work on copy, keep original
+    apisrs   = copy(apisrs_original)
+    apistrat = copy(apistrat_original)
+    apiclus1 = copy(apiclus1_original)
+    apiclus2 = copy(apiclus2_original)
 
     srs = SimpleRandomSample(apisrs, popsize = apisrs.fpc)
-    # @test srs.data.weights == ones(size(apisrs_original, 1))
     @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
-    # THIS NEEDS TO BE CHANGED WHEN `sampsize` IS UPDATED
-    # Write meaningful test for sample_size later
     @test srs.sampsize > 0
 
-    # 16.06.22 shikhar add - this test should return error as popsize should be given if sampsize is given (for now)
-    # srs_freq = SimpleRandomSample(apisrs; weights = fill(0.3, size(apisrs_original, 1)))
-    # 16.06.22 shikhar add - this test fixes above test
     srs_freq = SimpleRandomSample(apisrs; popsize = apisrs.fpc , weights = fill(0.3, size(apisrs_original, 1)))
     @test srs_freq.data.weights[1] == 30.97
     @test srs_freq.data.weights == 1 ./ srs_freq.data.probs
 
-    # This works but isnt what user is expecting
+    ##### TODO: needs change; this works but isn't what the user is expecting
     srs_prob = SimpleRandomSample(apisrs; probs = fill(0.3, size(apisrs_original, 1)))
     @test srs_prob.data.probs[1] == 0.3
-    # @test srs_prob.data.weights == ones(size(apisrs_original, 1))
 
+    # TODO: StratifiedSample tests
+    # ... @sayantika @iulia @shikhar
+    # apistrat examples from R, check the main if-else cases
 
-    # StratifiedSample tests
-    # apistrat = load_data("apistrat")
-    # apistrat_copy = copy(apistrat)
+    # Test with probs = , weight = , and popsize = arguments, as vectors and sybols
 
-    # strat = StratifiedSample(apistrat_copy, apistrat_copy.stype)
-    # @test strat.data.strata == apistrat.stype
+    ##### SurveyDesign tests
+    
+    # Case 1: Simple Random Sample
+
+    # Case 1b: SRS 'with replacement' approximation ie ignorefpc = true
+
+    # Case 2: Stratified Random Sample
+    # strat_design = SurveyDesign(apistrat,strata = :stype, popsize =:fpc, ignorefpc = false)
+
+    # Case: Arbitrary weights
+
+    # Case: One-stage cluster sampling, no strata
+
+    # Case: One-stage cluster sampling, with one-stage strata
+
+    # Case: Two cluster, two strata
+    
+    # Case: Multi stage stratified design
 end
