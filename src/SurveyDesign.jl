@@ -253,6 +253,5 @@ struct SurveyDesign <: AbstractSurveyDesign
             # TODO "Multistage cluster designs"
             print("TODO: Multistage cluster design with PSU SRS")
         end
-
     end
 end
