@@ -178,32 +178,33 @@ struct SurveyDesign <: AbstractSurveyDesign
         probs=nothing,
         ignorefpc=false
     )
+        if isnothing(sampsize)
+            if isnothing(strata)
+                sampsize = nrow(data)
+            else
+                sampsize = transform(groupby(data, strata), nrow => :counts).counts
+            end
+
+        end
+
+        if isa(weights, Symbol)
+            weights = data[!, weights]
+        end
+        if isa(probs, Symbol)
+            probs = data[!, probs]
+        end
+        if isa(popsize, Symbol)
+            popsize = data[!, popsize]
+        end
+
+        # TODO: Check below, may not be correct for all designs
+        if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
+            @warn "Assuming equal weights"
+            weights = ones(nrow(data))
+        end    
+        
         # TODO: Do the other case where clusters are given
         if isnothing(clusters)
-            if isnothing(sampsize)
-                if isnothing(strata)
-                    sampsize = nrow(data)
-                else
-                    sampsize = transform(groupby(data, strata), nrow => :counts).counts
-                end
-
-            end
-
-            if isa(weights, Symbol)
-                weights = data[!, weights]
-            end
-            if isa(probs, Symbol)
-                probs = data[!, probs]
-            end
-            if isa(popsize, Symbol)
-                popsize = data[!, popsize]
-            end
-
-            if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
-                @warn "Assuming equal weights"
-                weights = ones(nrow(data))
-            end
-
             # set population size if it is not given; `weights` and `sampsize` must be given
             if isnothing(popsize)
                 # TODO: add probability weights if `weights` is not `nothing`
@@ -245,8 +246,12 @@ struct SurveyDesign <: AbstractSurveyDesign
             end
             # @show clusters, strata, sampsize,popsize, sampfraction, fpc, ignorefpc
             new(data, clusters, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
-        else
-            print("TODO Cluster sampling")
+        elseif isa(clusters,Symbol)
+            # One Cluster sampling - PSU chosen with SRS,
+            print("One stage cluster design with PSU SRS")
+        elseif typeof(clusters) <: Vector{Symbol}
+            # TODO "Multistage cluster designs"
+            print("TODO: Multistage cluster design with PSU SRS")
         end
 
     end
