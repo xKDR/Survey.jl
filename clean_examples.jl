@@ -118,6 +118,7 @@ apistrat_categ.stype = CategoricalArray(apistrat_categ.stype)
 eltype(apistrat_categ.stype)
 
 strat_categ_design = StratifiedSample(apistrat_categ, :stype ; popsize = apistrat_categ.fpc )
+strat_categ_design = StratifiedSample(apistrat_categ, :stype ; weights = :pw )
 svymean(:stype,strat_categ_design)
 svytotal(:stype,strat_categ_design)
 
