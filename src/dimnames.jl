@@ -1,5 +1,6 @@
 """
 	dim(design)
+
 Get the dimensions of a `SurveyDesign`.
 
 ```jldoctest
@@ -14,7 +15,7 @@ julia> dim(srs)
 dim(design::AbstractSurveyDesign) = size(design.data)
 
 """
-Method for `svydesign` object.
+Method for `svydesign`.
 
 ```jldoctest
 julia> apistrat = load_data("apistrat");
@@ -29,6 +30,7 @@ dim(design::svydesign) = size(design.variables)
 
 """
 	colnames(design)
+
 Get the column names of a `SurveyDesign`.
 
 ```jldoctest
@@ -63,7 +65,7 @@ julia> colnames(srs)
 colnames(design::AbstractSurveyDesign) = names(design.data)
 
 """
-Method for `svydesign` objects.
+Method for `svydesign`.
 
 ```jldoctest
 julia> apistrat = load_data("apistrat");
@@ -98,6 +100,7 @@ colnames(design::svydesign) = names(design.variables)
 
 """
 	dimnames(design)
+
 Get the names of the rows and columns of a `SurveyDesign`.
 
 ```jldoctest
@@ -114,7 +117,7 @@ julia> dimnames(srs)
 dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names(design.data)]
 
 """
-Method for `svydesign` objects.
+Method for `svydesign`.
 
 ```jldoctest
 julia> apistrat = load_data("apistrat");

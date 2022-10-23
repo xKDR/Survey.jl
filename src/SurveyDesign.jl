@@ -1,6 +1,8 @@
 """
-Supertype for every survey design type: `SimpleRandomSample`, `ClusterSample`
-and `StratifiedSample`.
+    AbstractSurveyDesign
+
+Supertype for every survey design type: [`SimpleRandomSample`](@ref), [`StratifiedSample`](@ref)
+and [`ClusterSample`](@ref).
 
 !!! note
 

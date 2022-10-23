@@ -1,5 +1,7 @@
 """
-The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
+    svydesign
+
+Type incorporating all necessary information to describe a survey design.
 
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");

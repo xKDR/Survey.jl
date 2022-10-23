@@ -1,5 +1,7 @@
 """
-The `svyby` function can be used to generate subsets of a survey design.
+    svyby(formula, by, design, function, params)
+
+Generate subsets of a survey design.
 
 ```jldoctest
 julia> using Survey

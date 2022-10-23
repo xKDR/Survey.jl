@@ -1,7 +1,35 @@
 # SimpleRandomSample
 
 """
-Compute the mean of the survey variable `var`.
+    var_of_mean(x, design)
+
+Compute the variance of the mean for the variable `x`.
+"""
+function var_of_mean(x::Symbol, design::SimpleRandomSample)
+    return design.fpc ./ design.sampsize .* var(design.data[!, x])
+end
+
+function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
+    return design.fpc ./ design.sampsize .* var(x)
+end
+
+"""
+    sem(x, design)
+
+Compute the standard error of the mean for the variable `x`.
+"""
+function sem(x::Symbol, design::SimpleRandomSample)
+    return sqrt(var_of_mean(x, design))
+end
+
+function sem(x::AbstractVector, design::SimpleRandomSample)
+    return sqrt(var_of_mean(x, design))
+end
+
+"""
+    svymean(x, design)
+
+Compute the mean and SEM of the survey variable `x`.
 
 ```jldoctest
 julia> apisrs = load_data("apisrs");
@@ -15,33 +43,6 @@ julia> svymean(:enroll, srs)
 ─────┼──────────────────
    1 │  584.61  27.8212
 ```
-"""
-function var_of_mean(x::Symbol, design::SimpleRandomSample)
-    return design.fpc ./ design.sampsize .* var(design.data[!, x])
-end
-
-"""
-Inner method for `svyby`.
-"""
-function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
-    return design.fpc ./ design.sampsize .* var(x)
-end
-
-function sem(x::Symbol, design::SimpleRandomSample)
-    return sqrt(var_of_mean(x, design))
-end
-
-"""
-Inner method for `svyby`.
-"""
-function sem(x::AbstractVector, design::SimpleRandomSample)
-    return sqrt(var_of_mean(x, design))
-end
-
-"""
-    svymean(x, design)
-
-Compute the mean and SEM of the variable `x`.
 """
 function svymean(x::Symbol, design::SimpleRandomSample)
     if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
@@ -66,9 +67,6 @@ function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
     return df
 end
 
-"""
-Inner method for `svyby`.
-"""
 function sem_svyby(x::AbstractVector, design::SimpleRandomSample, weights)
     N = sum(weights)
     Nd = length(x)
@@ -83,6 +81,9 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample, weights)
     return sqrt(V̂_Ȳd)
 end
 
+"""
+Inner method for `svyby`.
+"""
 function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
     return DataFrame(mean = mean(x), sem = sem_svyby(x, design::SimpleRandomSample, weights))
 end

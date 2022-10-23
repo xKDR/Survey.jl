@@ -1,6 +1,7 @@
-"Helper function for nice printing"
+"""
+Helper function that transforms a given `Number` or `Vector` into a short-form string.
+"""
 function makeshort(x)
-    # write floats in short form
     if isa(x[1], Float64)
         x = round.(x, sigdigits=3)
     end
@@ -8,13 +9,16 @@ function makeshort(x)
     x = length(x) < 3 ? join(x, ", ") : join(x[1:3], ", ") * ", ..., " * string(last(x))
 end
 
-"Prints title: content"
+"""
+Print information in the form:
+    **name:** content[\n]
+"""
 function printinfo(io::IO, name::String, content::String; newline::Bool=true)
     printstyled(io, name, ": "; bold=true)
     newline ? println(io, content) : print(io, content)
 end
 
-"`show` method for printing information about a survey design"
+"Print information about a survey design."
 function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
     type = typeof(design)
     printstyled(io, "$type:\n"; bold=true)

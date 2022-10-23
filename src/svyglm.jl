@@ -9,11 +9,9 @@ mutable struct control
 end
 
 """
-```julia
-svyglm(formula, design, dist, link)
-```
+    svyglm(formula, design, dist, link)
 
-The `svyglm` function can be used to fit glms on svydesign.
+Fit Generalized Linear Models (GLMs) on `svydesign`.
 
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");

@@ -1,5 +1,17 @@
 # SimpleRandomSample
 
+function var_of_total(x::Symbol, design::SimpleRandomSample)
+    return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize
+end
+
+function var_of_total(x::AbstractVector, design::SimpleRandomSample)
+    return design.popsize^2 * design.fpc / design.sampsize * var(x)
+end
+
+function se_tot(x::Symbol, design::SimpleRandomSample)
+    return sqrt(var_of_total(x, design))
+end
+
 """
     svytotal(x, design)
 
@@ -18,21 +30,6 @@ julia> svytotal(:enroll, srs)
    1 │ 116922.0   5564.24
 ```
 """
-function var_of_total(x::Symbol, design::SimpleRandomSample)
-    return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize
-end
-
-"""
-Inner method for `svyby`.
-"""
-function var_of_total(x::AbstractVector, design::SimpleRandomSample)
-    return design.popsize^2 * design.fpc / design.sampsize * var(x)
-end
-
-function se_tot(x::Symbol, design::SimpleRandomSample)
-    return sqrt(var_of_total(x, design))
-end
-
 function svytotal(x::Symbol, design::SimpleRandomSample)
     if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
@@ -73,7 +70,6 @@ function svytotal(x::Symbol, design::StratifiedSample)
     SE = sqrt(V̂Ȳ̂)
     return DataFrame(grand_total = grand_total, SE = SE)
 end
-
 
 function svytotal(x::Vector{Symbol}, design::SimpleRandomSample)
     totals_list = []

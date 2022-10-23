@@ -140,9 +140,8 @@ julia> freedman_diaconis(dstrat, :enroll)
 freedman_diaconis(design::svydesign, var::Symbol) = freedman_diaconis(design.variables[!, var])
 
 """
-```julia
-svyhist(design, var, bins = freedman_diaconis; normalization = :density, weights = ones(size(design.variables, 1), ...)
-```
+    svyhist(design, var, bins = freedman_diaconis; normalization = :density, weights = ones(size(design.variables, 1), ...)
+
 Histogram plot of a survey design variable given by `var`.
 
 `bins` can be an `Integer` specifying the number of equal-width bins,
@@ -151,7 +150,7 @@ the function used for calculating the number of bins. The possible functions
 are `sturges` and `freedman_diaconis`.
 
 The normalization can be set to `:none`, `:density`, `:probability` or `:pdf`.
-See [Makie.hist](https://makie.juliaplots.org/stable/examples/plotting_functions/hist/)
+See [AlgebraOfGraphics.histogram](https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.9/generated/datatransformations/#AlgebraOfGraphics.histogram)
 for more information.
 
 The `weights` argument should be a `Symbol` specifying a design variable.

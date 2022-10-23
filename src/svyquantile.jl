@@ -1,4 +1,5 @@
 """
+    svyquantile(var, design, q)
 Estimate quantiles for `SurveyDesign`s.
 
 ```jldoctest
@@ -31,7 +32,7 @@ function svyquantile(var, design::StratifiedSample, q)
 end
 
 """
-Method for `svydesign` objects.
+Method for `svydesign`.
 """
 function svyquantile(var, design::svydesign, q)
     x = design.variables[!, var]
