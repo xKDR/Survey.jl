@@ -32,3 +32,19 @@ function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
     printinfo(io, "sampfraction", makeshort(design.sampfraction))
     printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
 end
+
+"Print information about a survey design initialized using `svydesign`."
+function Base.show(io::IO, ::MIME"text/plain", design::svydesign)
+    printstyled(io, "Survey Design:\n"; bold=true)
+    printstyled(io, "variables: "; bold=true)
+    println(io, size(design.variables, 1), "x", size(design.variables, 2), " DataFrame")
+    printinfo(io, "id", makeshort(design.id))
+    printinfo(io, "strata", makeshort(design.variables.strata))
+    printinfo(io, "probs", makeshort(design.variables.probs))
+    printinfo(io, "fpc:\n    popsize", makeshort(design.variables.popsize))
+    printinfo(io, "    sampsize", makeshort(design.variables.sampsize); newline=false)
+    printstyled("\nnest: "; bold=true)
+    print(design.nest)
+    printstyled("\ncheck_strat: "; bold=true)
+    print(design.check_strat)
+end
