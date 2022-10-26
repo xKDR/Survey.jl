@@ -4,34 +4,32 @@
 Generate subsets of a survey design.
 
 ```jldoctest
-julia> using Survey
-
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs);
+julia> srs = SimpleRandomSample(apisrs; weights = :pw);
 
-julia> svyby(:api00, :cname, srs, svytotal)
+julia> svyby(:api00, :cname, srs, svymean)
 38×3 DataFrame
- Row │ cname            total    se_total
-     │ String15         Float64  Float64
-─────┼────────────────────────────────────
-   1 │ Kern              5736.0  2045.98
-   2 │ Los Angeles      29617.0  2050.04
-   3 │ Orange            6744.0  1234.81
-   4 │ San Luis Obispo    739.0   NaN
-   5 │ San Francisco     1675.0  1193.85
-   6 │ Modoc              671.0   NaN
-   7 │ Alameda           7437.0  1633.82
-   8 │ Solano            1869.0  1219.59
+ Row │ cname            mean     sem     
+     │ String15         Float64  Float64 
+─────┼───────────────────────────────────
+   1 │ Kern             573.6    179.646
+   2 │ Los Angeles      658.156   87.585
+   3 │ Orange           749.333  241.821
+   4 │ San Luis Obispo  739.0    NaN
+   5 │ San Francisco    558.333  318.351
+   6 │ Modoc            671.0    NaN
+   7 │ Alameda          676.091  197.927
+   8 │ Solano           623.0    354.57
   ⋮  │        ⋮            ⋮        ⋮
-  32 │ Kings              939.0  1190.0
-  33 │ Shasta            1508.0  1600.0
-  34 │ Yolo               475.0   NaN
-  35 │ Calaveras          790.0   NaN
-  36 │ Napa              1454.0  1340.0
-  37 │ Lake               804.0   NaN
-  38 │ Merced             595.0   NaN
-                           23 rows omitted
+  32 │ Kings            469.5    330.175
+  33 │ Shasta           754.0    527.752
+  34 │ Yolo             475.0    NaN
+  35 │ Calaveras        790.0    NaN
+  36 │ Napa             727.0    507.463
+  37 │ Lake             804.0    NaN
+  38 │ Merced           595.0    NaN
+                          23 rows omitted
 ```
 """
 function svyby(formula::Symbol, by::Symbol, design::AbstractSurveyDesign, func::Function, params = [])

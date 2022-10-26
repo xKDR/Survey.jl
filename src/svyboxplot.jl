@@ -9,14 +9,13 @@ The keyword arguments are all the arguments that can be passed to `mapping` in
 [AlgebraOfGraphics](https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.7/).
 
 ```@example svyboxplot
-julia> apisrs = load_data("apisrs");
-
-julia> srs = SimpleRandomSample(apisrs);
-
-julia> bp = svyboxplot(srs, :stype, :enroll; weights = :pw)
+apisrs = load_data("apisrs");
+srs = SimpleRandomSample(apisrs; weights = :pw);
+bp = svyboxplot(srs, :stype, :enroll; weights = :pw)
+save("boxplot.png", bp); nothing # hide
 ```
 
-![](./assets/boxplot.png)
+![](boxplot.png)
 """
 function svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 	map = mapping(x, y; kwargs...)

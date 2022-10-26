@@ -34,14 +34,14 @@ Compute the mean and SEM of the survey variable `x`.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs);
+julia> srs = SimpleRandomSample(apisrs; weights = :pw);
 
 julia> svymean(:enroll, srs)
 1×2 DataFrame
- Row │ mean     sem
-     │ Float64  Float64
+ Row │ mean     sem     
+     │ Float64  Float64 
 ─────┼──────────────────
-   1 │  584.61  27.8212
+   1 │  584.61  27.3684
 ```
 """
 function svymean(x::Symbol, design::SimpleRandomSample)
@@ -68,8 +68,8 @@ function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
 end
 
 function sem_svyby(x::AbstractVector, design::SimpleRandomSample, weights)
-    N = sum(weights)
-    Nd = length(x)
+    N = design.popsize
+    Nd = sum(weights)
     Pd = Nd / N
     n = design.sampsize
     n̄d = n * Pd

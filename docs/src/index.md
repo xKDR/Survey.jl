@@ -23,7 +23,7 @@ load_data
 AbstractSurveyDesign
 SimpleRandomSample
 StratifiedSample
-ClusterSample
+GeneralSample
 dim(design::AbstractSurveyDesign)
 colnames(design::AbstractSurveyDesign)
 dimnames(design::AbstractSurveyDesign)

@@ -5,12 +5,12 @@ Estimate quantiles for `SurveyDesign`s.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs);
+julia> srs = SimpleRandomSample(apisrs; weights = :pw);
 
 julia> svyquantile(:enroll, srs, 0.5)
 1×1 DataFrame
  Row │ 0.5th percentile
-     │ Float32
+     │ Float64
 ─────┼──────────────────
    1 │            453.0
 ```
