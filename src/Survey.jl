@@ -11,7 +11,6 @@ using AlgebraOfGraphics
 using CategoricalArrays
 
 include("SurveyDesign.jl")
-include("show.jl")
 include("svydesign.jl")
 include("svymean.jl")
 include("svyquantile.jl")
@@ -24,6 +23,7 @@ include("dimnames.jl")
 include("svyboxplot.jl")
 include("svyby.jl")
 include("ht.jl")
+include("show.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
