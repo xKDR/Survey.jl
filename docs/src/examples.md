@@ -21,13 +21,16 @@ Next, we can build a design. The most basic survey design is a simple random sam
 A [`SimpleRandomSample`](@ref) can be instantianted by calling the constructor:
 
 ```julia
-julia> srs = SimpleRandomSample(apisrs)
-Simple Random Sample:
+julia> srs = SimpleRandomSample(apisrs; weights = :pw)
+SimpleRandomSample:
 data: 200x42 DataFrame
-probs: 1.0, 1.0, 1.0 ... 1.0
-fpc: 1
-    popsize: 200
-    sampsize: 200
+weights: 31.0, 31.0, 31.0, ..., 31.0
+probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
+fpc: 6194, 6194, 6194, ..., 6194
+popsize: 6194
+sampsize: 200
+sampfraction: 0.0323
+ignorefpc: false
 ```
 
 With a `SimpleRandomSample` (as well as with any subtype of [`AbstractSurveyDesign`](@ref))
@@ -37,63 +40,23 @@ along with the corresponding standard errors.
 ```julia
 julia> svymean(:api00, srs)
 1×2 DataFrame
- Row │ mean     sem
-     │ Float64  Float64
-─────┼──────────────────
-   1 │ 656.585  9.40277
-
-julia> svytotal(:api00, srs)
-1×2 DataFrame
- Row │ total     se_total
-     │ Float64   Float64
-─────┼────────────────────
-   1 │ 131317.0   1880.55
-```
-
-The complexity of the design can be increased by specifying frequency or probability
-weights, the population or sample size and whether or not to account for finite
-population correction (fpc). By default the weights are equal to one, the sample size is
-equal to the number of rows in `data` the fpc is ignored. The population size is calculated
-from the weights.
-
-```julia
-julia> wsrs = SimpleRandomSample(apisrs; weights = :pw)
-Simple Random Sample:
-data: 200x42 DataFrame
-weights: 31.0, 31.0, 31.0 ... 31.0
-probs: 0.0323, 0.0323, 0.0323 ... 0.0323
-fpc: 1
-    popsize: 6194
-    sampsize: 200
-
-julia> fpcwsrs = SimpleRandomSample(apisrs; weights = :pw, ignorefpc = false)
-Simple Random Sample:
-data: 200x42 DataFrame
-weights: 31.0, 31.0, 31.0 ... 31.0
-probs: 0.0323, 0.0323, 0.0323 ... 0.0323
-fpc: 0.968
-    popsize: 6194
-    sampsize: 200
-```
-
-When `ignorefpc` is set to `false` the `fpc` is calculated from the sample and population
-sizes.
-
-The statistics for mean and population total are different when the design takes weights
-and fpc into account:
-
-```julia
-julia> svymean(:api00, fpcwsrs)
-1×2 DataFrame
- Row │ mean     sem
-     │ Float64  Float64
+ Row │ mean     sem     
+     │ Float64  Float64 
 ─────┼──────────────────
    1 │ 656.585  9.24972
 
-julia> svytotal(:api00, fpcwsrs)
+julia> svytotal(:api00, srs)
 1×2 DataFrame
- Row │ total      se_total
-     │ Float64    Float64
+ Row │ total      se_total 
+     │ Float64    Float64  
 ─────┼─────────────────────
    1 │ 4.06689e6   57292.8
 ```
+
+The design can be tweaked by specifying the population or sample size or whether
+or not to account for finite population correction (fpc). By default the weights
+are equal to one, the sample size is equal to the number of rows in `data` and the
+fpc is not ignored. The population size is calculated from the weights.
+
+When `ignorefpc` is set to `false` the `fpc` is calculated from the sample and population
+sizes. When it is set to `true` it is set to 1.

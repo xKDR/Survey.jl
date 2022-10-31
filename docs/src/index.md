@@ -30,6 +30,7 @@ dimnames(design::AbstractSurveyDesign)
 svymean(x::Symbol, design::SimpleRandomSample)
 svytotal(x::Symbol, design::SimpleRandomSample)
 svyby
+svyglm
 svyplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 svyhist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
