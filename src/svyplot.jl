@@ -13,7 +13,7 @@ s = svyplot(srs, :api99, :api00)
 save("scatter.png", s); nothing # hide
 ```
 
-![](scatter.png)
+![](assets/scatter.png)
 """
 function svyplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
     data(design.data) * mapping(x, y, markersize = :weights) * visual(Scatter, marker = '￮') |> draw

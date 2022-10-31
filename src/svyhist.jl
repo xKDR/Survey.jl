@@ -166,18 +166,7 @@ h = svyhist(srs, :enroll)
 save("hist.png", h); nothing # hide
 ```
 
-![](hist.png)
-
-The histogram plot also supports the old design.
-
-```@example histogram_old
-apistrat = load_data("apistrat");
-dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-h_old = svyhist(dstrat, :enroll)
-save("hist_old.png", h_old); nothing # hide
-```
-
-![](hist_old.png)
+![](assets/hist.png)
 """
 function svyhist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);

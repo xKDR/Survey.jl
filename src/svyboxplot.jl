@@ -15,7 +15,7 @@ bp = svyboxplot(srs, :stype, :enroll; weights = :pw)
 save("boxplot.png", bp); nothing # hide
 ```
 
-![](boxplot.png)
+![](assets/boxplot.png)
 """
 function svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 	map = mapping(x, y; kwargs...)
