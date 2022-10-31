@@ -169,7 +169,7 @@ struct ClusterSample <: AbstractSurveyDesign
     sampfraction::Vector{Real}
     fpc::Vector{Real}
     ignorefpc::Bool
-    function StratifiedSample(data::AbstractDataFrame, strata::Symbol;
+    function ClusterSample(data::AbstractDataFrame, strata::Symbol;
         popsize=nothing,
         sampsize=transform(groupby(data, strata), nrow => :counts).counts,
         weights=nothing,
