@@ -154,11 +154,11 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 """
-    GeneralSample <: AbstractSurveyDesign
+    ClusterSample <: AbstractSurveyDesign
 
 Survey design sampled by clustering.
 """
-struct GeneralSample <: AbstractSurveyDesign
+struct ClusterSample <: AbstractSurveyDesign
     data::AbstractDataFrame
     strata::Symbol
     sampsize::Vector{Union{Nothing,Float64}}
