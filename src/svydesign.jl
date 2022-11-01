@@ -1,18 +1,20 @@
 """
-The `svydesign` object combines a data frame and all the survey design information needed to analyse it.
+    svydesign
+
+Type incorporating all necessary information to describe a survey design.
 
 ```jldoctest
-julia> apiclus1 = load_data("apiclus1");
+julia> apistrat = load_data("apistrat");
 
-julia> dclus1 = svydesign(id= :dnum, weights= :pw, data = apiclus1, fpc= :fpc) |> print
+julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
 Survey Design:
-variables: 183x45 DataFrame
-id: dnum
-strata: 1, 1, 1 ... 1
-probs: 0.0295, 0.0295, 0.0295 ... 0.0295
+variables: 200x45 DataFrame
+id: 1
+strata: E, E, E, ..., H
+probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
 fpc:
-    popsize: 757, 757, 757 ... 757
-    sampsize: 183, 183, 183 ... 183
+    popsize: 4421, 4421, 4421, ..., 755
+    sampsize: 200, 200, 200, ..., 200
 nest: false
 check_strat: true
 ```
@@ -89,25 +91,4 @@ function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata 
     df.sampsize = repeat([nrow(data)], nrow(data))
 	df.strata = get_strata(data, strata)
     return svydesign(id, df, nest, check_strat)
-end
-
-function Base.show(io::IO, design::svydesign)
-    printstyled("Survey Design:\n")
-    printstyled("variables: "; bold = true)
-    print(size(design.variables)[1], "x", size(design.variables)[2], " DataFrame")
-    printstyled("\nid: "; bold = true)
-    print(design.id)
-    printstyled("\nstrata: "; bold = true)
-    print_short(design.variables.strata)
-    printstyled("\nprobs: "; bold = true)
-    print_short(design.variables.probs)
-    printstyled("\nfpc: "; bold = true)
-    print("\n    popsize: ")
-    print_short(design.variables.popsize)
-    print("\n    sampsize: ")
-    print_short(design.variables.sampsize)
-    printstyled("\nnest: "; bold = true)
-    print(design.nest)
-    printstyled("\ncheck_strat: "; bold = true)
-    print(design.check_strat)
 end
