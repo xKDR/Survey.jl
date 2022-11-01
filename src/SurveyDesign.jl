@@ -1,9 +1,13 @@
 """
-Supertype for every survey design type: `SimpleRandomSample`, `ClusterSample`
-and `StratifiedSample`.
+    AbstractSurveyDesign
 
-The data to a survey constructor is modified. To avoid this pass a copy of the data
-instead of the original.
+Supertype for every survey design type: [`SimpleRandomSample`](@ref), [`StratifiedSample`](@ref)
+and [`ClusterSample`](@ref).
+
+!!! note
+
+    The data passed to a survey constructor is modified. To avoid this pass a copy of the data
+    instead of the original.
 """
 abstract type AbstractSurveyDesign end
 
@@ -150,11 +154,11 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 """
-    GeneralSample <: AbstractSurveyDesign
+    ClusterSample <: AbstractSurveyDesign
 
 Survey design sampled by clustering.
 """
-struct GeneralSample <: AbstractSurveyDesign
+struct ClusterSample <: AbstractSurveyDesign
     data::AbstractDataFrame
     strata::Symbol
     sampsize::Vector{Union{Nothing,Float64}}

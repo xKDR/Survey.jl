@@ -1,43 +1,49 @@
 # SimpleRandomSample
 
 """
-Compute the mean of the survey variable `var`.
+    var_of_mean(x, design)
 
-```jldoctest
-julia> apisrs = load_data("apisrs");
-
-julia> srs = SimpleRandomSample(apisrs);
-
-julia> svymean(:enroll, srs)
-1×2 DataFrame
- Row │ mean     sem
-     │ Float64  Float64
-─────┼──────────────────
-   1 │  584.61  27.8212
-```
+Compute the variance of the mean for the variable `x`.
 """
 function var_of_mean(x::Symbol, design::SimpleRandomSample)
     return design.fpc ./ design.sampsize .* var(design.data[!, x])
 end
 
-"""
-Inner method for `svyby`.
-"""
 function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
     return design.fpc ./ design.sampsize .* var(x)
 end
 
-function sem(x, design::SimpleRandomSample)
+"""
+    sem(x, design)
+
+Compute the standard error of the mean for the variable `x`.
+"""
+function sem(x::Symbol, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
-"""
-Inner method for `svyby`.
-"""
 function sem(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
+"""
+    svymean(x, design)
+
+Compute the mean and SEM of the survey variable `x`.
+
+```jldoctest
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+
+julia> svymean(:enroll, srs)
+1×2 DataFrame
+ Row │ mean     sem     
+     │ Float64  Float64 
+─────┼──────────────────
+   1 │  584.61  27.3684
+```
+"""
 function svymean(x::Symbol, design::SimpleRandomSample)
     if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
@@ -77,6 +83,9 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
     return sqrt(variance)
 end
 
+"""
+Inner method for `svyby`.
+"""
 function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
     return DataFrame(mean = mean(x), sem = sem_svyby(x, design::SimpleRandomSample, weights))
 end
