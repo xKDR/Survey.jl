@@ -67,18 +67,20 @@ function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
     return df
 end
 
-function sem_svyby(x::AbstractVector, design::SimpleRandomSample, weights)
-    N = design.popsize
-    Nd = sum(weights)
-    Pd = Nd / N
-    n = design.sampsize
-    n̄d = n * Pd
-    Ȳd = mean(x)
-    S2d = var(x)
-    Sd = sqrt(S2d)
-    CVd = Sd / Ȳd
-    V̂_Ȳd = ((1 ./ n̄d) - (1 ./ Nd)) * S2d * (1 + (1 - Pd) / CVd^2)
-    return sqrt(V̂_Ȳd)
+"""
+Inner method for `svyby`.
+"""
+function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
+    # domain size
+    dsize = length(x)
+    # sample size
+    ssize = design.sampsize
+    # fpc
+    fpc = design.fpc
+    # variance of the mean
+    variance = (dsize / ssize)^(-2) / ssize * fpc * ((dsize - 1) / (ssize - 1)) * var(x)
+    # return the standard error
+    return sqrt(variance)
 end
 
 """
