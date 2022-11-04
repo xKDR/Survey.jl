@@ -38,4 +38,8 @@ svyhist(design::AbstractSurveyDesign, var::Symbol,
 				 kwargs...
     			)
 svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
+svydesign
+svyquantile
+sturges
+freedman_diaconis
 ```
