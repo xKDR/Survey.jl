@@ -31,9 +31,6 @@ function svyquantile(var, design::StratifiedSample, q)
     return df
 end
 
-"""
-Method for `svydesign`.
-"""
 function svyquantile(var, design::svydesign, q)
     x = design.variables[!, var]
     w = design.variables.probs
@@ -43,9 +40,7 @@ function svyquantile(var, design::svydesign, q)
     return df
 end
 
-"""
-Inner method used by `svyby`.
-"""
+# Inner method for `svyby`
 function svyquantile(x, w, _, q)
     df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
