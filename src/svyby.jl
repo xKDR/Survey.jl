@@ -10,26 +10,26 @@ julia> srs = SimpleRandomSample(apisrs; weights = :pw);
 
 julia> svyby(:api00, :cname, srs, svymean)
 38×3 DataFrame
- Row │ cname            mean     sem     
-     │ String15         Float64  Float64 
-─────┼───────────────────────────────────
-   1 │ Kern             573.6    179.646
-   2 │ Los Angeles      658.156   87.585
-   3 │ Orange           749.333  241.821
+ Row │ cname            mean     sem      
+     │ String15         Float64  Float64  
+─────┼────────────────────────────────────
+   1 │ Kern             573.6     42.8026
+   2 │ Los Angeles      658.156   21.0728
+   3 │ Orange           749.333   27.0613
    4 │ San Luis Obispo  739.0    NaN
-   5 │ San Francisco    558.333  318.351
+   5 │ San Francisco    558.333   39.2453
    6 │ Modoc            671.0    NaN
-   7 │ Alameda          676.091  197.927
-   8 │ Solano           623.0    354.57
+   7 │ Alameda          676.091   32.7536
+   8 │ Solano           623.0     40.0916
   ⋮  │        ⋮            ⋮        ⋮
-  32 │ Kings            469.5    330.175
-  33 │ Shasta           754.0    527.752
+  32 │ Kings            469.5     41.4919
+  33 │ Shasta           754.0     55.7874
   34 │ Yolo             475.0    NaN
   35 │ Calaveras        790.0    NaN
-  36 │ Napa             727.0    507.463
+  36 │ Napa             727.0     46.722
   37 │ Lake             804.0    NaN
   38 │ Merced           595.0    NaN
-                          23 rows omitted
+                           23 rows omitted
 ```
 """
 function svyby(formula::Symbol, by::Symbol, design::AbstractSurveyDesign, func::Function, params = [])
