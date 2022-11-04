@@ -19,6 +19,7 @@ makedocs(;
         "Comparison with R" => "R_comparison.md",
         "Performance" => "performance.md",
     ],
+    checkdocs=:exports,
 )
 
 deploydocs(;
