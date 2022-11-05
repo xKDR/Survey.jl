@@ -32,11 +32,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         if isa(probs, Symbol)
             probs = data[!, probs]
         end
-        if !( sum(probs) ≈ 1 )
-            error("Sampling probabilities for SRS must sum to 1")
-        elseif !(sum(1 ./ weights) ≈ 1)
-            error("Inverse of weights should for SRS must sum to 1")
-        end
+
         if ignorefpc
             @warn "assuming all weights are equal to 1.0"
             weights = ones(nrow(data))
