@@ -33,6 +33,23 @@ function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
     printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
 end
 
+"`show` method for printing information about a survey design"
+function Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign)
+    type = typeof(design)
+    printstyled(io, "$type:\n"; bold=true)
+    printstyled(io, "data: "; bold=true)
+    println(io, size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    println(io, "clusters: ", design.clusters)
+    println(io, "strata: ", design.strata)
+    printinfo(io, "weights", makeshort(design.data.weights))
+    printinfo(io, "probs", makeshort(design.data.probs))
+    printinfo(io, "popsize", makeshort(design.popsize))
+    printinfo(io, "sampsize", makeshort(design.sampsize))
+    printinfo(io, "fpc", makeshort(design.data.fpc))
+    printinfo(io, "sampfraction", makeshort(design.sampfraction))
+    printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
+end
+
 "Print information about a survey design initialized using `svydesign`."
 function Base.show(io::IO, ::MIME"text/plain", design::svydesign)
     printstyled(io, "Survey Design:\n"; bold=true)
