@@ -53,7 +53,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             end
             # estimate population size
             popsize = round(sampsize * first(weights)) |> UInt
-            @show popsize, sampsize
+            # @show popsize, sampsize # Check this Line TODO
             if sampsize > popsize
                 error("sample size cannot be greater than population size")
             end
