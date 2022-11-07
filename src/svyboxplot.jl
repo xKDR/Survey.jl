@@ -24,9 +24,6 @@ function svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs..
 	data * visual(BoxPlot) * map |> draw
 end
 
-"""
-Method for `svydesign`.
-"""
 function svyboxplot(design::svydesign, x::Symbol, y::Symbol; kwargs...)
     # TODO: change function, make it a wrapper
 	map = mapping(x, y; kwargs...)
