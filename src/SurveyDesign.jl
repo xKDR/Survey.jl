@@ -97,8 +97,6 @@ struct StratifiedSample <: AbstractSurveyDesign
     popsize::Union{Nothing,Vector{Real}}
     sampfraction::Vector{Real}
     fpc::Vector{Real}
-    nₕ::Union{Nothing,Vector{Real}}
-    Nₕ::Union{Nothing,Vector{Real}}
     ignorefpc::Bool
     function StratifiedSample(data::AbstractDataFrame, strata::Symbol;
         popsize=nothing,
@@ -152,11 +150,11 @@ struct StratifiedSample <: AbstractSurveyDesign
             data[!, :weights] = weights
             data[!, :probs] = 1 ./ data[!, :weights]
         end
-        gdf = groupby(data, strata)
-        Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
-        nₕ = combine(gdf, nrow => :nₕ).nₕ
-        @show nₕ , Nₕ
-        new(data, strata, sampsize, popsize, sampfraction, fpc, nₕ, Nₕ, ignorefpc)
+        data[!, :sampsize] = sampsize
+        data[!, :popsize] = popsize
+        data[!, :fpc] = fpc
+        data[!, :sampfraction] = sampfraction
+        new(data, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
 end
 

@@ -92,36 +92,6 @@ function sem_svyby(x::AbstractVector, design::StratifiedSample,weights)
     return SE
 end
 
-"""
-    Domain mean estimator for StratifiedSample
-    Adapted from Example 10.3.3 pg 394 of Sarndal et al. Model-Assisted Survey Sampling (1992)
-"""
-function domain_mean_stratified(design::SimpleRandomSample,gdf,formula)
-    # Calculate strata sampling sampsize and popsize
-    # TODO: if Nₕ and nₕ being used a lot, then add them to design object?
-    Nₕ = design.Nₕ
-    nₕ = design.nₕ
-    # x is api00 within the domain
-
-    # Only need nsdh and sigma_sdh_yk
-    gdf_domain = gdf
-    each_domain = keys(gdf_domain) # THIS IS A HACK, think about it
-    domain_means = []
-    
-    # for each_domain in keys(gdf_domain)
-    grouped_frame = groupby(gdf_domain[each_domain],design.strata)
-    ############ How to get 0 as nrow of empty groupedframe
-    nsdh = combine(grouped_frame, nrow=>:nsdh).nsdh # Lol this is not always length H!! sometimes strata empty in a domain
-    # nsdh = combine(grouped_frame, :weights => length => :nsdh).nsdh
-    ############
-    @show nsdh
-    substrata_domain_totals = combine(grouped_frame, formula => sum => :sigma_sdh_yk).sigma_sdh_yk
-    @show substrata_domain_totals, nsdh
-
-    domain_mean_estimator = sum(Nₕ .* substrata_domain_totals ./ nₕ ) / sum(Nₕ .* nsdh ./ nₕ)
-    push!(domain_means,domain_mean_estimator)
-    return domain_means
-end
 
 """
 Inner method for `svyby` for SimpleRandomSample
@@ -133,14 +103,29 @@ end
 """
 Inner method for `svyby` for StratifiedSample
 """
-function svymean(formula_vector::AbstractVector, design::StratifiedSample, weights, params)
-    gdf,formula,by = params
-    return DataFrame(mean = domain_mean_stratified(design,weights,gdf,formula,by),
-                     sem = sem_svyby(formula_vector, design, weights))
+function svymean(x::AbstractVector, sampfraction::AbstractVector,strata::AbstractVector,design::StratifiedSample)
+    df = DataFrame(x = x, sampfraction = sampfraction,strata = strata)
+    nsdh = []
+    substrata_domain_totals = []
+    sampfractions = []
+    grouped_frame = groupby(df,:strata)
+    for each_strata in keys(grouped_frame)
+        nsh = nrow(grouped_frame[each_strata])#, nrow=>:nsdh).nsdh
+        push!(nsdh,nsh)
+        substrata_domain_total = sum(grouped_frame[each_strata].x,)
+        push!(substrata_domain_totals,substrata_domain_total)
+        sampfrac = first(grouped_frame[each_strata].sampfraction)
+        push!(sampfractions,sampfrac)
+    end
+    domain_mean = sum( substrata_domain_totals ./sampfractions)/sum(nsdh ./ sampfractions)
+    return DataFrame(domain_mean = domain_mean)
 end
 
-# StratifiedSample
 
+"""
+    Survey mean for StratifiedSample objects.
+    Ref: Cochran (1977)
+"""
 function svymean(x::Symbol, design::StratifiedSample)
     if x == design.strata
         gdf = groupby(design.data, x)

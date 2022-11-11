@@ -51,10 +51,8 @@ Generate subsets of a StratifiedSample.
 #     return combine(gdf, [formula, :weights] => ((a, b) -> func(a, design, b, params)) => AsTable)
 # end
 
-function svyby(formula::Symbol, by::Symbol, design::StratifiedSample, func::Function, params = [])
+function svyby(formula::Symbol, by::Symbol, design::StratifiedSample, func::Function)
     # TODO: add functionality for `formula::AbstractVector`
-    gdf = groupby(design.data, by) 
-    params = [gdf,formula,by] # We need to know the domains we calculate statistics for later!!
-    # grouped_frame = groupby(design.data,[by,design.strata]) # No this has to be after combining over domains, inside the svymean/svytotal, because we only select the records in the domain
-    return combine(gdf, [formula, :weights] => ((a, b) -> func(a, design, b, params)) => AsTable)
+    gdf_domain = groupby(design.data, by)
+    return combine(gdf_domain, [formula, :sampfraction, design.strata] => ((a,b,c) -> func(a,b,c,design)) => AsTable ) 
 end
