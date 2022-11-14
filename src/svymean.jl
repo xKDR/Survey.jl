@@ -70,7 +70,8 @@ end
 """
 Inner method for `svyby` to calculate standard error of domain mean of SimpleRandomSample.
 """
-function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
+# Inner methods for `svyby`
+function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
     # domain size
     dsize = length(x)
     # sample size
@@ -83,13 +84,8 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(variance)
 end
 
-"""
-Inner method for `svyby` to calculate standard error of domain mean of StratifiedSample.
-"""
-function sem_svyby(x::AbstractVector, design::StratifiedSample,weights)
-    # TODO placeholder
-    SE = 0
-    return SE
+function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
+    return DataFrame(mean = mean(x), sem = sem_svyby(x, design::SimpleRandomSample, weights))
 end
 
 

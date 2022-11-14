@@ -14,28 +14,33 @@ At [xKDR](https://xkdr.org/) we processed millions of records from household sur
 
 ```@index
 Module = [Survey]
+Order = [:type, :function]
 Private = false
 ```
 
 ## API
 ```@docs
-load_data
 AbstractSurveyDesign
 SimpleRandomSample
 StratifiedSample
 ClusterSample
-dim(design::AbstractSurveyDesign)
-colnames(design::AbstractSurveyDesign)
-dimnames(design::AbstractSurveyDesign)
+svydesign
+svyglm
+load_data
 svymean(x::Symbol, design::SimpleRandomSample)
 svytotal(x::Symbol, design::SimpleRandomSample)
+svyquantile
 svyby
-svyglm
+colnames(design::AbstractSurveyDesign)
+dim(design::AbstractSurveyDesign)
+dimnames(design::AbstractSurveyDesign)
 svyplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
+svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 svyhist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
 				 normalization = :density,
 				 kwargs...
     			)
-svyboxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
+freedman_diaconis
+sturges
 ```

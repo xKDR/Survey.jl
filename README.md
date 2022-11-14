@@ -7,9 +7,9 @@
 [![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
 
 
-This package is used to study complex survey data. It is the Julia implementation of the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
+This package is used to study complex survey data. It is inspired by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005), and initial development attempts to replicate the basic functionality of that package with the speed and performance enhancement of Julia.
 
-As the size of survey datasets have become larger, processing the records can take hours or days in R. We endeavour to solve this problem by implementing the Survey package in Julia.
+R `survey` package can take hours/days for analysis large survey datasets (> few GB in memory), such as [CMIE CPHS](https://consumerpyramidsdx.cmie.com). One of the key goals of `Survey.jl` is to utilise the power of Julia and speedup processing times.
 
 ## How to install
 
@@ -21,28 +21,28 @@ In the following example, we will load the Academic Performance Index dataset fo
 ```julia
 using Survey
 
-apiclus1 = load_data("apiclus1")
+srs_design = SimpleRandomSample(apisrs, weights = :pw) 
 ## This function loads a commonly used dataset, Academic Performance Index (API), as an example.
 ## Any DataFrame object can be used with this package.
 
-dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1)
+# dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1)
 
-svyby(:api00, :cname, dclus1, svymean)
-11×3 DataFrame
- Row │ cname        mean     SE
-     │ String15     Float64  Float64
-─────┼────────────────────────────────
-   1 │ Alameda      669.0    16.2135
-   2 │ Fresno       472.0     9.85278
-   3 │ Kern         452.5    29.5049
-   4 │ Los Angeles  647.267  23.5116
-   5 │ Mendocino    623.25   24.216
-   6 │ Merced       519.25   10.4925
-   7 │ Orange       710.562  28.9123
-   8 │ Plumas       709.556  13.2174
-   9 │ San Diego    659.436  12.2082
-  10 │ San Joaquin  551.189  11.578
-  11 │ Santa Clara  732.077  12.2291
+# svyby(:api00, :cname, dclus1, svymean)
+# 11×3 DataFrame
+#  Row │ cname        mean     SE
+#      │ String15     Float64  Float64
+# ─────┼────────────────────────────────
+#    1 │ Alameda      669.0    16.2135
+#    2 │ Fresno       472.0     9.85278
+#    3 │ Kern         452.5    29.5049
+#    4 │ Los Angeles  647.267  23.5116
+#    5 │ Mendocino    623.25   24.216
+#    6 │ Merced       519.25   10.4925
+#    7 │ Orange       710.562  28.9123
+#    8 │ Plumas       709.556  13.2174
+#    9 │ San Diego    659.436  12.2082
+#   10 │ San Joaquin  551.189  11.578
+#   11 │ Santa Clara  732.077  12.2291
 ```
 
 This example is from the Survey package in R. The [examples section of the documentation](https://xkdr.github.io/Survey.jl/dev/examples/) shows the R and the Julia code side by side for this and a few other examples.
