@@ -46,5 +46,5 @@ Generate subsets of a StratifiedSample.
 function svyby(formula::Symbol, by::Symbol, design::StratifiedSample, func::Function)
     # TODO: add functionality for `formula::AbstractVector`
     gdf_domain = groupby(design.data, by)
-    return combine(gdf_domain, [formula, :sampfraction, design.strata] => ((a,b,c) -> func(a,b,c,design)) => AsTable ) 
+    return combine(gdf_domain, [formula, :popsize,:sampsize,:sampfraction, design.strata] => ((a,b,c,d,e) -> func(a,b,c,d,e)) => AsTable ) 
 end
