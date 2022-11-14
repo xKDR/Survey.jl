@@ -31,7 +31,7 @@ julia> svytotal(:enroll, srs)
 ```
 """
 function svytotal(x::Symbol, design::SimpleRandomSample)
-    if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
+    if isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
         p = combine(gdf, nrow => :count)
         p.total = design.popsize .* p.count ./ sum(p.count)
@@ -39,8 +39,8 @@ function svytotal(x::Symbol, design::SimpleRandomSample)
         p = select!(p, Not(:count)) # count column is not necessary for `svytotal`
         p.var = design.popsize^2 .* design.fpc .* p.proportion .*
                 (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* variance of proportion
-        p.se = sqrt.(p.var)
-        return p
+        p.se_tot = sqrt.(p.var)
+        return select(p, Not([:proportion, :var]))
     end
     total = design.popsize * mean(design.data[!, x])
     return DataFrame(total = total, se_total = se_tot(x, design::SimpleRandomSample))
