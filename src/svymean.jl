@@ -121,7 +121,6 @@ function svymean(x::AbstractVector, sampfraction::AbstractVector,strata::Abstrac
     return DataFrame(domain_mean = domain_mean)
 end
 
-
 """
     Survey mean for StratifiedSample objects.
     Ref: Cochran (1977)
