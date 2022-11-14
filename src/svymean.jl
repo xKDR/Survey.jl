@@ -102,23 +102,39 @@ end
 
 """
 Inner method for `svyby` for StratifiedSample
+Calculates domain mean and its std error, based on pg392 Sarndal.
 """
-function svymean(x::AbstractVector, sampfraction::AbstractVector,strata::AbstractVector,design::StratifiedSample)
-    df = DataFrame(x = x, sampfraction = sampfraction,strata = strata)
+function svymean(x::AbstractVector, popsize::AbstractVector,sampsize::AbstractVector,sampfraction::AbstractVector,strata::AbstractVector)
+    df = DataFrame(x = x, popsize = popsize, sampsize = sampsize, sampfraction = sampfraction,strata = strata)
     nsdh = []
     substrata_domain_totals = []
-    sampfractions = []
+    Nh = []
+    nh = []
+    fh = []
+    ȳsdh = []
+    sigma_ȳsh_squares = []
     grouped_frame = groupby(df,:strata)
     for each_strata in keys(grouped_frame)
         nsh = nrow(grouped_frame[each_strata])#, nrow=>:nsdh).nsdh
         push!(nsdh,nsh)
-        substrata_domain_total = sum(grouped_frame[each_strata].x,)
+        substrata_domain_total = sum(grouped_frame[each_strata].x)
+        ȳdh = mean(grouped_frame[each_strata].x)
+        push!(ȳsdh, ȳdh)
         push!(substrata_domain_totals,substrata_domain_total)
+        popsizes = first(grouped_frame[each_strata].popsize)
+        push!(Nh,popsizes)
+        sampsizes = first(grouped_frame[each_strata].sampsize)
+        push!(nh,sampsizes)
         sampfrac = first(grouped_frame[each_strata].sampfraction)
-        push!(sampfractions,sampfrac)
+        push!(fh,sampfrac)
+        push!(sigma_ȳsh_squares,sum((grouped_frame[each_strata].x .- ȳdh).^2) )
     end
-    domain_mean = sum( substrata_domain_totals ./sampfractions)/sum(nsdh ./ sampfractions)
-    return DataFrame(domain_mean = domain_mean)
+    domain_mean = sum(Nh .* substrata_domain_totals ./ nh)/sum(Nh .* nsdh ./ nh)
+    pdh = nsdh./nh
+    N̂d = sum(Nh .* pdh)
+    domain_var = sum(Nh.^2 .* (1 .- fh) .*  (sigma_ȳsh_squares .+ (nsdh .* (1 .-pdh) .* (ȳsdh .- domain_mean).^2)) ./ (nh .* (nh .- 1) )) ./ N̂d.^2
+    domain_mean_se = sqrt(domain_var)
+    return DataFrame(domain_mean = domain_mean, domain_mean_se = domain_mean_se)
 end
 
 """
