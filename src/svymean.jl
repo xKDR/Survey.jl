@@ -70,7 +70,8 @@ end
 """
 Inner method for `svyby`
 """
-function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
+# Inner methods for `svyby`
+function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
     # domain size
     dsize = length(x)
     # sample size
@@ -81,6 +82,10 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
     variance = (dsize / ssize)^(-2) / ssize * fpc * ((dsize - 1) / (ssize - 1)) * var(x)
     # return the standard error
     return sqrt(variance)
+end
+
+function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
+    return DataFrame(mean = mean(x), sem = sem_svyby(x, design))
 end
 
 """

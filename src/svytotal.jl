@@ -46,9 +46,7 @@ function svytotal(x::Symbol, design::SimpleRandomSample)
     return DataFrame(total = total, se_total = se_tot(x, design::SimpleRandomSample))
 end
 
-"""
-Inner method for `svyby`.
-"""
+# Inner methods for `svyby`
 function se_total_svyby(x::AbstractVector, design::SimpleRandomSample, _)
     # vector of length equal to `sampsize` containing `x` and zeros
     z = cat(zeros(design.sampsize - length(x)), x; dims=1)
@@ -57,10 +55,6 @@ function se_total_svyby(x::AbstractVector, design::SimpleRandomSample, _)
     # return the standard error
     return sqrt(variance)
 end
-
-"""
-Inner method for `svyby`.
-"""
 function svytotal(x::AbstractVector, design::SimpleRandomSample, weights)
     total = wsum(x, weights)
     return DataFrame(total = total, sem = se_total_svyby(x, design::SimpleRandomSample, weights))

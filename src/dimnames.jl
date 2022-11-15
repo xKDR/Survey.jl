@@ -13,19 +13,6 @@ julia> dim(srs)
 ```
 """
 dim(design::AbstractSurveyDesign) = size(design.data)
-
-"""
-Method for `svydesign`.
-
-```jldoctest
-julia> apistrat = load_data("apistrat");
-
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-
-julia> dim(dstrat)
-(200, 45)
-```
-"""
 dim(design::svydesign) = size(design.variables)
 
 """
@@ -63,39 +50,6 @@ julia> colnames(srs)
 ```
 """
 colnames(design::AbstractSurveyDesign) = names(design.data)
-
-"""
-Method for `svydesign`.
-
-```jldoctest
-julia> apistrat = load_data("apistrat");
-
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-
-julia> colnames(dstrat)
-45-element Vector{String}:
- "Column1"
- "cds"
- "stype"
- "name"
- "sname"
- "snum"
- "dname"
- "dnum"
- "cname"
- "cnum"
- ⋮
- "enroll"
- "api.stu"
- "pw"
- "fpc"
- "probs"
- "weights"
- "popsize"
- "sampsize"
- "strata"
-```
-"""
 colnames(design::svydesign) = names(design.variables)
 
 """
@@ -115,19 +69,4 @@ julia> dimnames(srs)
 ```
 """
 dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names(design.data)]
-
-"""
-Method for `svydesign`.
-
-```jldoctest
-julia> apistrat = load_data("apistrat");
-
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-
-julia> dimnames(dstrat)
-2-element Vector{Vector{String}}:
- ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"  …  "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"]
- ["Column1", "cds", "stype", "name", "sname", "snum", "dname", "dnum", "cname", "cnum"  …  "emer", "enroll", "api.stu", "pw", "fpc", "probs", "weights", "popsize", "sampsize", "strata"]
-```
-"""
 dimnames(design::svydesign) = [string.(1:size(design.variables, 1)), names(design.variables)]
