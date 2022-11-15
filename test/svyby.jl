@@ -9,7 +9,7 @@
     ###>>> Add tests here
 
     ## Test svytotal with svyby
-    srs_svytotal_svyby = svyby(:api00,:cname,srs,svymean)
+    # srs_svytotal_svyby = svyby(:api00,:cname,srs,svytotal)
     ###>>> Add tests here
 
     ####################################################################
@@ -21,7 +21,7 @@
     ###>>> Add tests here
 
     ## Test svytotal with svyby
-    strat_svytotal_svyby = svyby(:api00,:cname,strat,svymean)
+    # strat_svytotal_svyby = svyby(:api00,:cname,strat,svytotal)
     ###>>> Add tests here
 
     ####################################################################
