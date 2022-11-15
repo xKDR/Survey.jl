@@ -1,4 +1,4 @@
-# TODO: add docstrings
+# TODO: improve docstrings?
 """
     Hartley Rao Approximation of the variance of the Horvitz-Thompson Estimator.
     Avoids exhaustively calculating joint (inclusion) probabilities πᵢⱼ of the sampling scheme. 
@@ -30,14 +30,11 @@ function ht_svymean(x::Symbol, design)
     total_df = ht_svytotal(x, design)
     total = total_df.total[1]
     var_total = total_df.se[1]
-    
     mean = 1.0 ./ sum(design.popsize) .* total
+    # TODO check standard error, it is incorrect?
     # @show total_df, total, var_total, mean
     #1.0 ./ (sum(design.popsize).^2) .* 
-    
+    # @show design.popsize
     se = sqrt( var_total )
-
-    @show design.popsize
-
     return DataFrame(mean = mean, se = se)
 end
