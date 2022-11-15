@@ -68,7 +68,7 @@ function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
 end
 
 """
-Inner method for `svyby` to calculate standard error of domain mean of SimpleRandomSample.
+Inner method for `svyby`
 """
 # Inner methods for `svyby`
 function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
@@ -85,9 +85,8 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
 end
 
 function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
-    return DataFrame(mean = mean(x), sem = sem_svyby(x, design::SimpleRandomSample, weights))
+    return DataFrame(mean = mean(x), sem = sem_svyby(x, design))
 end
-
 
 """
 Inner method for `svyby` for SimpleRandomSample
@@ -98,7 +97,7 @@ end
 
 """
 Inner method for `svyby` for StratifiedSample
-Calculates domain mean and its std error, based on pg392 Sarndal.
+Calculates domain mean and its std error, based example 10.3.3 on pg394 Sarndal (1992)
 """
 function svymean(x::AbstractVector, popsize::AbstractVector,sampsize::AbstractVector,sampfraction::AbstractVector,strata::AbstractVector)
     df = DataFrame(x = x, popsize = popsize, sampsize = sampsize, sampfraction = sampfraction,strata = strata)
@@ -154,17 +153,14 @@ function svymean(x::Symbol, design::StratifiedSample)
         return p
     end
     gdf = groupby(design.data, design.strata)
-
     ȳₕ = combine(gdf, x => mean => :mean).mean
     Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
     nₕ = combine(gdf, nrow => :nₕ).nₕ
     fₕ = nₕ ./ Nₕ
     Wₕ = Nₕ ./ sum(Nₕ)
     Ȳ̂ = sum(Wₕ .* ȳₕ)
-
     s²ₕ = combine(gdf, x => var => :s²h).s²h
     V̂Ȳ̂ = sum((Wₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-
     return DataFrame(Ȳ̂ = Ȳ̂, SE = SE)
 end
