@@ -71,7 +71,7 @@ end
 Inner method for `svyby`
 """
 # Inner methods for `svyby`
-function sem_svyby(x::AbstractVector, design::SimpleRandomSample, _)
+function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
     # domain size
     dsize = length(x)
     # sample size
