@@ -150,6 +150,10 @@ struct StratifiedSample <: AbstractSurveyDesign
             data[!, :weights] = weights
             data[!, :probs] = 1 ./ data[!, :weights]
         end
+        data[!, :sampsize] = sampsize
+        data[!, :popsize] = popsize
+        data[!, :fpc] = fpc
+        data[!, :sampfraction] = sampfraction
         new(data, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
 end
