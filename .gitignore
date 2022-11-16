@@ -5,3 +5,4 @@
 /docs/Manifest.toml
 /docs/build/
 /test/Manifest.toml
+clean_examples.jl

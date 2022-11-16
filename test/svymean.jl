@@ -15,5 +15,12 @@
     @test svymean(:enroll, srs).mean[1] ≈ 584.61
     @test svymean(:enroll, srs).sem[1] ≈ 27.821214737089324
 
-    # StratifiedSample
+    srs_w_p = srs_weights = SimpleRandomSample(apisrs, ignorefpc = false, weights = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
+    @test svymean(:enroll, srs_weights).mean[1] ≈ 584.61 
+    
+
+    # Stratified Sample Tests
+    
 end
+
+
