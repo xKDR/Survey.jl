@@ -141,7 +141,7 @@ struct StratifiedSample <: AbstractSurveyDesign
         # set sampling fraction
         sampfraction = sampsize ./ popsize
         # set fpc
-        fpc = ignorefpc ? 1 : 1 .- (sampsize ./ popsize)
+        fpc = ignorefpc ? fill(1,size(data, 1)) : 1 .- (sampsize ./ popsize)
         # add columns for frequency and probability weights to `data`
         if !isnothing(probs)
             data[!, :probs] = probs

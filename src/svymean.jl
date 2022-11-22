@@ -164,3 +164,10 @@ function svymean(x::Symbol, design::StratifiedSample)
     SE = sqrt(V̂Ȳ̂)
     return DataFrame(Ȳ̂ = Ȳ̂, SE = SE)
 end
+
+function svymean(::Bool; x::Symbol, design::StratifiedSample)
+    gdf = groupby(design.data, design.strata)
+    ȳₕ = combine(gdf, x => mean => :mean).mean
+    s²ₕ = combine(gdf, x => var => :s²h).s²h
+    return DataFrame(ȳₕ,s²ₕ)
+end
