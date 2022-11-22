@@ -3,33 +3,37 @@
     # Load API datasets
     apisrs_original   = load_data("apisrs")
     apistrat_original = load_data("apistrat")
-    apiclus1_original = load_data("apiclus1")
-    apiclus2_original = load_data("apiclus2")
+    # apiclus1_original = load_data("apiclus1")
+    # apiclus2_original = load_data("apiclus2")
     # Work on copy, keep original
-    apisrs   = copy(apisrs_original)
-    apistrat = copy(apistrat_original)
-    apiclus1 = copy(apiclus1_original)
-    apiclus2 = copy(apiclus2_original)
+    apisrs1 = copy(apisrs_original)
+    # apiclus1 = copy(apiclus1_original)
+    # apiclus2 = copy(apiclus2_original)
 
-    srs = SimpleRandomSample(apisrs, popsize = apisrs.fpc)
+    srs = SimpleRandomSample(apisrs1, popsize = :fpc)
     @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
     @test srs.sampsize > 0
-
-    srs_freq = SimpleRandomSample(apisrs; weights = apisrs.pw )
+    
+    apisrs2 = copy(apisrs_original)
+    srs_freq = SimpleRandomSample(apisrs2; weights = :pw )
     @test srs_freq.data.weights[1] == 30.97
     @test srs_freq.data.weights == 1 ./ srs_freq.data.probs
-
-    srs_weights = SimpleRandomSample(apisrs, ignorefpc = false, weights = :fpc)
     
-    Test.@test_throws SimpleRandomSample(apisrs, ignorefpc = false, weights = :stype)
-    srs_w_p = SimpleRandomSample(apisrs, ignorefpc = false, weights = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
+    apisrs3 = copy(apisrs_original)
+    srs_weights = SimpleRandomSample(apisrs3, ignorefpc = false, weights = :fpc)
+    
+    @test_throws SimpleRandomSample(apisrs3, ignorefpc = false, weights = :stype)
+    apisrs4 = copy(apisrs_original)
+    srs_w_p = SimpleRandomSample(apisrs4, ignorefpc = false, weights = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
     @test srs_w_p.data.probs == 1 ./ srs_w_p.data.weights
     @test sum(srs_w_p.data.probs) == 1
-
-    srs = SimpleRandomSample(apisrs, ignorefpc = true, probs = 1 ./ apisrs.pw )
+    
+    apisrs5 = copy(apisrs_original)
+    srs = SimpleRandomSample(apisrs5, ignorefpc = true, probs = 1 ./ apisrs5.pw )
     @test srs.data.probs == 1 ./ srs.data.weights
-    @test_throws srs = SimpleRandomSample(apisrs, popsize = -2.8, ignorefpc = true)# the errror is wrong
-    @test_throws srs = SimpleRandomSample(apisrs, sampsize = -2.8, ignorefpc = true)# the function is working upto line 55
+    apisrs6 = copy(apisrs_original)
+    @test_throws SimpleRandomSample(apisrs6, popsize = -2.8, ignorefpc = true)# the errror is wrong
+    @test_throws SimpleRandomSample(apisrs6, sampsize = -2.8, ignorefpc = true)# the function is working upto line 55
 
 
     ##### TODO: needs change; this works but isn't what the user is expecting
@@ -46,26 +50,31 @@ end
 
 @testset "StratifiedSample" begin
   # StratifiedSample tests   
-  apistrat = load_data("apistrat")
-  strat = StratifiedSample(apistrat, :stype ; popsize = apistrat.fpc )
+  apistrat_original = load_data("apistrat")
+  apistrat1 = copy(apistrat_original)
+  strat = StratifiedSample(apistrat1, :stype ; popsize = :fpc )
   @test strat.data.probs == 1 ./ strat.data.weights
-
-  strat_wt = StratifiedSample(apistrat, :stype ; weights = :pw)
+  
+  apistrat2 = copy(apistrat_original)
+  strat_wt = StratifiedSample(apistrat2, :stype ; weights = :pw)
   @test strat_wt.data.probs == 1 ./ strat_wt.data.weights
   
-  strat_probs = StratifiedSample(apistrat, :stype ; probs = 1 ./ apistrat.pw)
+  apistrat3 = copy(apistrat_original)
+  strat_probs = StratifiedSample(apistrat3, :stype ; probs = 1 ./ apistrat3.pw)
   @test strat_probs.data.probs == 1 ./ strat_probs.data.weights
   
   #see github issue for srs
-  strat_probs1 = StratifiedSample(apistrat, :stype; probs = fill(0.3, size(apistrat, 1)))
+  apistrat4 = copy(apistrat_original)
+  strat_probs1 = StratifiedSample(apistrat4, :stype; probs = fill(0.3, size(apistrat4, 1)))
   #@test strat_probs1.data.probs == 1 ./ strat_probs1.data.weights
   
-  strat_popsize = StratifiedSample(apistrat, :stype; popsize= apistrat.fpc)
+  apistrat5 = copy(apistrat_original)
+  strat_popsize = StratifiedSample(apistrat5, :stype; popsize= apistrat5.fpc)
   @test strat_popsize.data.probs == 1 ./ strat_popsize.data.weights
   
-  strat_popsize_fpc = StratifiedSample(apistrat, :stype; popsize= apistrat.fpc, ignorefpc = true)
-  
-  strat_new = StratifiedSample(apistrat, :stype; popsize= apistrat.pw, sampsize = apistrat.fpc) #should throw error because sampsize > popsize
+  # To edit
+  # strat_popsize_fpc = StratifiedSample(apistrat, :stype; popsize= apistrat.fpc, ignorefpc = true)
+  # strat_new = StratifiedSample(apistrat, :stype; popsize= apistrat.pw, sampsize = apistrat.fpc) #should throw error because sampsize > popsize
 end
 
 ##### SurveyDesign tests
