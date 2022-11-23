@@ -16,7 +16,7 @@
     @test srs.sampsize > 0
     
     apisrs2 = copy(apisrs_original)
-    srs_weights = SimpleRandomSample(apisrs2; weights = 1 ./ apisrs2.pw )
+    srs_weights = SimpleRandomSample(apisrs2; weights = apisrs2.pw )
     @test srs_weights.data.weights[1] == 30.97
     @test srs_weights.data.weights == 1 ./ srs_weights.data.probs
     
@@ -26,15 +26,12 @@
     @test srs_freq.data.weights == 1 ./ srs_freq.data.probs
 
     apisrs3 = copy(apisrs_original)
-    srs_weights = SimpleRandomSample(apisrs3, ignorefpc = false, weights = :fpc)
+    srs_weights = SimpleRandomSample(apisrs3, ignorefpc = false, weights = :pw)
     
-    @test_throws MethodError SimpleRandomSample(apisrs3, ignorefpc = false, weights = :stype)
+    @test_throws ErrorException SimpleRandomSample(apisrs3, ignorefpc = false, weights = :stype)
     
-    # In R below example constructor runs, gives different SE, same mean. DOES NOT return error!! Garbage in => garbage out
-    # This test should throw error for invalid probs??
-    # But for SRS it shouldnt run
     apisrs4 = copy(apisrs_original)
-    srs_w_p = SimpleRandomSample(apisrs4, ignorefpc = false, fpc = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
+    srs_w_p = SimpleRandomSample(apisrs4, ignorefpc = false, popsize = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
     @test srs_w_p.data.probs == 1 ./ srs_w_p.data.weights
     @test sum(srs_w_p.data.probs) == 1
     
@@ -42,7 +39,7 @@
     srs = SimpleRandomSample(apisrs5, ignorefpc = true, probs = 1 ./ apisrs5.pw )
     @test srs.data.probs == 1 ./ srs.data.weights
     apisrs6 = copy(apisrs_original)
-    @test_throws MethodError SimpleRandomSample(apisrs6, popsize = -2.8, ignorefpc = true)# the errror is wrong
+    @test_throws ErrorException SimpleRandomSample(apisrs6, popsize = -2.8, ignorefpc = true)# the errror is wrong
     # @test_throws SimpleRandomSample(apisrs6, sampsize = -2.8, ignorefpc = true)# the function is working upto line 55
 
 
