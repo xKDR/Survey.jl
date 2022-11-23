@@ -84,10 +84,6 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(variance)
 end
 
-function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
-    return DataFrame(mean = mean(x), sem = sem_svyby(x, design))
-end
-
 """
 Inner method for `svyby` for SimpleRandomSample
 """
