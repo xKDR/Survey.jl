@@ -1,30 +1,40 @@
-@testset "SurveyDesign.jl" begin
+@testset "SimpleRandomSample" begin
     ##### SimpleRandomSample tests
     # Load API datasets
-    apisrs_original   = load_data("apisrs")
-    apistrat_original = load_data("apistrat")
-    # apiclus1_original = load_data("apiclus1")
-    # apiclus2_original = load_data("apiclus2")
-    # Work on copy, keep original
+    apisrs_original = load_data("apisrs")
+    # Work on copies, keep original
+    
+    # Test: with popsize == ::Symbol
     apisrs1 = copy(apisrs_original)
-    # apiclus1 = copy(apiclus1_original)
-    # apiclus2 = copy(apiclus2_original)
+    srs = SimpleRandomSample(apisrs1; popsize = apisrs1.fpc)
+    @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
+    @test srs.sampsize > 0
 
-    srs = SimpleRandomSample(apisrs1, popsize = :fpc)
+    apisrs1 = copy(apisrs_original)
+    srs = SimpleRandomSample(apisrs1; popsize = :fpc)
     @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
     @test srs.sampsize > 0
     
     apisrs2 = copy(apisrs_original)
-    srs_freq = SimpleRandomSample(apisrs2; weights = :pw )
+    srs_weights = SimpleRandomSample(apisrs2; weights = 1 ./ apisrs2.pw )
+    @test srs_weights.data.weights[1] == 30.97
+    @test srs_weights.data.weights == 1 ./ srs_weights.data.probs
+    
+    apisrs2 = copy(apisrs_original)
+    srs_freq = SimpleRandomSample(apisrs2; probs = 1 ./ apisrs2.pw )
     @test srs_freq.data.weights[1] == 30.97
     @test srs_freq.data.weights == 1 ./ srs_freq.data.probs
-    
+
     apisrs3 = copy(apisrs_original)
     srs_weights = SimpleRandomSample(apisrs3, ignorefpc = false, weights = :fpc)
     
-    @test_throws SimpleRandomSample(apisrs3, ignorefpc = false, weights = :stype)
+    @test_throws MethodError SimpleRandomSample(apisrs3, ignorefpc = false, weights = :stype)
+    
+    # In R below example constructor runs, gives different SE, same mean. DOES NOT return error!! Garbage in => garbage out
+    # This test should throw error for invalid probs??
+    # But for SRS it shouldnt run
     apisrs4 = copy(apisrs_original)
-    srs_w_p = SimpleRandomSample(apisrs4, ignorefpc = false, weights = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
+    srs_w_p = SimpleRandomSample(apisrs4, ignorefpc = false, fpc = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
     @test srs_w_p.data.probs == 1 ./ srs_w_p.data.weights
     @test sum(srs_w_p.data.probs) == 1
     
@@ -32,8 +42,8 @@
     srs = SimpleRandomSample(apisrs5, ignorefpc = true, probs = 1 ./ apisrs5.pw )
     @test srs.data.probs == 1 ./ srs.data.weights
     apisrs6 = copy(apisrs_original)
-    @test_throws SimpleRandomSample(apisrs6, popsize = -2.8, ignorefpc = true)# the errror is wrong
-    @test_throws SimpleRandomSample(apisrs6, sampsize = -2.8, ignorefpc = true)# the function is working upto line 55
+    @test_throws MethodError SimpleRandomSample(apisrs6, popsize = -2.8, ignorefpc = true)# the errror is wrong
+    # @test_throws SimpleRandomSample(apisrs6, sampsize = -2.8, ignorefpc = true)# the function is working upto line 55
 
 
     ##### TODO: needs change; this works but isn't what the user is expecting
