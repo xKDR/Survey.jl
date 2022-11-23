@@ -72,6 +72,12 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
         if isa(probs, Symbol)
             probs = data[!, probs]
         end
+        # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
+        if !isa(weights , Vector{<:Real})
+            error("Weights should be Vector{<:Real}. You passed $(typeof(weights))")
+        elseif !isa(probs , Vector{<:Real})
+            error("Sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
+        end
         # If popsize given as Symbol or Vector, check all records equal 
         if isa(popsize , Symbol)
             if !all(w -> w == first(data[!,popsize]), data[!,popsize])
@@ -100,16 +106,6 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
         if !isnothing(weights) && !isnothing(probs)
             probs = 1 ./ weights
             data[!, :probs] = probs        
-        end
-        # 1./ weights must sum to 1 for SRS
-        if !isnothing(weights) && !(isapprox(sum(1 ./ weights), 1; atol = 1e-4))
-            @show sum(1 ./ weights)
-            error("Sum of inverse of sampling weights must be equal to 1 for Simple Random Sample")
-        end
-        # Probs must sum to 1 for SRS
-        if !isnothing(probs) && !(isapprox(sum(probs), 1; atol = 1e-4))
-            @show sum(probs)
-            error("Sum of probability weights must be equal to 1 for Simple Random Sample")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc correction
@@ -143,6 +139,16 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
             weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
         else
             error("something went wrong")
+        end
+        # sum of weights must equal to `popsize` for SRS
+        if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol = 1e-4))
+            @show sum(1 ./ weights)
+            error("Sum of inverse of sampling weights must be equal to 1 for Simple Random Sample")
+        end
+        # sum of probs must equal popsize for SRS
+        if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol = 1e-4))
+            @show sum(probs)
+            error("Sum of probability weights must be equal to 1 for Simple Random Sample")
         end
         # set sampling fraction
         sampfraction = sampsize / popsize
