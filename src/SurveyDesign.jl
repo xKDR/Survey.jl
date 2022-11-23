@@ -51,8 +51,8 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
         # Only valid argument types given to constructor
         argtypes_weights = Union{Nothing,Symbol,Vector{<:R} where R<:Real}
         argtypes_probs = Union{Nothing,Symbol,Vector{<:R} where R<:Real}
-        argtypes_popsize = Union{Nothing,Symbol,<:Integer,Vector{<:R} where R<:Real}
-        argtypes_sampsize = Union{Nothing,Symbol,<:Integer,Vector{<:R} where R<:Real}
+        argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:R} where R<:Real}
+        argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:R} where R<:Real}
         # If any invalid type raise error
         if !(isa(weights,argtypes_weights)) 
             error("Invalid type of argument given for `weights` argument")
