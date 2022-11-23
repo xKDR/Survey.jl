@@ -1,17 +1,26 @@
+# Work on copies, keep original
 @testset "SimpleRandomSample" begin
     ##### SimpleRandomSample tests
     # Load API datasets
     apisrs_original = load_data("apisrs")
-    # Work on copies, keep original
-    
+    ##############################
+    ### Valid type checking tests
+    apisrs = copy(apisrs_original)
+    @test_throws ErrorException SimpleRandomSample(apisrs, popsize = -2.83, ignorefpc = true)
+    @test_throws ErrorException SimpleRandomSample(apisrs, sampsize = -300)
+    @test_throws ErrorException SimpleRandomSample(apisrs, weights = 50)
+    @test_throws ErrorException SimpleRandomSample(apisrs, probs = 1)
+    ##############################
+    ###
+    ##############################
     # Test: with popsize == ::Symbol
     apisrs1 = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs1; popsize = apisrs1.fpc)
+    srs1 = SimpleRandomSample(apisrs1; popsize = apisrs1.fpc)
     @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
     @test srs.sampsize > 0
 
-    apisrs1 = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs1; popsize = :fpc)
+    apisrs2 = copy(apisrs_original)
+    srs2 = SimpleRandomSample(apisrs2; popsize = :fpc)
     @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
     @test srs.sampsize > 0
     
@@ -38,14 +47,17 @@
     apisrs5 = copy(apisrs_original)
     srs = SimpleRandomSample(apisrs5, ignorefpc = true, probs = 1 ./ apisrs5.pw )
     @test srs.data.probs == 1 ./ srs.data.weights
-    apisrs6 = copy(apisrs_original)
-    @test_throws ErrorException SimpleRandomSample(apisrs6, popsize = -2.8, ignorefpc = true)# the errror is wrong
+    
+    
+    
+
+        # @test_throws ErrorException SimpleRandomSample(apisrs, weights = :stype)
     # @test_throws SimpleRandomSample(apisrs6, sampsize = -2.8, ignorefpc = true)# the function is working upto line 55
 
 
     ##### TODO: needs change; this works but isn't what the user is expecting
-    # srs_prob = SimpleRandomSample(apisrs; probs = 1 ./ apisrs.pw)
-    # @test srs_prob.data.probs[1] == 0.3
+    apisrs = copy(apisrs_original)
+    srs_prob = SimpleRandomSample(apisrs; probs = 1 ./ apisrs.pw)
 
     #### TODO: StratifiedSample tests
         # ... @sayantika @iulia @shikhar
