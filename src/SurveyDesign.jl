@@ -61,7 +61,6 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
         elseif !(isa(popsize,argtypes_popsize))
             error("Invalid type of argument given for `popsize` argument")
         elseif !(isa(sampsize,argtypes_sampsize))
-            @show typeof(sampsize) argtypes_sampsize
             error("Invalid type of argument given for `sampsize` argument")
         end
         # If any of weights or probs given as Symbol,
@@ -73,9 +72,9 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
             probs = data[!, probs]
         end
         # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
-        if !isa(weights , Vector{<:Real})
+        if !isa(weights, Union{Nothing,Vector{<:Real}})
             error("Weights should be Vector{<:Real}. You passed $(typeof(weights))")
-        elseif !isa(probs , Vector{<:Real})
+        elseif !isa(probs, Union{Nothing,Vector{<:Real}})
             error("Sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
         end
         # If popsize given as Symbol or Vector, check all records equal 
@@ -141,15 +140,16 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
             error("something went wrong")
         end
         # sum of weights must equal to `popsize` for SRS
-        if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol = 1e-4))
+        if !ignorefpc && !isnothing(weights) && !(isapprox(sum(weights), popsize; atol = 1e-4))
             @show sum(1 ./ weights)
-            error("Sum of inverse of sampling weights must be equal to 1 for Simple Random Sample")
+            error("Sum of inverse of sampling weights must be equal to `popsize` for Simple Random Sample")
         end
         # sum of probs must equal popsize for SRS
-        if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol = 1e-4))
+        if !ignorefpc && !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol = 1e-4))
             @show sum(probs)
-            error("Sum of probability weights must be equal to 1 for Simple Random Sample")
+            error("Sum of probability weights must be equal to `popsize` for Simple Random Sample")
         end
+        ## Set remaining parts of data structure
         # set sampling fraction
         sampfraction = sampsize / popsize
         # set fpc
