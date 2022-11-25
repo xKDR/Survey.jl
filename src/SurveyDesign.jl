@@ -34,25 +34,25 @@ abstract type AbstractSurveyDesign end
     If `popsize` not given, `weights` or `probs` must be given, so that in combination 
     with `sampsize`, `popsize` can be calculated.
 """
-struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
+struct SimpleRandomSample <: AbstractSurveyDesign
     data::AbstractDataFrame
-    sampsize::Union{S,Nothing}
-    popsize::Union{S,Nothing}
-    sampfraction::T
-    fpc::T
+    sampsize::Union{Unsigned,Nothing}
+    popsize::Union{Unsigned,Nothing}
+    sampfraction::Float64
+    fpc::Float64
     ignorefpc::Bool
     function SimpleRandomSample(data::AbstractDataFrame;
         popsize=nothing,
-        sampsize=nrow(data),
+        sampsize=nrow(data) |> UInt,
         weights=nothing,
         probs=nothing,
         ignorefpc=false
     )
         # Only valid argument types given to constructor
-        argtypes_weights = Union{Nothing,Symbol,Vector{<:R} where R<:Real}
-        argtypes_probs = Union{Nothing,Symbol,Vector{<:R} where R<:Real}
-        argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:R} where R<:Real}
-        argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:R} where R<:Real}
+        argtypes_weights = Union{Nothing,Symbol,Vector{Float64}}
+        argtypes_probs = Union{Nothing,Symbol,Vector{Float64}}
+        argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{Float64}}
+        argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{Float64}}
         # If any invalid type raise error
         if !(isa(weights,argtypes_weights)) 
             error("Invalid type of argument given for `weights` argument")
@@ -72,9 +72,9 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
             probs = data[!, probs]
         end
         # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
-        if !isa(weights, Union{Nothing,Vector{<:Real}})
+        if !isa(weights, Union{Nothing,Vector{Float64}})
             error("Weights should be Vector{<:Real}. You passed $(typeof(weights))")
-        elseif !isa(probs, Union{Nothing,Vector{<:Real}})
+        elseif !isa(probs, Union{Nothing,Vector{Float64}})
             error("Sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
         end
         # If popsize given as Symbol or Vector, check all records equal 
@@ -83,7 +83,7 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
                 error("popsize must be same for all observations in Simple Random Sample")
             end
             popsize = first(data[!,popsize]) |> UInt
-        elseif isa(popsize , Vector{<:Real})
+        elseif isa(popsize , Vector{Float64})
             if !all(w -> w == first(popsize), popsize)
                 error("popsize must be same for all observations in Simple Random Sample")
             end
@@ -95,7 +95,7 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
                 error("sampsize must be same for all observations in Simple Random Sample")
             end
             sampsize = first(data[!,sampsize]) |> UInt
-        elseif isa(sampsize , Vector{<:Real})
+        elseif isa(sampsize , Vector{Float64})
             if !all(w -> w == first(sampsize), sampsize)
                 error("sampsize must be same for all observations in Simple Random Sample")
             end
@@ -106,22 +106,16 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
             probs = 1 ./ weights
             data[!, :probs] = probs        
         end
-        # If ignorefpc then set weights to 1 ??
-        # TODO: This works under some cases, but should find better way to process ignoring fpc correction
-        if ignorefpc
-            @warn "assuming all weights are equal to 1.0"
-            weights = ones(nrow(data))
-        end
         # popsize must be nothing or <:Integer by now
         if isnothing(popsize) 
             # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
             @warn "Using weights/probs and sampsize to estimate `popsize`"
             # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
-            if typeof(weights) <: Vector{<:Real}
+            if typeof(weights) <: Vector{Float64}
                 if !all(w -> w == first(weights), weights)
                     error("all frequency weights must be equal for Simple Random Sample")
                 end
-            elseif typeof(probs) <: Vector{<:Real}
+            elseif typeof(probs) <: Vector{Float64}
                 if !all(p -> p == first(probs), probs)
                     error("all probability weights must be equal for Simple Random Sample")
                 end
@@ -134,20 +128,35 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
             if sampsize > popsize
                 error("population size was estimated to be greater than given sampsize. Please check input arguments.")
             end
-        elseif typeof(popsize) <: Integer
+        elseif typeof(popsize) <: Unsigned
             weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
         else
-            error("something went wrong")
+            error("Something went wrong. Please check validity of inputs.")
+        end
+        # If ignorefpc then set weights to 1 ??
+        # TODO: This works under some cases, but should find better way to process ignoring fpc
+        if ignorefpc
+            @warn "assuming all weights are equal to 1.0"
+            weights = ones(nrow(data))
+            probs = 1 ./ weights
         end
         # sum of weights must equal to `popsize` for SRS
-        if !ignorefpc && !isnothing(weights) && !(isapprox(sum(weights), popsize; atol = 1e-4))
-            @show sum(1 ./ weights)
-            error("Sum of inverse of sampling weights must be equal to `popsize` for Simple Random Sample")
+        if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol = 1e-4))
+            if ignorefpc && !(isapprox(sum(weights), sampsize; atol = 1e-4)) # Change if ignorefpc functionality changes
+                error("Sum of sampling weights should be equal to `sampsize` for Simple Random Sample with ignorefpc")
+            elseif !ignorefpc
+                @show sum(weights)
+                error("Sum of sampling weights must be equal to `popsize` for Simple Random Sample")
+            end
         end
         # sum of probs must equal popsize for SRS
-        if !ignorefpc && !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol = 1e-4))
-            @show sum(probs)
-            error("Sum of probability weights must be equal to `popsize` for Simple Random Sample")
+        if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol = 1e-4))
+            if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol = 1e-4)) # Change if ignorefpc functionality changes
+                error("Sum of inverse sampling probabilities should be equal to `sampsize` for Simple Random Sample with ignorefpc")
+            elseif !ignorefpc
+                @show sum(1 ./ probs)
+                error("Sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
+            end
         end
         ## Set remaining parts of data structure
         # set sampling fraction
@@ -161,7 +170,7 @@ struct SimpleRandomSample{T<:Real, S<:Unsigned} <: AbstractSurveyDesign
         end
         data[!, :probs] = probs
         # Initialise the structure
-        new{Float64,Unsigned}(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
+        new(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
     end
 end
 
