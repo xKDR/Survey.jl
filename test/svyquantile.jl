@@ -2,7 +2,7 @@
     # SimpleRandomSample
     apisrs = load_data("apisrs")
 
-    srs_new = SimpleRandomSample(apisrs, ignorefpc = true)
+    srs_new = SimpleRandomSample(apisrs,popsize=:fpc,ignorefpc = true)
     srs_old = svydesign(id = :1, data = apisrs)
     # 0.5th percentile
     q_05_new = svyquantile(:api00, srs_new, 0.5)

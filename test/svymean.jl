@@ -1,16 +1,16 @@
 @testset "svymean.jl" begin
     # SimpleRandomSample
     apisrs_original = load_data("apisrs")
-    apisrs1 = copy(apisrs_original)
+    apisrs = copy(apisrs_original)
     
-    srs = SimpleRandomSample(apisrs1, popsize = apisrs.fpc)
+    srs = SimpleRandomSample(apisrs, popsize = apisrs.fpc)
     @test svymean(:api00, srs).mean[1] == 656.585
     @test svymean(:api00, srs).sem[1] ≈ 9.249722039282807
     @test svymean(:enroll, srs).mean[1] ≈ 584.61
     @test svymean(:enroll, srs).sem[1] ≈ 27.36836524766856
     
-    apisrs2 = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs2, ignorefpc = true)
+    apisrs = copy(apisrs_original)
+    srs = SimpleRandomSample(apisrs, popsize=apisrs.fpc,ignorefpc = true)
     @test svymean(:api00, srs).mean[1] == 656.585
     @test svymean(:api00, srs).sem[1] ≈ 9.402772170880636
 
