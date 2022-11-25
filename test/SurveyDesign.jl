@@ -3,6 +3,8 @@
     ##### SimpleRandomSample tests
     # Load API datasets
     apisrs_original = load_data("apisrs")
+    apisrs_original[!,:derived_probs] = 1 ./ apisrs_original.pw
+    apisrs_original[!,:derived_sampsize] = fill(200.0,size(apisrs_original,1))
     ##############################
     ### Valid type checking tests
     apisrs = copy(apisrs_original)
@@ -11,38 +13,76 @@
     @test_throws ErrorException SimpleRandomSample(apisrs, weights = 50)
     @test_throws ErrorException SimpleRandomSample(apisrs, probs = 1)
     ##############################
-    ###
+    ### weights or probs as Symbol
+    apisrs = copy(apisrs_original)
+    srs_weights = SimpleRandomSample(apisrs; weights = :pw )
+    @test srs_weights.data.weights[1] ≈ 30.97 atol = 1e-4
+    @test srs_weights.data.weights == 1 ./ srs_weights.data.probs
+    ### probs as Symbol
+    apisrs = copy(apisrs_original)
+    srs_probs_sym = SimpleRandomSample(apisrs; probs = :derived_probs )
+    @test srs_probs_sym.data.probs[1] ≈ 0.032289 atol = 1e-4
+    @test srs_probs_sym.data.probs == 1 ./ srs_probs_sym.data.weights
     ##############################
-    # Test: with popsize == ::Symbol
-    apisrs1 = copy(apisrs_original)
-    srs1 = SimpleRandomSample(apisrs1; popsize = apisrs1.fpc)
-    @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
-    @test srs.sampsize > 0
-
-    apisrs2 = copy(apisrs_original)
-    srs2 = SimpleRandomSample(apisrs2; popsize = :fpc)
-    @test srs.data.weights == 1 ./ srs.data.probs # weights should be inverse of probs
-    @test srs.sampsize > 0
-    
-    apisrs2 = copy(apisrs_original)
-    srs_weights = SimpleRandomSample(apisrs2; weights = apisrs2.pw )
+    ### Weights or probs as non-numeric error
+    apisrs = copy(apisrs_original)
+    @test_throws ErrorException SimpleRandomSample(apisrs, weights = :stype)
+    @test_throws ErrorException SimpleRandomSample(apisrs, probs = :cname)
+    ##############################
+    ### popsize given as Symbol
+    apisrs = copy(apisrs_original)
+    srs_popsize_sym = SimpleRandomSample(apisrs; popsize = :fpc)
+    @test srs_popsize_sym.data.weights == 1 ./ srs_popsize_sym.data.probs # weights should be inverse of probs
+    @test srs_popsize_sym.sampsize > 0
+    ### popsize given as Vector
+    apisrs = copy(apisrs_original)
+    srs_popsize_vec = SimpleRandomSample(apisrs; popsize = apisrs.fpc)
+    @test srs_popsize_vec.data.weights == 1 ./ srs_popsize_vec.data.probs # weights should be inverse of probs
+    @test srs_popsize_vec.sampsize > 0
+    ##############################
+    ### sampsize given as Symbol
+    apisrs = copy(apisrs_original)
+    srs_sampsize_sym = SimpleRandomSample(apisrs; sampsize = :derived_sampsize, weights = :pw)
+    @test srs_sampsize_sym.data.weights == 1 ./ srs_sampsize_sym.data.probs # weights should be inverse of probs
+    @test srs_sampsize_sym.sampsize > 0
+    ### sampsize given as Vector
+    apisrs = copy(apisrs_original)
+    srs_sampsize_vec = SimpleRandomSample(apisrs; sampsize = apisrs.derived_sampsize, probs = :derived_probs)
+    @test srs_sampsize_vec.data.weights == 1 ./ srs_sampsize_vec.data.probs # weights should be inverse of probs
+    @test srs_sampsize_vec.sampsize > 0
+    ##############################
+    ### both weights and probs given
+    # If weights given, probs is superfluous
+    apisrs = copy(apisrs_original)
+    srs_weights_probs = SimpleRandomSample(apisrs; weights = :pw, probs = :derived_probs)
+    srs_weights_probs = SimpleRandomSample(apisrs; weights = :pw, probs = :pw)
+    ##############################
+    ### sum of weights and probs condition check
+    apisrs = copy(apisrs_original)
+    @test_throws ErrorException SimpleRandomSample(apisrs, probs = fill(0.3, size(apisrs_original, 1)))
+    apisrs = copy(apisrs_original)
+    @test_throws ErrorException SimpleRandomSample(apisrs, popsize = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
+    ##############################
+    ### weights only as Vector
+    apisrs = copy(apisrs_original)
+    srs_weights = SimpleRandomSample(apisrs; weights = apisrs.pw )
     @test srs_weights.data.weights[1] == 30.97
     @test srs_weights.data.weights == 1 ./ srs_weights.data.probs
-    
-    apisrs2 = copy(apisrs_original)
-    srs_freq = SimpleRandomSample(apisrs2; probs = 1 ./ apisrs2.pw )
+    ### probs only as Vector
+    apisrs = copy(apisrs_original)
+    srs_freq = SimpleRandomSample(apisrs; probs = apisrs.derived_probs )
     @test srs_freq.data.weights[1] == 30.97
     @test srs_freq.data.weights == 1 ./ srs_freq.data.probs
-
-    apisrs3 = copy(apisrs_original)
-    srs_weights = SimpleRandomSample(apisrs3, ignorefpc = false, weights = :pw)
-    
-    @test_throws ErrorException SimpleRandomSample(apisrs3, ignorefpc = false, weights = :stype)
-    
-    apisrs4 = copy(apisrs_original)
-    srs_w_p = SimpleRandomSample(apisrs4, ignorefpc = false, popsize = :fpc, probs = fill(0.3, size(apisrs_original, 1)))
+    ##############################
+    ### ignorefpc tests. TODO: change if ignorefpc functionality changed
+    apisrs = copy(apisrs_original)
+    srs_ignorefpc = SimpleRandomSample(apisrs; popsize = :fpc, ignorefpc = true)
+    @test srs_ignorefpc.data.weights == 1 ./ srs_ignorefpc.data.probs # weights should be inverse of probs
+    @test srs_ignorefpc.sampsize > 0
+    ### incorrect probs with correct popsize, ignorefpc = true
+    apisrs = copy(apisrs_original)
+    srs_w_p = SimpleRandomSample(apisrs, popsize = :fpc, probs = fill(0.3, size(apisrs_original, 1)), ignorefpc = true)
     @test srs_w_p.data.probs == 1 ./ srs_w_p.data.weights
-    @test sum(srs_w_p.data.probs) == 1
     
     apisrs5 = copy(apisrs_original)
     srs = SimpleRandomSample(apisrs5, ignorefpc = true, probs = 1 ./ apisrs5.pw )
