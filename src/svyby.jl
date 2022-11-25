@@ -32,7 +32,7 @@ julia> svyby(:api00, :cname, srs, svymean)
                            23 rows omitted
 ```
 """
-function svyby(formula::Symbol, by::Symbol, design::AbstractSurveyDesign, func::Function, params = [])
+function svyby(formula::Symbol, by::Symbol, design::SimpleRandomSample, func::Function, params = [])
     # TODO: add functionality for `formula::AbstractVector`
     gdf = groupby(design.data, by)
     return combine(gdf, [formula, :weights] => ((a, b) -> func(a, design, b, params...)) => AsTable)
