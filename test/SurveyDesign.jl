@@ -97,14 +97,17 @@
 end
 
 @testset "StratifiedSample" begin
-    # StratifiedSample tests
+    ### StratifiedSample tests
+    # Load API datasets
     apistrat_original = load_data("apistrat")
-    apistrat1 = copy(apistrat_original)
-    strat = StratifiedSample(apistrat1, :stype; popsize=:fpc)
-    @test strat.data.probs == 1 ./ strat.data.weights
+    apistrat_original[!, :derived_probs] = 1 ./ apistrat_original.pw
+    ##############################
+    apistrat = copy(apistrat_original)
+    strat_pop = StratifiedSample(apistrat, :stype; popsize=:fpc)
+    @test strat_pop.data.probs == 1 ./ strat_pop.data.weights
 
-    apistrat2 = copy(apistrat_original)
-    strat_wt = StratifiedSample(apistrat2, :stype; weights=:pw)
+    apistrat = copy(apistrat_original)
+    strat_wt = StratifiedSample(apistrat, :stype; weights=:pw)
     @test strat_wt.data.probs == 1 ./ strat_wt.data.weights
 
     apistrat3 = copy(apistrat_original)
@@ -112,8 +115,8 @@ end
     @test strat_probs.data.probs == 1 ./ strat_probs.data.weights
 
     #see github issue for srs
-    apistrat4 = copy(apistrat_original)
-    strat_probs1 = StratifiedSample(apistrat4, :stype; probs=fill(0.3, size(apistrat4, 1)))
+    # apistrat4 = copy(apistrat_original)
+    # strat_probs1 = StratifiedSample(apistrat4, :stype; probs=fill(0.3, size(apistrat4, 1)))
     #@test strat_probs1.data.probs == 1 ./ strat_probs1.data.weights
 
     apistrat5 = copy(apistrat_original)
@@ -127,12 +130,19 @@ end
 
 ##### SurveyDesign tests
 @testset "SurveyDesign" begin
+    # Load API datasets
+    apisrs_original = load_data("apisrs")
+    apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw
+    apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1))
+    ##############################
     # Case 1: Simple Random Sample
+    apisrs = copy(apisrs_original)
     svydesign1 = SurveyDesign(apisrs, popsize=apisrs.fpc)
     @test svydesign1.data.weights == 1 ./ svydesign1.data.probs # weights should be inverse of probs
     @test svydesign1.sampsize > 0
 
     # Case 1b: SRS 'with replacement' approximation ie ignorefpc = true
+    apisrs = copy(apisrs_original)
     svydesign2 = SurveyDesign(apisrs, popsize=apisrs.fpc, ignorefpc=true)
     @test svydesign2.data.weights == 1 ./ svydesign2.data.probs # weights should be inverse of probs
     @test svydesign2.sampsize > 0
