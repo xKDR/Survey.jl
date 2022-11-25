@@ -49,10 +49,10 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         ignorefpc=false
     )
         # Only valid argument types given to constructor
-        argtypes_weights = Union{Nothing,Symbol,Vector{Float64}}
-        argtypes_probs = Union{Nothing,Symbol,Vector{Float64}}
-        argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{Float64}}
-        argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{Float64}}
+        argtypes_weights = Union{Nothing,Symbol,Vector{<:Real}}
+        argtypes_probs = Union{Nothing,Symbol,Vector{<:Real}}
+        argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}
+        argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}
         # If any invalid type raise error
         if !(isa(weights, argtypes_weights))
             error("Invalid type of argument given for `weights` argument")
@@ -72,9 +72,9 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             probs = data[!, probs]
         end
         # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
-        if !isa(weights, Union{Nothing,Vector{Float64}})
+        if !isa(weights, Union{Nothing,Vector{<:Real}})
             error("Weights should be Vector{<:Real}. You passed $(typeof(weights))")
-        elseif !isa(probs, Union{Nothing,Vector{Float64}})
+        elseif !isa(probs, Union{Nothing,Vector{<:Real}})
             error("Sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
         end
         # If popsize given as Symbol or Vector, check all records equal 
@@ -83,7 +83,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
                 error("popsize must be same for all observations in Simple Random Sample")
             end
             popsize = first(data[!, popsize]) |> UInt
-        elseif isa(popsize, Vector{Float64})
+        elseif isa(popsize, Vector{<:Real})
             if !all(w -> w == first(popsize), popsize)
                 error("popsize must be same for all observations in Simple Random Sample")
             end
@@ -95,7 +95,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
                 error("sampsize must be same for all observations in Simple Random Sample")
             end
             sampsize = first(data[!, sampsize]) |> UInt
-        elseif isa(sampsize, Vector{Float64})
+        elseif isa(sampsize, Vector{<:Real})
             if !all(w -> w == first(sampsize), sampsize)
                 error("sampsize must be same for all observations in Simple Random Sample")
             end
@@ -111,11 +111,11 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
             @warn "Using weights/probs and sampsize to estimate `popsize`"
             # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
-            if typeof(weights) <: Vector{Float64}
+            if typeof(weights) <: Vector{<:Real}
                 if !all(w -> w == first(weights), weights)
                     error("all frequency weights must be equal for Simple Random Sample")
                 end
-            elseif typeof(probs) <: Vector{Float64}
+            elseif typeof(probs) <: Vector{<:Real}
                 if !all(p -> p == first(probs), probs)
                     error("all probability weights must be equal for Simple Random Sample")
                 end
