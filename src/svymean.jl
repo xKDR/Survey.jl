@@ -54,7 +54,7 @@ function svymean(x::Symbol, design::SimpleRandomSample)
         p.se = sqrt.(p.var)
         return p
     end
-    return DataFrame(mean = mean(design.data[!, x]), sem = sem(x, design::SimpleRandomSample))
+    return DataFrame(mean=mean(design.data[!, x]), sem=sem(x, design::SimpleRandomSample))
 end
 
 function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
@@ -88,15 +88,15 @@ end
 Inner method for `svyby` for SimpleRandomSample
 """
 function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
-    return DataFrame(mean = mean(x), sem = sem_svyby(x, design))
+    return DataFrame(mean=mean(x), sem=sem_svyby(x, design))
 end
 
 """
 Inner method for `svyby` for StratifiedSample
 Calculates domain mean and its std error, based example 10.3.3 on pg394 Sarndal (1992)
 """
-function svymean(x::AbstractVector, popsize::AbstractVector,sampsize::AbstractVector,sampfraction::AbstractVector,strata::AbstractVector)
-    df = DataFrame(x = x, popsize = popsize, sampsize = sampsize, sampfraction = sampfraction,strata = strata)
+function svymean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVector, sampfraction::AbstractVector, strata::AbstractVector)
+    df = DataFrame(x=x, popsize=popsize, sampsize=sampsize, sampfraction=sampfraction, strata=strata)
     nsdh = []
     substrata_domain_totals = []
     Nh = []
@@ -104,28 +104,28 @@ function svymean(x::AbstractVector, popsize::AbstractVector,sampsize::AbstractVe
     fh = []
     ȳsdh = []
     sigma_ȳsh_squares = []
-    grouped_frame = groupby(df,:strata)
+    grouped_frame = groupby(df, :strata)
     for each_strata in keys(grouped_frame)
         nsh = nrow(grouped_frame[each_strata])#, nrow=>:nsdh).nsdh
-        push!(nsdh,nsh)
+        push!(nsdh, nsh)
         substrata_domain_total = sum(grouped_frame[each_strata].x)
         ȳdh = mean(grouped_frame[each_strata].x)
         push!(ȳsdh, ȳdh)
-        push!(substrata_domain_totals,substrata_domain_total)
+        push!(substrata_domain_totals, substrata_domain_total)
         popsizes = first(grouped_frame[each_strata].popsize)
-        push!(Nh,popsizes)
+        push!(Nh, popsizes)
         sampsizes = first(grouped_frame[each_strata].sampsize)
-        push!(nh,sampsizes)
+        push!(nh, sampsizes)
         sampfrac = first(grouped_frame[each_strata].sampfraction)
-        push!(fh,sampfrac)
-        push!(sigma_ȳsh_squares,sum((grouped_frame[each_strata].x .- ȳdh).^2) )
+        push!(fh, sampfrac)
+        push!(sigma_ȳsh_squares, sum((grouped_frame[each_strata].x .- ȳdh) .^ 2))
     end
-    domain_mean = sum(Nh .* substrata_domain_totals ./ nh)/sum(Nh .* nsdh ./ nh)
-    pdh = nsdh./nh
+    domain_mean = sum(Nh .* substrata_domain_totals ./ nh) / sum(Nh .* nsdh ./ nh)
+    pdh = nsdh ./ nh
     N̂d = sum(Nh .* pdh)
-    domain_var = sum(Nh.^2 .* (1 .- fh) .*  (sigma_ȳsh_squares .+ (nsdh .* (1 .-pdh) .* (ȳsdh .- domain_mean).^2)) ./ (nh .* (nh .- 1) )) ./ N̂d.^2
+    domain_var = sum(Nh .^ 2 .* (1 .- fh) .* (sigma_ȳsh_squares .+ (nsdh .* (1 .- pdh) .* (ȳsdh .- domain_mean) .^ 2)) ./ (nh .* (nh .- 1))) ./ N̂d .^ 2
     domain_mean_se = sqrt(domain_var)
-    return DataFrame(domain_mean = domain_mean, domain_mean_se = domain_mean_se)
+    return DataFrame(domain_mean=domain_mean, domain_mean_se=domain_mean_se)
 end
 
 """
@@ -158,12 +158,12 @@ function svymean(x::Symbol, design::StratifiedSample)
     s²ₕ = combine(gdf, x => var => :s²h).s²h
     V̂Ȳ̂ = sum((Wₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-    return DataFrame(Ȳ̂ = Ȳ̂, SE = SE)
+    return DataFrame(Ȳ̂=Ȳ̂, SE=SE)
 end
 
 function svymean(::Bool; x::Symbol, design::StratifiedSample)
     gdf = groupby(design.data, design.strata)
     ȳₕ = combine(gdf, x => mean => :mean).mean
     s²ₕ = combine(gdf, x => var => :s²h).s²h
-    return DataFrame(ȳₕ,s²ₕ)
+    return DataFrame(ȳₕ, s²ₕ)
 end

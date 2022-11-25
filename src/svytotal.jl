@@ -43,7 +43,7 @@ function svytotal(x::Symbol, design::SimpleRandomSample)
         return p
     end
     total = design.popsize * mean(design.data[!, x])
-    return DataFrame(total = total, se_total = se_tot(x, design::SimpleRandomSample))
+    return DataFrame(total=total, se_total=se_tot(x, design::SimpleRandomSample))
 end
 
 # Inner methods for `svyby`
@@ -57,7 +57,7 @@ function se_total_svyby(x::AbstractVector, design::SimpleRandomSample, _)
 end
 function svytotal(x::AbstractVector, design::SimpleRandomSample, weights)
     total = wsum(x, weights)
-    return DataFrame(total = total, sem = se_total_svyby(x, design::SimpleRandomSample, weights))
+    return DataFrame(total=total, sem=se_total_svyby(x, design::SimpleRandomSample, weights))
 end
 
 # StratifiedSample
@@ -82,7 +82,7 @@ function svytotal(x::Symbol, design::StratifiedSample)
     # the only difference between total and mean variance is the Nₕ instead of Wₕ
     V̂Ȳ̂ = sum((Nₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-    return DataFrame(grand_total = grand_total, SE = SE)
+    return DataFrame(grand_total=grand_total, SE=SE)
 end
 
 function svytotal(x::Vector{Symbol}, design::SimpleRandomSample)

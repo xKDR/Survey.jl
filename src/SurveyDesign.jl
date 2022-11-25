@@ -54,13 +54,13 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{Float64}}
         argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{Float64}}
         # If any invalid type raise error
-        if !(isa(weights,argtypes_weights)) 
+        if !(isa(weights, argtypes_weights))
             error("Invalid type of argument given for `weights` argument")
-        elseif !(isa(probs,argtypes_probs))
+        elseif !(isa(probs, argtypes_probs))
             error("Invalid type of argument given for `probs` argument")
-        elseif !(isa(popsize,argtypes_popsize))
+        elseif !(isa(popsize, argtypes_popsize))
             error("Invalid type of argument given for `popsize` argument")
-        elseif !(isa(sampsize,argtypes_sampsize))
+        elseif !(isa(sampsize, argtypes_sampsize))
             error("Invalid type of argument given for `sampsize` argument")
         end
         # If any of weights or probs given as Symbol,
@@ -78,24 +78,24 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             error("Sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
         end
         # If popsize given as Symbol or Vector, check all records equal 
-        if isa(popsize , Symbol)
-            if !all(w -> w == first(data[!,popsize]), data[!,popsize])
+        if isa(popsize, Symbol)
+            if !all(w -> w == first(data[!, popsize]), data[!, popsize])
                 error("popsize must be same for all observations in Simple Random Sample")
             end
-            popsize = first(data[!,popsize]) |> UInt
-        elseif isa(popsize , Vector{Float64})
+            popsize = first(data[!, popsize]) |> UInt
+        elseif isa(popsize, Vector{Float64})
             if !all(w -> w == first(popsize), popsize)
                 error("popsize must be same for all observations in Simple Random Sample")
             end
             popsize = first(popsize) |> UInt
         end
         # If sampsize given as Symbol or Vector, check all records equal 
-        if isa(sampsize , Symbol)
-            if !all(w -> w == first(data[!,sampsize]), data[!,sampsize])
+        if isa(sampsize, Symbol)
+            if !all(w -> w == first(data[!, sampsize]), data[!, sampsize])
                 error("sampsize must be same for all observations in Simple Random Sample")
             end
-            sampsize = first(data[!,sampsize]) |> UInt
-        elseif isa(sampsize , Vector{Float64})
+            sampsize = first(data[!, sampsize]) |> UInt
+        elseif isa(sampsize, Vector{Float64})
             if !all(w -> w == first(sampsize), sampsize)
                 error("sampsize must be same for all observations in Simple Random Sample")
             end
@@ -104,10 +104,10 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         # If both `weights` and `probs` given, then `weights` is assumed to be ground truth for probs.
         if !isnothing(weights) && !isnothing(probs)
             probs = 1 ./ weights
-            data[!, :probs] = probs        
+            data[!, :probs] = probs
         end
         # popsize must be nothing or <:Integer by now
-        if isnothing(popsize) 
+        if isnothing(popsize)
             # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
             @warn "Using weights/probs and sampsize to estimate `popsize`"
             # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
@@ -141,8 +141,8 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             probs = 1 ./ weights
         end
         # sum of weights must equal to `popsize` for SRS
-        if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol = 1e-4))
-            if ignorefpc && !(isapprox(sum(weights), sampsize; atol = 1e-4)) # Change if ignorefpc functionality changes
+        if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol=1e-4))
+            if ignorefpc && !(isapprox(sum(weights), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
                 error("Sum of sampling weights should be equal to `sampsize` for Simple Random Sample with ignorefpc")
             elseif !ignorefpc
                 @show sum(weights)
@@ -150,8 +150,8 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             end
         end
         # sum of probs must equal popsize for SRS
-        if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol = 1e-4))
-            if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol = 1e-4)) # Change if ignorefpc functionality changes
+        if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol=1e-4))
+            if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
                 error("Sum of inverse sampling probabilities should be equal to `sampsize` for Simple Random Sample with ignorefpc")
             elseif !ignorefpc
                 @show sum(1 ./ probs)
@@ -230,7 +230,7 @@ struct StratifiedSample <: AbstractSurveyDesign
         # set sampling fraction
         sampfraction = sampsize ./ popsize
         # set fpc
-        fpc = ignorefpc ? fill(1,size(data, 1)) : 1 .- (sampsize ./ popsize)
+        fpc = ignorefpc ? fill(1, size(data, 1)) : 1 .- (sampsize ./ popsize)
         # add columns for frequency and probability weights to `data`
         if !isnothing(probs)
             data[!, :probs] = probs
@@ -371,8 +371,8 @@ struct SurveyDesign <: AbstractSurveyDesign
         if ignorefpc # && (isnothing(popsize) || isnothing(weights) || isnothing(probs))
             @warn "Assuming equal weights"
             weights = ones(nrow(data))
-        end    
-        
+        end
+
         # TODO: Do the other case where clusters are given
         if isnothing(clusters)
             # set population size if it is not given; `weights` and `sampsize` must be given
@@ -416,7 +416,7 @@ struct SurveyDesign <: AbstractSurveyDesign
             end
             # @show clusters, strata, sampsize,popsize, sampfraction, fpc, ignorefpc
             new(data, clusters, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
-        elseif isa(clusters,Symbol)
+        elseif isa(clusters, Symbol)
             # One Cluster sampling - PSU chosen with SRS,
             print("One stage cluster design with PSU SRS")
         elseif typeof(clusters) <: Vector{Symbol}
