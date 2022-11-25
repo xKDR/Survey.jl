@@ -194,6 +194,9 @@ struct StratifiedSample <: AbstractSurveyDesign
         probs=nothing,
         ignorefpc=false
     )
+        if isa(popsize, Symbol)
+            popsize = data[!, popsize]
+        end
         if isa(weights, Symbol)
             weights = data[!, weights]
         end
