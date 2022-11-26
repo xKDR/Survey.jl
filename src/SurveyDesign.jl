@@ -143,7 +143,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         # sum of weights must equal to `popsize` for SRS
         if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol=1e-4))
             if ignorefpc && !(isapprox(sum(weights), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
-                error("Sum of sampling weights should be equal to `sampsize` for Simple Random Sample with ignorefpc")
+                error("sum of sampling weights should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
                 @show sum(weights)
                 error("Sum of sampling weights must be equal to `popsize` for Simple Random Sample")
