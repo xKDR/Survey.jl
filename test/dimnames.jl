@@ -3,7 +3,7 @@
     apisrs = load_data("apisrs")
     # make a copy to not modify the original dataset
     apisrs_copy = copy(apisrs)
-    srs_new = SimpleRandomSample(apisrs_copy,ignorefpc = true)
+    srs_new = SimpleRandomSample(apisrs_copy,popsize=:fpc,ignorefpc = true)
     # make a new copy to use for the old design
     apisrs_copy = copy(apisrs)
     srs_old = svydesign(id = :1, data = apisrs)
