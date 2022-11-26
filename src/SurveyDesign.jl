@@ -61,7 +61,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         elseif !(isa(popsize, argtypes_popsize))
             error("invalid type of argument given for `popsize` argument")
         elseif !(isa(sampsize, argtypes_sampsize))
-            error("Invalid type of argument given for `sampsize` argument")
+            error("invalid type of argument given for `sampsize` argument")
         end
         # If any of weights or probs given as Symbol,
         # find the corresponding column in `data`
