@@ -152,7 +152,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         # sum of probs must equal popsize for SRS
         if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol=1e-4))
             if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
-                error("Sum of inverse sampling probabilities should be equal to `sampsize` for Simple Random Sample with ignorefpc")
+                error("sum of inverse sampling probabilities should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
                 @show sum(1 ./ probs)
                 error("Sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
