@@ -57,7 +57,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         if !(isa(weights, argtypes_weights))
             error("invalid type of argument given for `weights` argument")
         elseif !(isa(probs, argtypes_probs))
-            error("Invalid type of argument given for `probs` argument")
+            error("invalid type of argument given for `probs` argument")
         elseif !(isa(popsize, argtypes_popsize))
             error("Invalid type of argument given for `popsize` argument")
         elseif !(isa(sampsize, argtypes_sampsize))
