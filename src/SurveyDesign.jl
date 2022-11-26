@@ -59,7 +59,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         elseif !(isa(probs, argtypes_probs))
             error("invalid type of argument given for `probs` argument")
         elseif !(isa(popsize, argtypes_popsize))
-            error("Invalid type of argument given for `popsize` argument")
+            error("invalid type of argument given for `popsize` argument")
         elseif !(isa(sampsize, argtypes_sampsize))
             error("Invalid type of argument given for `sampsize` argument")
         end
