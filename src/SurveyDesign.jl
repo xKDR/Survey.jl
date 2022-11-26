@@ -55,7 +55,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}
         # If any invalid type raise error
         if !(isa(weights, argtypes_weights))
-            error("Invalid type of argument given for `weights` argument")
+            error("invalid type of argument given for `weights` argument")
         elseif !(isa(probs, argtypes_probs))
             error("Invalid type of argument given for `probs` argument")
         elseif !(isa(popsize, argtypes_popsize))
