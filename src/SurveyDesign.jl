@@ -146,7 +146,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
                 error("sum of sampling weights should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
                 @show sum(weights)
-                error("Sum of sampling weights must be equal to `popsize` for Simple Random Sample")
+                error("sum of sampling weights must be equal to `popsize` for `SimpleRandomSample`")
             end
         end
         # sum of probs must equal popsize for SRS
