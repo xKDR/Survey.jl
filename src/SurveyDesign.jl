@@ -131,7 +131,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         elseif typeof(popsize) <: Unsigned
             weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
         else
-            error("Something went wrong. Please check validity of inputs.")
+            error("something went wrong, please check validity of inputs.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
