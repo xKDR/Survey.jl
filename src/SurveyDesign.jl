@@ -132,7 +132,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
             probs = 1 ./ weights
         else
-            error("something went wrong. Please check validity of inputs.")
+            error("something went wrong, please check validity of inputs.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
@@ -144,16 +144,16 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         # sum of weights must equal to `popsize` for SRS
         if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol=1e-4))
             if ignorefpc && !(isapprox(sum(weights), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
-                error("sum of sampling weights should be equal to `sampsize` for Simple Random Sample with ignorefpc")
+                error("sum of sampling weights should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
                 @show sum(weights)
-                error("sum of sampling weights must be equal to `popsize` for Simple Random Sample")
+                error("sum of sampling weights must be equal to `popsize` for `SimpleRandomSample`")
             end
         end
         # sum of probs must equal popsize for SRS
         if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol=1e-4))
             if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
-                error("sum of inverse sampling probabilities should be equal to `sampsize` for Simple Random Sample with ignorefpc")
+                error("sum of inverse sampling probabilities should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
                 @show sum(1 ./ probs)
                 error("sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
