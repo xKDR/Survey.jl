@@ -101,26 +101,67 @@ end
     # Load API datasets
     apistrat_original = load_data("apistrat")
     apistrat_original[!, :derived_probs] = 1 ./ apistrat_original.pw
+    apistrat_original[!, :derived_sampsize] = apistrat_original.fpc ./ apistrat_original.pw
     ##############################
+    ### Valid type checking tests
     apistrat = copy(apistrat_original)
-    strat_pop = StratifiedSample(apistrat, :stype; popsize=:fpc)
-    @test strat_pop.data.probs == 1 ./ strat_pop.data.weights
-
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; popsize=-2.83, ignorefpc=true)
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; sampsize=-300)
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; sampsize=-2.8, ignorefpc=true)
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; weights=50)
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; probs=1)
+    ##############################
+    ### weights as Symbol
     apistrat = copy(apistrat_original)
     strat_wt = StratifiedSample(apistrat, :stype; weights=:pw)
     @test strat_wt.data.probs == 1 ./ strat_wt.data.weights
-
-    apistrat3 = copy(apistrat_original)
-    strat_probs = StratifiedSample(apistrat3, :stype; probs=1 ./ apistrat3.pw)
+    ### probs as Symbol
+    apistrat = copy(apistrat_original)
+    strat_probs = StratifiedSample(apistrat, :stype; probs=:derived_probs)
     @test strat_probs.data.probs == 1 ./ strat_probs.data.weights
+    ### weights as Vector{<:Real}
+    apistrat = copy(apistrat_original)
+    strat_wt = StratifiedSample(apistrat, :stype; weights=apistrat.pw)
+    @test strat_wt.data.probs == 1 ./ strat_wt.data.weights
+    ### probs as Vector{<:Real}
+    apistrat = copy(apistrat_original)
+    strat_probs = StratifiedSample(apistrat, :stype; probs=apistrat.derived_probs)
+    @test strat_probs.data.probs == 1 ./ strat_probs.data.weights
+    ##############################
+    ### popsize as Symbol
+    apistrat = copy(apistrat_original)
+    strat_pop = StratifiedSample(apistrat, :stype; popsize=:fpc)
+    @test strat_pop.data.probs == 1 ./ strat_pop.data.weights
+    ### popsize given as Vector (should give error for now, not implemented Vector input directly for popsize)
+    apistrat = copy(apistrat_original)
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; popsize=apistrat.fpc)
+    ##############################
+    ### sampsize given as Symbol
+    apistrat = copy(apistrat_original)
+    strat_sampsize_sym = StratifiedSample(apistrat,:stype; sampsize=:derived_sampsize, weights=:pw)
+    @test strat_sampsize_sym.data.weights == 1 ./ strat_sampsize_sym.data.probs # weights should be inverse of probs
+    ### sampsize given as symbol without weights or probs, and popsize not given - raise error
+    apistrat = copy(apistrat_original)
+    @test_throws ErrorException StratifiedSample(apistrat,:stype; sampsize=:derived_sampsize)
+    ##############################
+    ### both weights and probs given
+    # If weights given, probs is superfluous
+    apistrat = copy(apistrat_original)
+    strat_weights_probs = StratifiedSample(apistrat,:stype; weights=:pw, probs=:derived_probs)
+    strat_weights_probs = StratifiedSample(apistrat,:stype; weights=:pw, probs=:pw)
+    ##############################
+    ### ignorefpc test (Modify if ignorefpc changed)
+    apistrat = copy(apistrat_original)
+    strat_ignorefpc=StratifiedSample(apistrat,:stype; popsize=:fpc, ignorefpc=true)
+    @test strat_ignorefpc.data.probs == 1 ./ strat_ignorefpc.data.weights
 
-    #see github issue for srs
+    #see github issue for strat
     # apistrat4 = copy(apistrat_original)
     # strat_probs1 = StratifiedSample(apistrat4, :stype; probs=fill(0.3, size(apistrat4, 1)))
     #@test strat_probs1.data.probs == 1 ./ strat_probs1.data.weights
 
-    apistrat5 = copy(apistrat_original)
-    strat_popsize = StratifiedSample(apistrat5, :stype; popsize=apistrat5.fpc)
+    apistrat = copy(apistrat_original)
+    strat_popsize = StratifiedSample(apistrat, :stype; popsize=:fpc)
     @test strat_popsize.data.probs == 1 ./ strat_popsize.data.weights
 
     # To edit

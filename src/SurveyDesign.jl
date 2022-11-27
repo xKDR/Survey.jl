@@ -224,9 +224,9 @@ struct StratifiedSample <: AbstractSurveyDesign
         elseif !(isa(probs, argtypes_probs))
             error("invalid type of argument given for `probs` argument")
         elseif !(isa(popsize, argtypes_popsize))
-            error("invalid type of argument given for `popsize` argument")
+            error("invalid type of argument given for `popsize` argument. Please give Symbol of the column in data")
         elseif !(isa(sampsize, argtypes_sampsize))
-            error("invalid type of argument given for `sampsize` argument")
+            error("invalid type of argument given for `sampsize` argument. Please give Symbol of the column in data")
         end
         # Store the iterator over each strata, as used multiple times
         data_groupedby_strata = groupby(data, strata)
@@ -267,6 +267,9 @@ struct StratifiedSample <: AbstractSurveyDesign
         end
         # If sampsize given as Symbol or Vector, check all records equal 
         if isa(sampsize, Symbol)
+            if isnothing(popsize) && isnothing(weights) && isnothing(probs)
+                error("if sampsize given, and popsize not given, then weights or probs must given to calculate popsize")
+            end
             for each_strata in keys(data_groupedby_strata)
                 if !all(w -> w == first(data_groupedby_strata[each_strata][!, sampsize]), data_groupedby_strata[each_strata][!, sampsize])
                     error("sampsize must be same for all observations within each strata in StratifiedSample")
@@ -298,7 +301,7 @@ struct StratifiedSample <: AbstractSurveyDesign
             if sampsize > popsize
                 error("population size was estimated to be greater than given sampsize. Please check input arguments.")
             end
-        elseif typeof(popsize) <: Vector{<:Real}
+        elseif typeof(popsize) <: Vector{<:Real} # Still need to check if the provided Column is of <:Real
             # If popsize is given, weights and probs made concordant with popsize and sampsize, regardless of supplied arguments
             weights = popsize ./ sampsize
             probs = 1 ./ weights
