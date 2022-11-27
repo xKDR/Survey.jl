@@ -7,121 +7,94 @@
 [![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
 
 
-This package is used to study complex survey data. It is inspired by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005), and initial development attempts to replicate the basic functionality of that package with the speed and performance enhancement of Julia.
+This package is used to study complex survey data. It aims to be a fast alternative to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
 
-R `survey` package can take hours/days for analysis large survey datasets (> few GB in memory), such as [CMIE CPHS](https://consumerpyramidsdx.cmie.com). One of the key goals of `Survey.jl` is to utilise the power of Julia and speedup processing times.
+This package currently supports simple random sample and stratified sample. In future releases, it will support multistage sampling as well. 
 
 ## How to install
-
-    add "https://github.com/xKDR/Survey.jl.git"
-
+```julia
+]  add "https://github.com/xKDR/Survey.jl.git"
+```
 ## Basic usage
 
-In the following example, we will load the Academic Performance Index dataset for Californian schools and produce the weighted mean for each county.
+### Simple Random Sample
+
+In the following example, we will load a simple random sample of the Academic Performance Index dataset for Californian schools and do basic analysis. 
 ```julia
 using Survey
 
-srs_design = SimpleRandomSample(apisrs, weights = :pw) 
-## This function loads a commonly used dataset, Academic Performance Index (API), as an example.
-## Any DataFrame object can be used with this package.
+srs = load_data("apisrs")
 
-# dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1)
+dsrs = SimpleRandomSample(srs; weights = :pw)
 
-# svyby(:api00, :cname, dclus1, svymean)
-# 11×3 DataFrame
-#  Row │ cname        mean     SE
-#      │ String15     Float64  Float64
-# ─────┼────────────────────────────────
-#    1 │ Alameda      669.0    16.2135
-#    2 │ Fresno       472.0     9.85278
-#    3 │ Kern         452.5    29.5049
-#    4 │ Los Angeles  647.267  23.5116
-#    5 │ Mendocino    623.25   24.216
-#    6 │ Merced       519.25   10.4925
-#    7 │ Orange       710.562  28.9123
-#    8 │ Plumas       709.556  13.2174
-#    9 │ San Diego    659.436  12.2082
-#   10 │ San Joaquin  551.189  11.578
-#   11 │ Santa Clara  732.077  12.2291
+svymean(:api00, dsrs)
+1×2 DataFrame
+ Row │ mean     sem     
+     │ Float64  Float64 
+─────┼──────────────────
+   1 │ 656.585  9.24972
+
+svytotal(:enroll, dsrs)
+1×2 DataFrame
+ Row │ total      se_total 
+     │ Float64    Float64  
+─────┼─────────────────────
+   1 │ 3.62107e6  1.6952e5   
+
+svyby(:api00, :cname, dsrs, svymean)
+38×3 DataFrame
+ Row │ cname            mean     sem      
+     │ String15         Float64  Float64  
+─────┼────────────────────────────────────
+   1 │ Kern             573.6     42.8026
+   2 │ Los Angeles      658.156   21.0728
+   3 │ Orange           749.333   27.0613
+  ⋮  │        ⋮            ⋮        ⋮
+  36 │ Napa             727.0     46.722
+  37 │ Lake             804.0    NaN
+  38 │ Merced           595.0    NaN
 ```
 
-This example is from the Survey package in R. The [examples section of the documentation](https://xkdr.github.io/Survey.jl/dev/examples/) shows the R and the Julia code side by side for this and a few other examples.
+### Stratified Sample
 
-## Performance
-We will measure the performance of the R and Julia for the example shown above.
-
-**R**
-
-```R
-library(survey)
-library(microbenchmark)
-data(api)
-dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
-microbenchmark(svyby(~api00, by = ~cname, design = dclus1, svymean), units = "us")
-```
-
-```R
-                                                 expr      min       lq
- svyby(~api00, by = ~cname, design = dclus1, svymean) 10180.47 12102.61
-     mean   median       uq      max neval
- 12734.43 12421.93 12788.55 17242.35   100
-```
-
-**Julia**
-```julia
-using Survey, BenchmarkTools
-apiclus1 = load_data("apiclus1")
-dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
-@benchmark svyby(:api00, :cname, dclus1, svymean)
-```
+In the following example, we will load a stratified sample of the Academic Performance Index dataset for Californian schools and do basic analysis. 
 
 ```julia
-BenchmarkTools.Trial: 10000 samples with 1 evaluation.
- Range (min … max):  54.464 μs …   6.070 ms  ┊ GC (min … max): 0.00% … 94.01%
- Time  (median):     72.468 μs               ┊ GC (median):    0.00%
- Time  (mean ± σ):   81.833 μs ± 190.657 μs  ┊ GC (mean ± σ):  7.62% ±  3.23%
- ```
+using Survey
 
-The Julia code is about 171 times faster than the R code.
+strat = load_data("apistrat")
 
-We increase the complexity by grouping the data by two variables and then performing the same operations.
-**R**
+dstrat = StratifiedSample(strat, :stype; weights = :pw, popsize = :fpc)
 
-```R
-library(survey)
-library(microbenchmark)
-data(api)
-dclus1 <- svydesign(id = ~1, weights = ~pw, data = apiclus1)
-microbenchmark(svyby(~api00, by = ~cname+meals, design = dclus1, svymean, keep.var = FALSE), units = "us")
+svymean(:api00, dstrat)
+1×2 DataFrame
+ Row │ Ȳ̂        SE      
+     │ Float64  Float64 
+─────┼──────────────────
+   1 │ 662.287  9.40894
+
+svytotal(:api00, dstrat)
+1×2 DataFrame
+ Row │ grand_total  SE      
+     │ Float64      Float64 
+─────┼──────────────────────
+   1 │   4.10221e6  58279.0
+
+svyby(:api00, :cname, dstrat, svymean)
+40×3 DataFrame
+ Row │ cname           domain_mean  domain_mean_se 
+     │ String15        Float64      Float64        
+─────┼─────────────────────────────────────────────
+   1 │ Los Angeles         633.511    21.3912
+   2 │ Ventura             707.172    31.6856
+   3 │ Kern                678.235    53.1337
+  ⋮  │       ⋮              ⋮             ⋮
+  38 │ Mariposa            706.0       0.0
+  39 │ Mendocino           632.018     1.04942
+  40 │ Butte               627.0       0.0
 ```
-
-```R
-Unit: microseconds
-                                                         expr      min     lq
- svyby(~api00, by = ~cname + meals, design = dclus1, svymean) 132468.1 149914
-     mean   median       uq      max neval
- 166121.9 160571.3 172301.6 304979.2   100
-```
-
-**Julia**
-```julia
-using Survey, BenchmarkTools
-apiclus1 = load_data("apiclus1")
-dclus1 = svydesign(id=:1, weights=:pw, data = apiclus1)
-@benchmark svyby(:api00, [:cname, :meals], dclus1, svymean)
-```
-
-```julia
-BenchmarkTools.Trial: 10000 samples with 1 evaluation.
- Range (min … max):  219.387 μs …   8.284 ms  ┊ GC (min … max):  0.00% … 90.94%
- Time  (median):     265.214 μs               ┊ GC (median):     0.00%
- Time  (mean ± σ):   325.100 μs ± 513.020 μs  ┊ GC (mean ± σ):  14.23% ±  8.58%
- ```
-
-The Julia code is about 605 times faster than the R code.
 
 ## Strategic goals
-
 We want to implement all the features provided by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 
 The [milestones](https://github.com/xKDR/Survey.jl/milestones) sections of the repository contains a list of features that contributors can implement in the short-term.
