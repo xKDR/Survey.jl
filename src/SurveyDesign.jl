@@ -125,14 +125,15 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             end
             # Estimate population size
             popsize = round(sampsize * first(weights)) |> UInt
-            if sampsize > popsize
-                error("population size was estimated to be greater than given sampsize. Please check input arguments.")
-            end
         elseif typeof(popsize) <: Unsigned
             weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
             probs = 1 ./ weights
         else
             error("something went wrong, please check validity of inputs.")
+        end
+        # If sampsize greater than popsize than illogical arguments specified.
+        if sampsize > popsize
+            error("population size was estimated to be greater than given sampsize. Please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
@@ -298,15 +299,16 @@ struct StratifiedSample <: AbstractSurveyDesign
             end
             # Estimate population size
             popsize = sampsize .* weights
-            if sampsize > popsize
-                error("population size was estimated to be greater than given sampsize. Please check input arguments.")
-            end
         elseif typeof(popsize) <: Vector{<:Real} # Still need to check if the provided Column is of <:Real
             # If popsize is given, weights and probs made concordant with popsize and sampsize, regardless of supplied arguments
             weights = popsize ./ sampsize
             probs = 1 ./ weights
         else
             error("something went wrong. Please check validity of inputs.")
+        end
+        # If sampsize greater than popsize than illogical arguments specified.
+        if sampsize > popsize
+            error("population size was estimated to be greater than given sampsize. please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
