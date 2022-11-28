@@ -60,9 +60,9 @@
     ##############################
     ### sum of weights and probs condition check
     apisrs = copy(apisrs_original)
-    @test_throws ErrorException SimpleRandomSample(apisrs, probs=fill(0.3, size(apisrs_original, 1)))
+    @test_throws ErrorException SimpleRandomSample(apisrs, weights=fill(0.3, size(apisrs_original, 1)))
     apisrs = copy(apisrs_original)
-    @test_throws ErrorException SimpleRandomSample(apisrs, popsize=:fpc, probs=fill(0.3, size(apisrs_original, 1)))
+    @test_throws ErrorException SimpleRandomSample(apisrs, probs=fill(0.3, size(apisrs_original, 1)))
     ##############################
     ### weights only as Vector
     apisrs = copy(apisrs_original)
@@ -154,19 +154,15 @@ end
     apistrat = copy(apistrat_original)
     strat_ignorefpc=StratifiedSample(apistrat,:stype; popsize=:fpc, ignorefpc=true)
     @test strat_ignorefpc.data.probs == 1 ./ strat_ignorefpc.data.weights
-
-    #see github issue for strat
-    # apistrat4 = copy(apistrat_original)
-    # strat_probs1 = StratifiedSample(apistrat4, :stype; probs=fill(0.3, size(apistrat4, 1)))
-    #@test strat_probs1.data.probs == 1 ./ strat_probs1.data.weights
-
+    ##############################
+    # For now, no sum checks on probs and weights for StratifiedSample (unlike SRS)
     apistrat = copy(apistrat_original)
-    strat_popsize = StratifiedSample(apistrat, :stype; popsize=:fpc)
-    @test strat_popsize.data.probs == 1 ./ strat_popsize.data.weights
-
-    # To edit
-    # strat_popsize_fpc = StratifiedSample(apistrat, :stype; popsize= apistrat.fpc, ignorefpc = true)
-    # strat_new = StratifiedSample(apistrat, :stype; popsize= apistrat.pw, sampsize = apistrat.fpc) #should throw error because sampsize > popsize
+    strat_probs1 = StratifiedSample(apistrat, :stype; probs=fill(0.3, size(apistrat, 1)))
+    @test strat_probs1.data.probs == 1 ./ strat_probs1.data.weights
+    ##############################
+    #should throw error because sampsize > popsize
+    apistrat = copy(apistrat_original)
+    @test_throws ErrorException StratifiedSample(apistrat, :stype; popsize= :pw, sampsize=:fpc) 
 end
 
 ##### SurveyDesign tests
