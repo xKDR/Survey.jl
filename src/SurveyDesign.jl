@@ -14,25 +14,46 @@ abstract type AbstractSurveyDesign end
 """
     SimpleRandomSample <: AbstractSurveyDesign
 
-    Survey design sampled by simple random sampling.
-    # Required arguments:
-    data - This is the survey dataset loaded as a DataFrame in memory. 
-           Note: Keeping with Julia conventions, original data object
-           is modified, not copied. Be careful
-    # Optional arguments:
-    sampsize -  Sample size of the survey, given as Symbol name of 
-                column in `data`, an `Unsigned` integer, or a Vector
-    popsize  -  The (expected) population size of survey, given as Symbol 
-                name of column in `data`, an `Unsigned` integer, or a Vector
-    weights  -  Sampling weights, passed as Symbol or Vector
-    probs    -  Sampling probabilities, passed as Symbol or Vector
-    ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
-    
-    Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
-    Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+Survey design sampled by simple random sampling.
+# Required arguments:
+data - This is the survey dataset loaded as a DataFrame in memory. 
+        Note: Keeping with Julia conventions, original data object
+        is modified, not copied. Be careful
+# Optional arguments:
+sampsize -  Sample size of the survey, given as Symbol name of 
+            column in `data`, an `Unsigned` integer, or a Vector
+popsize  -  The (expected) population size of survey, given as Symbol 
+            name of column in `data`, an `Unsigned` integer, or a Vector
+weights  -  Sampling weights, passed as Symbol or Vector
+probs    -  Sampling probabilities, passed as Symbol or Vector
+ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
 
-    If `popsize` not given, `weights` or `probs` must be given, so that in combination 
-    with `sampsize`, `popsize` can be calculated.
+Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
+Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+
+If `popsize` not given, `weights` or `probs` must be given, so that in combination 
+with `sampsize`, `popsize` can be calculated.
+
+```jldoctest
+julia> apisrs_original = load_data("apisrs");
+
+julia> apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw;
+
+julia> apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1));
+
+julia> srs = SimpleRandomSample(apisrs_original; popsize=:fpc);
+
+julia> srs
+SimpleRandomSample:
+data: 200x44 DataFrame
+weights: 31.0, 31.0, 31.0, ..., 31.0
+probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
+fpc: 6194, 6194, 6194, ..., 6194
+popsize: 6194
+sampsize: 200
+sampfraction: 0.0323
+ignorefpc: false
+```
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::AbstractDataFrame
@@ -73,9 +94,9 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         end
         # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
         if !isa(weights, Union{Nothing,Vector{<:Real}})
-            error("Weights should be Vector{<:Real}. You passed $(typeof(weights))")
+            error("weights should be Vector{<:Real}. You passed $(typeof(weights))")
         elseif !isa(probs, Union{Nothing,Vector{<:Real}})
-            error("Sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
+            error("sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
         end
         # If popsize given as Symbol or Vector, check all records equal 
         if isa(popsize, Symbol)
@@ -106,10 +127,10 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             probs = 1 ./ weights
             data[!, :probs] = probs
         end
-        # popsize must be nothing or <:Integer by now
+        # popsize must be nothing or <:Unsigned by now
         if isnothing(popsize)
             # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
-            @warn "Using weights/probs and sampsize to estimate `popsize`"
+            @warn "popsize not given. using weights/probs and sampsize to estimate `popsize`"
             # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
             if typeof(weights) <: Vector{<:Real}
                 if !all(w -> w == first(weights), weights)
@@ -125,13 +146,15 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             end
             # Estimate population size
             popsize = round(sampsize * first(weights)) |> UInt
-            if sampsize > popsize
-                error("population size was estimated to be greater than given sampsize. Please check input arguments.")
-            end
         elseif typeof(popsize) <: Unsigned
             weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
+            probs = 1 ./ weights
         else
             error("something went wrong, please check validity of inputs.")
+        end
+        # If sampsize greater than popsize than illogical arguments specified.
+        if sampsize > popsize
+            error("population size was estimated to be less than given sampsize. Please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
@@ -155,7 +178,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
                 error("sum of inverse sampling probabilities should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
                 @show sum(1 ./ probs)
-                error("Sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
+                error("sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
             end
         end
         ## Set remaining parts of data structure
@@ -177,76 +200,183 @@ end
 """
     StratifiedSample <: AbstractSurveyDesign
 
-    Survey design sampled by stratification.
+Survey design sampled by stratification.
+
+`strata` must be specified as a Symbol name of a column in `data`.
+
+# Required arguments:
+data    -   This is the survey dataset loaded as a DataFrame in memory. 
+            Note: Keeping with Julia conventions, original data object
+            is modified, not copied. Be careful
+strata  -   Column that is the stratification variable.
+# Optional arguments:
+sampsize -  Sample size of the survey, given as Symbol name of 
+            column in `data`, an `Unsigned` integer, or a Vector
+popsize  -  The (expected) population size of survey, given as Symbol 
+            name of column in `data`, an `Unsigned` integer, or a Vector
+weights  -  Sampling weights, passed as Symbol or Vector
+probs    -  Sampling probabilities, passed as Symbol or Vector
+ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
+
+Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
+Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+
+If `popsize` not given, `weights` or `probs` must be given, so that in combination 
+with `sampsize`, `popsize` can be calculated.
+
+```jldoctest
+julia> apistrat_original = load_data("apistrat");
+
+julia> apistrat_original[!, :derived_probs] = 1 ./ apistrat_original.pw;
+
+julia> apistrat_original[!, :derived_sampsize] = apistrat_original.fpc ./ apistrat_original.pw;
+
+julia> strat_pop = StratifiedSample(apistrat_original, :stype; popsize=:fpc);
+
+julia> strat_pop
+StratifiedSample:
+data: 200x47 DataFrame
+strata: stype
+weights: 44.2, 44.2, 44.2, ..., 15.1
+probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
+fpc: 0.977, 0.977, 0.977, ..., 0.934
+popsize: 4421, 4421, 4421, ..., 755
+sampsize: 100, 100, 100, ..., 50
+sampfraction: 0.0226, 0.0226, 0.0226, ..., 0.0662
+ignorefpc: false
+```
 """
 struct StratifiedSample <: AbstractSurveyDesign
     data::AbstractDataFrame
     strata::Symbol
-    sampsize::Union{Nothing,Vector{Real}}
-    popsize::Union{Nothing,Vector{Real}}
-    sampfraction::Vector{Real}
-    fpc::Vector{Real}
     ignorefpc::Bool
     function StratifiedSample(data::AbstractDataFrame, strata::Symbol;
         popsize=nothing,
-        sampsize=transform(groupby(data, strata), nrow => :counts).counts,
+        sampsize=nothing,
         weights=nothing,
         probs=nothing,
         ignorefpc=false
     )
-        if isa(popsize, Symbol)
-            popsize = data[!, popsize]
+        # Only valid argument types given to constructor
+        argtypes_weights = Union{Nothing,Symbol,Vector{<:Real}}
+        argtypes_probs = Union{Nothing,Symbol,Vector{<:Real}}
+        argtypes_popsize = Union{Nothing,Symbol}
+        argtypes_sampsize = Union{Nothing,Symbol}
+        # If any invalid type raise error
+        if !(isa(weights, argtypes_weights))
+            error("invalid type of argument given for `weights` argument")
+        elseif !(isa(probs, argtypes_probs))
+            error("invalid type of argument given for `probs` argument")
+        elseif !(isa(popsize, argtypes_popsize))
+            error("invalid type of argument given for `popsize` argument. Please give Symbol of the column in data")
+        elseif !(isa(sampsize, argtypes_sampsize))
+            error("invalid type of argument given for `sampsize` argument. Please give Symbol of the column in data")
         end
+        # Store the iterator over each strata, as used multiple times
+        data_groupedby_strata = groupby(data, strata)
+        # If any of weights or probs given as Symbol, find the corresponding column in `data`
         if isa(weights, Symbol)
-            weights = data[!, weights]
+            for each_strata in keys(data_groupedby_strata)
+                if !all(w -> w == first(data_groupedby_strata[each_strata][!, weights]), data_groupedby_strata[each_strata][!, weights])
+                    error("sampling weights within each strata must be equal in StratifiedSample")
+                end
+            end
+            # original_weights_colname = copy(weights)
+            weights = data[!, weights] # If all good with weights column, then store it as Vector
         end
         if isa(probs, Symbol)
-            probs = data[!, probs]
+            for each_strata in keys(data_groupedby_strata)
+                if !all(p -> p == first(data_groupedby_strata[each_strata][!, probs]), data_groupedby_strata[each_strata][!, probs])
+                    error("sampling probabilities within each strata must be equal in StratifiedSample")
+                end
+            end
+            # original_probs_colname = copy(probs)
+            probs = data[!, probs] # If all good with probs column, then store it as Vector
         end
-
-        if ignorefpc
-            # TODO: change what happens if `ignorepfc == true` or if the user only
-            # specifies `data`
-            @warn "assuming equal weights"
-            weights = ones(nrow(data))
+        # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
+        if !isa(weights, Union{Nothing,Vector{<:Real}})
+            error("weights should be Vector{<:Real}. You passed $(typeof(weights))")
+        elseif !isa(probs, Union{Nothing,Vector{<:Real}})
+            error("sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
         end
-
-        # set population size if it is not given; `weights` and `sampsize` must be given
+        # If popsize given as Symbol or Vector, check all records equal in each strata
+        if isa(popsize, Symbol)
+            for each_strata in keys(data_groupedby_strata)
+                if !all(w -> w == first(data_groupedby_strata[each_strata][!, popsize]), data_groupedby_strata[each_strata][!, popsize])
+                    error("popsize must be same for all observations within each strata in StratifiedSample")
+                end
+            end
+            # original_popsize_colname = copy(popsize)
+            popsize = data[!, popsize]
+        end
+        # If sampsize given as Symbol or Vector, check all records equal 
+        if isa(sampsize, Symbol)
+            if isnothing(popsize) && isnothing(weights) && isnothing(probs)
+                error("if sampsize given, and popsize not given, then weights or probs must given to calculate popsize")
+            end
+            for each_strata in keys(data_groupedby_strata)
+                if !all(w -> w == first(data_groupedby_strata[each_strata][!, sampsize]), data_groupedby_strata[each_strata][!, sampsize])
+                    error("sampsize must be same for all observations within each strata in StratifiedSample")
+                end
+            end
+            # original_sampsize_colname = copy(sampsize)
+            sampsize = data[!, sampsize]
+            # If sampsize column not provided in constructor call, set it as nrow of strata
+        elseif isnothing(sampsize)
+            sampsize = transform(groupby(data, strata), nrow => :counts).counts
+        end
+        # If both `weights` and `probs` given, then `weights` is assumed to be ground truth for probs.
+        if !isnothing(weights) && !isnothing(probs)
+            probs = 1 ./ weights
+            data[!, :probs] = probs
+        end
+        # `popsize` is either nothing or a Vector{<:Real} by now
         if isnothing(popsize)
-            # TODO: add probability weights if `weights` is not `nothing`
+            # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
+            @warn "popsize not given. using weights/probs and sampsize to estimate `popsize` for StratifiedSample"
+            # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
             if typeof(probs) <: Vector{<:Real}
                 weights = 1 ./ probs
+            elseif !(typeof(weights) <: Vector{<:Real})
+                error("either weights or probs must be given if `popsize` not given")
             end
-            # estimate population size
+            # Estimate population size
             popsize = sampsize .* weights
-
-            if sampsize > popsize
-                error("sample size cannot be greater than population size")
-            end
-        elseif typeof(popsize) <: Vector{<:Real}
-            # TODO: change `elseif` condition
-            weights = popsize ./ sampsize # expansion estimator
-        # TODO: add probability weights
+        elseif typeof(popsize) <: Vector{<:Real} # Still need to check if the provided Column is of <:Real
+            # If popsize is given, weights and probs made concordant with popsize and sampsize, regardless of supplied arguments
+            weights = popsize ./ sampsize
+            probs = 1 ./ weights
         else
-            error("either population size or frequency/probability weights must be specified")
+            error("something went wrong. Please check validity of inputs.")
         end
+        # If sampsize greater than popsize than illogical arguments specified.
+        if any(sampsize .> popsize)
+            @show sampsize, popsize
+            error("population sizes were estimated to be less than sampsize. please check input arguments.")
+        end
+        # If ignorefpc then set weights to 1 ??
+        # TODO: This works under some cases, but should find better way to process ignoring fpc
+        if ignorefpc
+            @warn "assuming all weights are equal to 1.0"
+            weights = ones(nrow(data))
+            probs = 1 ./ weights
+        end
+        ## Set remaining parts of data structure
         # set sampling fraction
         sampfraction = sampsize ./ popsize
         # set fpc
         fpc = ignorefpc ? fill(1, size(data, 1)) : 1 .- (sampsize ./ popsize)
         # add columns for frequency and probability weights to `data`
-        if !isnothing(probs)
-            data[!, :probs] = probs
-            data[!, :weights] = 1 ./ data[!, :probs]
-        else
-            data[!, :weights] = weights
-            data[!, :probs] = 1 ./ data[!, :weights]
+        data[!, :weights] = weights
+        if isnothing(probs)
+            probs = 1 ./ data[!, :weights]
         end
+        data[!, :probs] = probs
         data[!, :sampsize] = sampsize
         data[!, :popsize] = popsize
         data[!, :fpc] = fpc
         data[!, :sampfraction] = sampfraction
-        new(data, strata, sampsize, popsize, sampfraction, fpc, ignorefpc)
+        new(data, strata, ignorefpc)
     end
 end
 

@@ -33,6 +33,21 @@ function Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign)
     printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
 end
 
+function Base.show(io::IO, ::MIME"text/plain", design::StratifiedSample)
+    type = typeof(design)
+    printstyled(io, "$type:\n"; bold=true)
+    printstyled(io, "data: "; bold=true)
+    println(io, size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printinfo(io, "strata", string(design.strata); newline=true)
+    printinfo(io, "weights", makeshort(design.data.weights))
+    printinfo(io, "probs", makeshort(design.data.probs))
+    printinfo(io, "fpc", makeshort(design.data.fpc))
+    printinfo(io, "popsize", makeshort(design.data.popsize))
+    printinfo(io, "sampsize", makeshort(design.data.sampsize))
+    printinfo(io, "sampfraction", makeshort(design.data.sampfraction))
+    printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
+end
+
 "`show` method for printing information about a survey design"
 function Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign)
     type = typeof(design)

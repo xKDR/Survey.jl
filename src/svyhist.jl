@@ -12,7 +12,7 @@ Calculate the number of bins to use in a histogram using the Sturges rule.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> sturges(srs, :enroll)
 9
@@ -33,7 +33,7 @@ Calculate the number of bins to use in a histogram using the Freedman-Diaconis r
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> freedman_diaconis(srs, :enroll)
 18
@@ -63,7 +63,7 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 
 ```@example histogram
 apisrs = load_data("apisrs");
-srs = SimpleRandomSample(apisrs; weights = :pw);
+srs = SimpleRandomSample(apisrs;popsize=:fpc);
 h = svyhist(srs, :enroll)
 save("hist.png", h); nothing # hide
 ```

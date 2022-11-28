@@ -5,7 +5,7 @@ Estimate quantiles for `SurveyDesign`s.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> svyquantile(:enroll, srs, 0.5)
 1×1 DataFrame
@@ -27,7 +27,6 @@ function svyquantile(var, design::StratifiedSample, q)
     w = design.data.probs
     df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
-
     return df
 end
 

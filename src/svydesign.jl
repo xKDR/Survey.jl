@@ -2,21 +2,6 @@
     svydesign
 
 Type incorporating all necessary information to describe a survey design.
-
-```jldoctest
-julia> apistrat = load_data("apistrat");
-
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
-Survey Design:
-variables: 200x45 DataFrame
-id: 1
-strata: E, E, E, ..., H
-probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
-fpc:
-    popsize: 4421, 4421, 4421, ..., 755
-    sampsize: 200, 200, 200, ..., 200
-nest: false
-check_strat: true
 ```
 """
 struct svydesign
