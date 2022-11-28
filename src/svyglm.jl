@@ -11,30 +11,7 @@ end
 """
     svyglm(formula, design, dist, link)
 
-Fit Generalized Linear Models (GLMs) on `svydesign`.
-
-```jldoctest
-julia> apiclus1 = load_data("apiclus1");
-
-julia> dclus1 = svydesign(id=:dnum, weights=:pw, data = apiclus1);
-
-julia> svyglm(@formula(ell~meals),dclus1,Normal(),IdentityLink())
-StatsModels.TableRegressionModel{GLM.GeneralizedLinearModel{GLM.GlmResp{Vector{Float64}, Normal{Float64}, IdentityLink}, GLM.DensePredChol{Float64, LinearAlgebra.Cholesky{Float64, Matrix{Float64}}}}, Matrix{Float64}}
-
-ell ~ 1 + meals
-
-Coefficients:
-────────────────────────────────────────────────────────────────────────
-                Coef.  Std. Error      z  Pr(>|z|)  Lower 95%  Upper 95%
-────────────────────────────────────────────────────────────────────────
-(Intercept)  6.86665   0.350512    19.59    <1e-84   6.17966    7.55364
-meals        0.410511  0.00613985  66.86    <1e-99   0.398477   0.422545
-────────────────────────────────────────────────────────────────────────
-Degrees of Freedom: 6193.000324249264 (i.e. Null); 6192.000324249264 Residual
-Null Deviance: 1.7556928968296547e6
-Residual Deviance: 1.0196009035970895e6
-AIC: 49195.42124574161
-```
+    Fit Generalized Linear Models (GLMs) on `svydesign`.
 """
 mutable struct svyglm
     glm

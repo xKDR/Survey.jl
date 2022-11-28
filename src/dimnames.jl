@@ -60,7 +60,7 @@ Get the names of the rows and columns of a `SurveyDesign`.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> dimnames(srs)
 2-element Vector{Vector{String}}:
