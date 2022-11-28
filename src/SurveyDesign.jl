@@ -14,46 +14,46 @@ abstract type AbstractSurveyDesign end
 """
     SimpleRandomSample <: AbstractSurveyDesign
 
-    Survey design sampled by simple random sampling.
-    # Required arguments:
-    data - This is the survey dataset loaded as a DataFrame in memory. 
-           Note: Keeping with Julia conventions, original data object
-           is modified, not copied. Be careful
-    # Optional arguments:
-    sampsize -  Sample size of the survey, given as Symbol name of 
-                column in `data`, an `Unsigned` integer, or a Vector
-    popsize  -  The (expected) population size of survey, given as Symbol 
-                name of column in `data`, an `Unsigned` integer, or a Vector
-    weights  -  Sampling weights, passed as Symbol or Vector
-    probs    -  Sampling probabilities, passed as Symbol or Vector
-    ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
-    
-    Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
-    Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+Survey design sampled by simple random sampling.
+# Required arguments:
+data - This is the survey dataset loaded as a DataFrame in memory. 
+        Note: Keeping with Julia conventions, original data object
+        is modified, not copied. Be careful
+# Optional arguments:
+sampsize -  Sample size of the survey, given as Symbol name of 
+            column in `data`, an `Unsigned` integer, or a Vector
+popsize  -  The (expected) population size of survey, given as Symbol 
+            name of column in `data`, an `Unsigned` integer, or a Vector
+weights  -  Sampling weights, passed as Symbol or Vector
+probs    -  Sampling probabilities, passed as Symbol or Vector
+ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
 
-    If `popsize` not given, `weights` or `probs` must be given, so that in combination 
-    with `sampsize`, `popsize` can be calculated.
+Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
+Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
 
-    ```julia
-    julia> apisrs = load_data("apisrs");
+If `popsize` not given, `weights` or `probs` must be given, so that in combination 
+with `sampsize`, `popsize` can be calculated.
 
-    julia> apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw;
+```jldoctest
+julia> apisrs_original = load_data("apisrs");
 
-    julia> apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1));
+julia> apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw;
 
-    julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1));
 
-    julia> srs
-    SimpleRandomSample:
-    data: 200x42 DataFrame
-    weights: 31.0, 31.0, 31.0, ..., 31.0
-    probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
-    fpc: 6194, 6194, 6194, ..., 6194
-    popsize: 6194
-    sampsize: 200
-    sampfraction: 0.0323
-    ignorefpc: false
-    ```
+julia> srs = SimpleRandomSample(apisrs_original; popsize=:fpc);
+
+julia> srs
+SimpleRandomSample:
+data: 200x44 DataFrame
+weights: 31.0, 31.0, 31.0, ..., 31.0
+probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
+fpc: 6194, 6194, 6194, ..., 6194
+popsize: 6194
+sampsize: 200
+sampfraction: 0.0323
+ignorefpc: false
+```
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::AbstractDataFrame
@@ -154,7 +154,7 @@ struct SimpleRandomSample <: AbstractSurveyDesign
         end
         # If sampsize greater than popsize than illogical arguments specified.
         if sampsize > popsize
-            error("population size was estimated to be greater than given sampsize. Please check input arguments.")
+            error("population size was estimated to be less than given sampsize. Please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
@@ -200,29 +200,51 @@ end
 """
     StratifiedSample <: AbstractSurveyDesign
 
-    Survey design sampled by stratification.
+Survey design sampled by stratification.
 
-    `strata` must be specified as a Symbol name of a column in `data`.
-    
-    # Required arguments:
-    data    -   This is the survey dataset loaded as a DataFrame in memory. 
-                Note: Keeping with Julia conventions, original data object
-                is modified, not copied. Be careful
-    strata  -   Column that is the stratification variable.
-    # Optional arguments:
-    sampsize -  Sample size of the survey, given as Symbol name of 
-                column in `data`, an `Unsigned` integer, or a Vector
-    popsize  -  The (expected) population size of survey, given as Symbol 
-                name of column in `data`, an `Unsigned` integer, or a Vector
-    weights  -  Sampling weights, passed as Symbol or Vector
-    probs    -  Sampling probabilities, passed as Symbol or Vector
-    ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
-    
-    Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
-    Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+`strata` must be specified as a Symbol name of a column in `data`.
 
-    If `popsize` not given, `weights` or `probs` must be given, so that in combination 
-    with `sampsize`, `popsize` can be calculated.
+# Required arguments:
+data    -   This is the survey dataset loaded as a DataFrame in memory. 
+            Note: Keeping with Julia conventions, original data object
+            is modified, not copied. Be careful
+strata  -   Column that is the stratification variable.
+# Optional arguments:
+sampsize -  Sample size of the survey, given as Symbol name of 
+            column in `data`, an `Unsigned` integer, or a Vector
+popsize  -  The (expected) population size of survey, given as Symbol 
+            name of column in `data`, an `Unsigned` integer, or a Vector
+weights  -  Sampling weights, passed as Symbol or Vector
+probs    -  Sampling probabilities, passed as Symbol or Vector
+ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
+
+Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
+Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+
+If `popsize` not given, `weights` or `probs` must be given, so that in combination 
+with `sampsize`, `popsize` can be calculated.
+
+```jldoctest
+julia> apistrat_original = load_data("apistrat");
+
+julia> apistrat_original[!, :derived_probs] = 1 ./ apistrat_original.pw;
+
+julia> apistrat_original[!, :derived_sampsize] = apistrat_original.fpc ./ apistrat_original.pw;
+
+julia> strat_pop = StratifiedSample(apistrat_original, :stype; popsize=:fpc);
+
+julia> strat_pop
+StratifiedSample:
+data: 200x47 DataFrame
+strata: stype
+weights: 44.2, 44.2, 44.2, ..., 15.1
+probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
+fpc: 0.977, 0.977, 0.977, ..., 0.934
+popsize: 4421, 4421, 4421, ..., 755
+sampsize: 100, 100, 100, ..., 50
+sampfraction: 0.0226, 0.0226, 0.0226, ..., 0.0662
+ignorefpc: false
+```
 """
 struct StratifiedSample <: AbstractSurveyDesign
     data::AbstractDataFrame
@@ -328,8 +350,9 @@ struct StratifiedSample <: AbstractSurveyDesign
             error("something went wrong. Please check validity of inputs.")
         end
         # If sampsize greater than popsize than illogical arguments specified.
-        if sampsize > popsize
-            error("population size was estimated to be greater than given sampsize. please check input arguments.")
+        if any(sampsize .> popsize)
+            @show sampsize, popsize
+            error("population sizes were estimated to be less than sampsize. please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??
         # TODO: This works under some cases, but should find better way to process ignoring fpc
