@@ -6,7 +6,7 @@ Generate subsets of a survey design.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs; popsize =:fpc);
 
 julia> svyby(:api00, :cname, srs, svymean)
 38×3 DataFrame
@@ -46,24 +46,30 @@ Generate subsets of a StratifiedSample.
 ```jldoctest
 julia> apistrat = load_data("apistrat");
 
-julia> strat = StratifiedSample(apistrat, :stype ; popsize = apistrat.fpc);
+julia> strat = StratifiedSample(apistrat, :stype ; popsize =:fpc);
 
 julia> svyby(:api00, :cname, strat, svymean)
 40×3 DataFrame
- Row │ cname           domain_mean  domain_mean_se 
-     │ String15        Float64      Float64        
+ Row │ cname           domain_mean  domain_mean_se
+     │ String15        Float64      Float64
 ─────┼─────────────────────────────────────────────
    1 │ Los Angeles         633.511    21.3912
    2 │ Ventura             707.172    31.6856
    3 │ Kern                678.235    53.1337
    4 │ San Diego           704.121    32.3311
    5 │ San Bernardino      567.551    32.0866
+   6 │ Riverside           590.901    13.6463
+   7 │ Fresno              553.635    35.7614
+   8 │ Alameda             695.16     51.3053
   ⋮  │       ⋮              ⋮             ⋮
+  34 │ Santa Barbara       743.0       0.0
+  35 │ Siskiyou            780.0       0.0
+  36 │ Stanislaus          712.0       1.09858e-13
   37 │ Napa                660.0       0.0
   38 │ Mariposa            706.0       0.0
   39 │ Mendocino           632.018     1.04942
   40 │ Butte               627.0       0.0
-                                    31 rows omitted
+                                    25 rows omitted
 ```
 """
 function svyby(formula::Symbol, by::Symbol, design::StratifiedSample, func::Function)

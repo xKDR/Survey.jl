@@ -6,7 +6,7 @@ Get the dimensions of a `SurveyDesign`.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs; popsize =:fpc);
 
 julia> dim(srs)
 (200, 42)
@@ -23,7 +23,7 @@ Get the column names of a `SurveyDesign`.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs; popsize=:fpc);
 
 julia> colnames(srs)
 42-element Vector{String}:

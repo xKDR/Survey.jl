@@ -20,7 +20,7 @@ Estimate the population total for the variable specified by `x`.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> svytotal(:enroll, srs)
 1×2 DataFrame

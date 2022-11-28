@@ -33,6 +33,27 @@ abstract type AbstractSurveyDesign end
 
     If `popsize` not given, `weights` or `probs` must be given, so that in combination 
     with `sampsize`, `popsize` can be calculated.
+
+    ```julia
+    julia> apisrs = load_data("apisrs");
+
+    julia> apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw;
+
+    julia> apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1));
+
+    julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+
+    julia> srs
+    SimpleRandomSample:
+    data: 200x42 DataFrame
+    weights: 31.0, 31.0, 31.0, ..., 31.0
+    probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
+    fpc: 6194, 6194, 6194, ..., 6194
+    popsize: 6194
+    sampsize: 200
+    sampfraction: 0.0323
+    ignorefpc: false
+    ```
 """
 struct SimpleRandomSample <: AbstractSurveyDesign
     data::AbstractDataFrame

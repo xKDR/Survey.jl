@@ -34,7 +34,7 @@ Compute the mean and SEM of the survey variable `x`.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs; weights = :pw);
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> svymean(:enroll, srs)
 1×2 DataFrame
