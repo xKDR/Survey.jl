@@ -42,8 +42,9 @@ function total(x::Symbol, design::SimpleRandomSample)
         p.se = sqrt.(p.var)
         return p
     end
-    total = design.popsize * mean(x,design)
-    return DataFrame(total=total, se_total=se_tot(x, design::SimpleRandomSample))
+    m = mean(x,design)
+    total = design.popsize * m.mean[1]
+    return DataFrame(total=total, se_total=se_tot(x, design))
 end
 
 # Inner methods for `by`

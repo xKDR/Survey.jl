@@ -17,7 +17,7 @@ julia> quantile(:enroll, srs, 0.5)
 """
 function quantile(var, design::SimpleRandomSample, q; kwargs...)
     x = design.data[!, var]
-    df = DataFrame(tmp = quantile(Float32.(x), q; kwargs...))
+    df = DataFrame(tmp = Statistics.quantile(Float32.(x), q; kwargs...))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
     return df
 end
@@ -25,7 +25,7 @@ end
 function quantile(var, design::StratifiedSample, q)
     x = design.data[!, var]
     w = design.data.probs
-    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
+    df = DataFrame(tmp = Statistics.quantile(Float32.(x), weights(w), q))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
     return df
 end
@@ -33,7 +33,7 @@ end
 function quantile(var, design::design, q)
     x = design.variables[!, var]
     w = design.variables.probs
-    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
+    df = DataFrame(tmp = Statistics.quantile(Float32.(x), weights(w), q))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
 
     return df
@@ -41,7 +41,7 @@ end
 
 # Inner method for `by`
 function quantile(x, w, _, q)
-    df = DataFrame(tmp = quantile(Float32.(x), weights(w), q))
+    df = DataFrame(tmp = Statistics.quantile(Float32.(x), weights(w), q))
     rename!(df, :tmp => Symbol(string(q) .* "th percentile"))
 
     return df

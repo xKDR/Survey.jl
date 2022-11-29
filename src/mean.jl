@@ -54,7 +54,7 @@ function mean(x::Symbol, design::SimpleRandomSample)
         p.se = sqrt.(p.var)
         return p
     end
-    return DataFrame(mean=mean(design.data[!, x], dims=1), sem=sem(x, design::SimpleRandomSample))
+    return DataFrame(mean=Statistics.mean(design.data[!, x], dims=1), sem=sem(x, design::SimpleRandomSample))
 end
 
 function mean(x::Vector{Symbol}, design::SimpleRandomSample)
@@ -88,7 +88,7 @@ end
 Inner method for `by` for SimpleRandomSample
 """
 function mean(x::AbstractVector, design::SimpleRandomSample, weights)
-    return DataFrame(mean=mean(x), sem=sem_by(x, design))
+    return DataFrame(mean=Statistics.mean(x), sem=sem_by(x, design))
 end
 
 """
@@ -109,7 +109,7 @@ function mean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVect
         nsh = nrow(grouped_frame[each_strata])#, nrow=>:nsdh).nsdh
         push!(nsdh, nsh)
         substrata_domain_total = sum(grouped_frame[each_strata].x)
-        ȳdh = mean(grouped_frame[each_strata].x)
+        ȳdh = Statistics.mean(grouped_frame[each_strata].x)
         push!(ȳsdh, ȳdh)
         push!(substrata_domain_totals, substrata_domain_total)
         popsizes = first(grouped_frame[each_strata].popsize)

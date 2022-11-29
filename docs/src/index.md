@@ -25,7 +25,6 @@ SimpleRandomSample
 StratifiedSample
 ClusterSample
 design
-glm
 load_data
 mean(x::Symbol, design::SimpleRandomSample)
 total(x::Symbol, design::SimpleRandomSample)
