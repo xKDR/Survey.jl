@@ -1,5 +1,5 @@
 """
-    svyby(formula, by, design, function, params)
+    by(formula, by, design, function, params)
 
 Generate subsets of a survey design.
 
@@ -8,7 +8,7 @@ julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs; popsize =:fpc);
 
-julia> svyby(:api00, :cname, srs, svymean)
+julia> by(:api00, :cname, srs, mean)
 38×3 DataFrame
  Row │ cname            mean     sem      
      │ String15         Float64  Float64  
@@ -32,14 +32,14 @@ julia> svyby(:api00, :cname, srs, svymean)
                            23 rows omitted
 ```
 """
-function svyby(formula::Symbol, by::Symbol, design::SimpleRandomSample, func::Function, params = [])
+function by(formula::Symbol, by::Symbol, design::SimpleRandomSample, func::Function, params = [])
     # TODO: add functionality for `formula::AbstractVector`
     gdf = groupby(design.data, by)
     return combine(gdf, [formula, :weights] => ((a, b) -> func(a, design, b, params...)) => AsTable)
 end
 
 """
-    svyby(formula, by, design, function)
+    by(formula, by, design, function)
 
 Generate subsets of a StratifiedSample.
 
@@ -48,7 +48,7 @@ julia> apistrat = load_data("apistrat");
 
 julia> strat = StratifiedSample(apistrat, :stype ; popsize =:fpc);
 
-julia> svyby(:api00, :cname, strat, svymean)
+julia> by(:api00, :cname, strat, mean)
 40×3 DataFrame
  Row │ cname           domain_mean  domain_mean_se
      │ String15        Float64      Float64
@@ -72,7 +72,7 @@ julia> svyby(:api00, :cname, strat, svymean)
                                     25 rows omitted
 ```
 """
-function svyby(formula::Symbol, by::Symbol, design::StratifiedSample, func::Function)
+function by(formula::Symbol, by::Symbol, design::StratifiedSample, func::Function)
     # TODO: add functionality for `formula::AbstractVector`
     gdf_domain = groupby(design.data, by)
     return combine(gdf_domain, [formula, :popsize,:sampsize,:sampfraction, design.strata] => ((a,b,c,d,e) -> func(a,b,c,d,e)) => AsTable ) 

@@ -1,27 +1,27 @@
-# TODO testing for svyby
-@testset "svyby.jl" begin
+# TODO testing for by
+@testset "by.jl" begin
     ####################################################################
     # SimpleRandomSample Test
     apisrs = load_data("apisrs")
     srs = SimpleRandomSample(apisrs, popsize = apisrs.fpc)
-    ## Test svymean with svyby
-    srs_svymean_svyby = svyby(:api00,:cname,srs,svymean)
+    ## Test mean with by
+    srs_mean_by = by(:api00,:cname,srs,mean)
     ###>>> Add tests here
 
-    ## Test svytotal with svyby
-    # srs_svytotal_svyby = svyby(:api00,:cname,srs,svytotal)
+    ## Test total with by
+    # srs_total_by = by(:api00,:cname,srs,total)
     ###>>> Add tests here
 
     ####################################################################
     # StratifiedSample Test
     apistrat = load_data("apistrat") # load data
     strat = StratifiedSample(apistrat, :stype ; popsize = apistrat.fpc )
-    ## Test svymean with svyby
-    strat_svymean_svyby = svyby(:api00,:cname,strat,svymean)
+    ## Test mean with by
+    strat_mean_by = by(:api00,:cname,strat,mean)
     ###>>> Add tests here
 
-    ## Test svytotal with svyby
-    # strat_svytotal_svyby = svyby(:api00,:cname,strat,svytotal)
+    ## Test total with by
+    # strat_total_by = by(:api00,:cname,strat,total)
     ###>>> Add tests here
 
     ####################################################################

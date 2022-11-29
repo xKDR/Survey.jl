@@ -9,11 +9,10 @@ using Test
 end
 
 include("SurveyDesign.jl")
-include("svytotal.jl")
-include("svyquantile.jl")
-include("svymean.jl")
+include("total.jl")
+include("quantile.jl")
+include("mean.jl")
 include("dimnames.jl")
-include("svyglm.jl")
-include("svyplot.jl")
-include("svyhist.jl")
-include("svyboxplot.jl")
+include("plot.jl")
+include("hist.jl")
+include("boxplot.jl")

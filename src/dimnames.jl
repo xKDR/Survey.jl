@@ -13,7 +13,7 @@ julia> dim(srs)
 ```
 """
 dim(design::AbstractSurveyDesign) = size(design.data)
-dim(design::svydesign) = size(design.variables)
+dim(design::design) = size(design.variables)
 
 """
 	colnames(design)
@@ -50,7 +50,7 @@ julia> colnames(srs)
 ```
 """
 colnames(design::AbstractSurveyDesign) = names(design.data)
-colnames(design::svydesign) = names(design.variables)
+colnames(design::design) = names(design.variables)
 
 """
 	dimnames(design)
@@ -69,4 +69,4 @@ julia> dimnames(srs)
 ```
 """
 dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names(design.data)]
-dimnames(design::svydesign) = [string.(1:size(design.variables, 1)), names(design.variables)]
+dimnames(design::design) = [string.(1:size(design.variables, 1)), names(design.variables)]

@@ -43,7 +43,7 @@ apiclus1 = load_data("apiclus1")
 ## svydesign
 [The ```svydesign``` object combines a data frame and all the survey design information needed to analyse it.](https://www.rdocumentation.org/packages/survey/versions/4.1-1/topics/svydesign)
 
-A ```svydesign``` object can be constructed with the following command:
+A ```design``` object can be constructed with the following command:
 
 **R**
 ```r
@@ -52,11 +52,11 @@ dclus1 <-svydesign(id = ~1, weights = ~pw, data = apiclus1, fpc = ~fpc)
 
 **Julia**
 ```julia
-dclus1 = svydesign(id = :1, weights = :pw, data = apiclus1, fpc = :fpc)
+dclus1 = design(id = :1, weights = :pw, data = apiclus1, fpc = :fpc)
 ```
 
-## svyby
-The `svyby` function can be used to generate stratified estimates.
+## by
+The `by` function can be used to generate stratified estimates.
 
 ### Mean
 Weighted mean of a variable by strata can be computed using the following command:
@@ -68,7 +68,7 @@ svyby(~api00, by = ~cname, design = dclus1, svymean)
 
 **Julia**
 ```julia
-svyby(:api00, :cname, dclus1, svymean)
+by(:api00, :cname, dclus1, mean)
 ```
 
 ### Sum
@@ -81,7 +81,7 @@ svyby(~api00, by = ~cname, design = dclus1, svytotal)
 
 **Julia**
 ```julia
-svyby(:api00, :cname, dclus1, svytotal)
+by(:api00, :cname, dclus1, total)
 ```
 
 ### Quantile
@@ -94,5 +94,5 @@ svyby(~api00, by = ~cname, design = dclus1, svyquantile, quantile = 0.63)
 
 **Julia**
 ```julia
-svyby(:api00, :cname, dclus1, svyquantile, 0.63)
+by(:api00, :cname, dclus1, quantile, 0.63)
 ```

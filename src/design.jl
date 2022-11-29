@@ -1,10 +1,10 @@
 """
-    svydesign
+    design
 
 Type incorporating all necessary information to describe a survey design.
 ```
 """
-struct svydesign
+struct design
     id
     variables::DataFrame
     nest::Bool
@@ -63,7 +63,7 @@ function get_strata(data, strata::Nothing)
 	return repeat([1], nrow(data))
 end
 
-function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata = nothing, fpc = nothing, nest = false, check_strat = !nest, weights = nothing)
+function design(; data = DataFrame(), id = Symbol(), probs = nothing, strata = nothing, fpc = nothing, nest = false, check_strat = !nest, weights = nothing)
     wt = get_weights(data, weights)
     if isnothing(probs) & isnothing(weights)
         # THIS WARNING IS NOT NECESSARY
@@ -75,5 +75,5 @@ function svydesign(; data = DataFrame(), id = Symbol(), probs = nothing, strata 
     df.popsize = get_fpc(data, fpc)
     df.sampsize = repeat([nrow(data)], nrow(data))
 	df.strata = get_strata(data, strata)
-    return svydesign(id, df, nest, check_strat)
+    return design(id, df, nest, check_strat)
 end
