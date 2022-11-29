@@ -11,34 +11,34 @@ using AlgebraOfGraphics
 using CategoricalArrays
 
 include("SurveyDesign.jl")
-include("svydesign.jl")
-include("svymean.jl")
-include("svyquantile.jl")
-include("svytotal.jl")
+include("design.jl")
+include("mean.jl")
+include("quantile.jl")
+include("total.jl")
 include("load_data.jl")
-include("svyglm.jl")
-include("svyhist.jl")
-include("svyplot.jl")
+include("glm.jl")
+include("hist.jl")
+include("plot.jl")
 include("dimnames.jl")
-include("svyboxplot.jl")
-include("svyby.jl")
+include("boxplot.jl")
+include("by.jl")
 include("ht.jl")
 include("show.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
 export SurveyDesign
-export svydesign
-export svyglm
-export svyby
+export design
+export glm
+export by
 export ht_calc
 export dim, colnames, dimnames
-export svymean, svytotal, svyquantile
+export mean, total, quantile
 export @formula
-export svyplot
-export svyhist, sturges, freedman_diaconis
-export svyboxplot
-export ht_svytotal, ht_svymean
+export plot
+export hist, sturges, freedman_diaconis
+export boxplot
+export ht_total, ht_mean
 export
     #families
     Normal,

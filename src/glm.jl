@@ -9,11 +9,11 @@ mutable struct control
 end
 
 """
-    svyglm(formula, design, dist, link)
+    glm(formula, design, dist, link)
 
-    Fit Generalized Linear Models (GLMs) on `svydesign`.
+    Fit Generalized Linear Models (GLMs) on `design`.
 """
-mutable struct svyglm
+mutable struct glm
     glm
     coefficients
     data
@@ -38,7 +38,7 @@ mutable struct svyglm
     df_null
     null_deviance
     df_residual
-    function svyglm_cons(glm, nullglm, data, weights,rtol,atol,maxiter)
+    function glm_cons(glm, nullglm, data, weights,rtol,atol,maxiter)
         out = new()
         out.glm = glm
         out.coefficients = coef(glm)
@@ -67,7 +67,7 @@ mutable struct svyglm
         out
     end
 
-    function svyglm(formula, design, dist=Normal(), link=canonicallink(dist))
+    function glm(formula, design, dist=Normal(), link=canonicallink(dist))
         data = design.variables
         rtol = 1e-8
         atol = 1e-8
@@ -76,14 +76,14 @@ mutable struct svyglm
 
         glmout = glm(formula, data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
         nullglm = glm(nullformula(formula), data, dist, link, wts = weights, rtol = rtol, atol = atol, maxiter = maxiter)
-        svyglm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)
+        glm_cons(glmout, nullglm, data, weights, rtol, atol, maxiter)
     end
 
-    svyglm(;formula, design, dist=Normal(), link=canonicallink(dist)) = svyglm(formula,design,dist,link)
+    glm(;formula, design, dist=Normal(), link=canonicallink(dist)) = glm(formula,design,dist,link)
 
 end
 
-function Base.show(io::IO, g::svyglm)
+function Base.show(io::IO, g::glm)
     print(g.glm)
     println("")
     println("Degrees of Freedom: $(g.df_null) (i.e. Null); $(g.df_residual) Residual")

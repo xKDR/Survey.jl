@@ -65,8 +65,8 @@ function Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign)
     printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
 end
 
-"Print information about a survey design initialized using `svydesign`."
-function Base.show(io::IO, ::MIME"text/plain", design::svydesign)
+"Print information about a survey design initialized using `design`."
+function Base.show(io::IO, ::MIME"text/plain", design::design)
     printstyled(io, "Survey Design:\n"; bold=true)
     printstyled(io, "variables: "; bold=true)
     println(io, size(design.variables, 1), "x", size(design.variables, 2), " DataFrame")

@@ -27,7 +27,7 @@ function sem(x::AbstractVector, design::SimpleRandomSample)
 end
 
 """
-    svymean(x, design)
+    mean(x, design)
 
 Compute the mean and SEM of the survey variable `x`.
 
@@ -36,7 +36,7 @@ julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
-julia> svymean(:enroll, srs)
+julia> mean(:enroll, srs)
 1×2 DataFrame
  Row │ mean     sem     
      │ Float64  Float64 
@@ -44,7 +44,7 @@ julia> svymean(:enroll, srs)
    1 │  584.61  27.3684
 ```
 """
-function svymean(x::Symbol, design::SimpleRandomSample)
+function mean(x::Symbol, design::SimpleRandomSample)
     if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
         p = combine(gdf, nrow => :counts)
@@ -54,13 +54,13 @@ function svymean(x::Symbol, design::SimpleRandomSample)
         p.se = sqrt.(p.var)
         return p
     end
-    return DataFrame(mean=mean(design.data[!, x]), sem=sem(x, design::SimpleRandomSample))
+    return DataFrame(mean=mean(design.data[!, x], dims=1), sem=sem(x, design::SimpleRandomSample))
 end
 
-function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
+function mean(x::Vector{Symbol}, design::SimpleRandomSample)
     means_list = []
     for i in x
-        push!(means_list, svymean(i, design))
+        push!(means_list, mean(i, design))
     end
     df = reduce(vcat, means_list)
     insertcols!(df, 1, :names => String.(x))
@@ -68,10 +68,10 @@ function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
 end
 
 """
-Inner method for `svyby`
+Inner method for `by`
 """
-# Inner methods for `svyby`
-function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
+# Inner methods for `by`
+function sem_by(x::AbstractVector, design::SimpleRandomSample)
     # domain size
     dsize = length(x)
     # sample size
@@ -85,17 +85,17 @@ function sem_svyby(x::AbstractVector, design::SimpleRandomSample)
 end
 
 """
-Inner method for `svyby` for SimpleRandomSample
+Inner method for `by` for SimpleRandomSample
 """
-function svymean(x::AbstractVector, design::SimpleRandomSample, weights)
-    return DataFrame(mean=mean(x), sem=sem_svyby(x, design))
+function mean(x::AbstractVector, design::SimpleRandomSample, weights)
+    return DataFrame(mean=mean(x), sem=sem_by(x, design))
 end
 
 """
-Inner method for `svyby` for StratifiedSample
+Inner method for `by` for StratifiedSample
 Calculates domain mean and its std error, based example 10.3.3 on pg394 Sarndal (1992)
 """
-function svymean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVector, sampfraction::AbstractVector, strata::AbstractVector)
+function mean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVector, sampfraction::AbstractVector, strata::AbstractVector)
     df = DataFrame(x=x, popsize=popsize, sampsize=sampsize, sampfraction=sampfraction, strata=strata)
     nsdh = []
     substrata_domain_totals = []
@@ -132,7 +132,7 @@ end
     Survey mean for StratifiedSample objects.
     Ref: Cochran (1977)
 """
-function svymean(x::Symbol, design::StratifiedSample)
+function mean(x::Symbol, design::StratifiedSample)
     if x == design.strata
         gdf = groupby(design.data, x)
         p = combine(gdf, :weights => sum => :Nₕ)
@@ -161,7 +161,7 @@ function svymean(x::Symbol, design::StratifiedSample)
     return DataFrame(Ȳ̂=Ȳ̂, SE=SE)
 end
 
-function svymean(::Bool; x::Symbol, design::StratifiedSample)
+function mean(::Bool; x::Symbol, design::StratifiedSample)
     gdf = groupby(design.data, design.strata)
     ȳₕ = combine(gdf, x => mean => :mean).mean
     s²ₕ = combine(gdf, x => var => :s²h).s²h

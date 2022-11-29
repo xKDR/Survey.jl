@@ -38,14 +38,14 @@ it is possible to calculate estimates of the mean or population total for a give
 along with the corresponding standard errors.
 
 ```julia
-julia> svymean(:api00, srs)
+julia> mean(:api00, srs)
 1×2 DataFrame
  Row │ mean     sem     
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 656.585  9.24972
 
-julia> svytotal(:api00, srs)
+julia> total(:api00, srs)
 1×2 DataFrame
  Row │ total      se_total 
      │ Float64    Float64  

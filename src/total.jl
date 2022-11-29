@@ -13,7 +13,7 @@ function se_tot(x::Symbol, design::SimpleRandomSample)
 end
 
 """
-    svytotal(x, design)
+    total(x, design)
 
 Estimate the population total for the variable specified by `x`.
 
@@ -22,7 +22,7 @@ julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
-julia> svytotal(:enroll, srs)
+julia> total(:enroll, srs)
 1×2 DataFrame
  Row │ total      se_total 
      │ Float64    Float64  
@@ -30,24 +30,24 @@ julia> svytotal(:enroll, srs)
    1 │ 3.62107e6  1.6952e5
 ```
 """
-function svytotal(x::Symbol, design::SimpleRandomSample)
+function total(x::Symbol, design::SimpleRandomSample)
     if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
         p = combine(gdf, nrow => :count)
         p.total = design.popsize .* p.count ./ sum(p.count)
         p.proportion = p.total ./ design.popsize
-        p = select!(p, Not(:count)) # count column is not necessary for `svytotal`
+        p = select!(p, Not(:count)) # count column is not necessary for `total`
         p.var = design.popsize^2 .* design.fpc .* p.proportion .*
                 (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* variance of proportion
         p.se = sqrt.(p.var)
         return p
     end
-    total = design.popsize * mean(design.data[!, x])
+    total = design.popsize * mean(x,design)
     return DataFrame(total=total, se_total=se_tot(x, design::SimpleRandomSample))
 end
 
-# Inner methods for `svyby`
-function se_total_svyby(x::AbstractVector, design::SimpleRandomSample, _)
+# Inner methods for `by`
+function se_total_by(x::AbstractVector, design::SimpleRandomSample, _)
     # vector of length equal to `sampsize` containing `x` and zeros
     z = cat(zeros(design.sampsize - length(x)), x; dims=1)
     # variance of the total
@@ -55,14 +55,14 @@ function se_total_svyby(x::AbstractVector, design::SimpleRandomSample, _)
     # return the standard error
     return sqrt(variance)
 end
-function svytotal(x::AbstractVector, design::SimpleRandomSample, weights)
+function total(x::AbstractVector, design::SimpleRandomSample, weights)
     total = wsum(x, weights)
-    return DataFrame(total=total, sem=se_total_svyby(x, design::SimpleRandomSample, weights))
+    return DataFrame(total=total, sem=se_total_by(x, design::SimpleRandomSample, weights))
 end
 
 # StratifiedSample
 
-function svytotal(x::Symbol, design::StratifiedSample)
+function total(x::Symbol, design::StratifiedSample)
     # TODO: check if statement
     if x == design.strata
         gdf = groupby(design.data, x)
@@ -85,10 +85,10 @@ function svytotal(x::Symbol, design::StratifiedSample)
     return DataFrame(grand_total=grand_total, SE=SE)
 end
 
-function svytotal(x::Vector{Symbol}, design::SimpleRandomSample)
+function total(x::Vector{Symbol}, design::SimpleRandomSample)
     totals_list = []
     for i in x
-        push!(totals_list, svytotal(i, design))
+        push!(totals_list, total(i, design))
     end
     df = reduce(vcat, totals_list)
     insertcols!(df, 1, :names => String.(x))

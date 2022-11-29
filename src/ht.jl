@@ -15,7 +15,7 @@ end
     Horvitz-Thompson Estimator of Population Total
     For arbitrary sampling probabilities
 """
-function ht_svytotal(x::Symbol, design)
+function ht_total(x::Symbol, design)
     total = wsum(Float32.(design.data[!, x]), design.data.weights)
     var_total = HT_HartleyRaoVarApprox(design.data[!, x], design, total)
     return DataFrame(total = total, se = sqrt(var_total))
@@ -26,8 +26,8 @@ end
     Horvitz-Thompson Estimator of Population Mean
     Scales the Population Total by the relevant
 """
-function ht_svymean(x::Symbol, design)
-    total_df = ht_svytotal(x, design)
+function ht_mean(x::Symbol, design)
+    total_df = ht_total(x, design)
     total = total_df.total[1]
     var_total = total_df.se[1]
     mean = 1.0 ./ sum(design.popsize) .* total

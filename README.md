@@ -27,21 +27,21 @@ srs = load_data("apisrs")
 
 dsrs = SimpleRandomSample(srs; weights = :pw)
 
-svymean(:api00, dsrs)
+mean(:api00, dsrs)
 1×2 DataFrame
  Row │ mean     sem     
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 656.585  9.24972
 
-svytotal(:enroll, dsrs)
+total(:enroll, dsrs)
 1×2 DataFrame
  Row │ total      se_total 
      │ Float64    Float64  
 ─────┼─────────────────────
    1 │ 3.62107e6  1.6952e5   
 
-svyby(:api00, :cname, dsrs, svymean)
+by(:api00, :cname, dsrs, mean)
 38×3 DataFrame
  Row │ cname            mean     sem      
      │ String15         Float64  Float64  
@@ -66,21 +66,21 @@ strat = load_data("apistrat")
 
 dstrat = StratifiedSample(strat, :stype; weights = :pw, popsize = :fpc)
 
-svymean(:api00, dstrat)
+mean(:api00, dstrat)
 1×2 DataFrame
  Row │ Ȳ̂        SE      
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 662.287  9.40894
 
-svytotal(:api00, dstrat)
+total(:api00, dstrat)
 1×2 DataFrame
  Row │ grand_total  SE      
      │ Float64      Float64 
 ─────┼──────────────────────
    1 │   4.10221e6  58279.0
 
-svyby(:api00, :cname, dstrat, svymean)
+by(:api00, :cname, dstrat, mean)
 40×3 DataFrame
  Row │ cname           domain_mean  domain_mean_se 
      │ String15        Float64      Float64        
