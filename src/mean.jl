@@ -6,11 +6,7 @@
 Compute the variance of the mean for the variable `x`.
 """
 function var_of_mean(x::Symbol, design::SimpleRandomSample)
-    return design.fpc ./ design.sampsize .* var(design.data[!, x])
-end
-
-function var_of_mean(x::AbstractVector, design::SimpleRandomSample)
-    return design.fpc ./ design.sampsize .* var(x)
+    return design.fpc * var(design.data[!, x]) / design.sampsize 
 end
 
 """
@@ -19,10 +15,6 @@ end
 Compute the standard error of the mean for the variable `x`.
 """
 function sem(x::Symbol, design::SimpleRandomSample)
-    return sqrt(var_of_mean(x, design))
-end
-
-function sem(x::AbstractVector, design::SimpleRandomSample)
     return sqrt(var_of_mean(x, design))
 end
 
@@ -54,7 +46,7 @@ function mean(x::Symbol, design::SimpleRandomSample)
         p.sem = sqrt.(p.var)
         return select(p, Not([:counts, :var]))
     end
-    return DataFrame(mean=mean(design.data[!, x], dims=1), sem=sem(x, design))
+    return DataFrame(mean=mean(design.data[!, x]), sem=sem(x, design))
 end
 
 function mean(x::Vector{Symbol}, design::SimpleRandomSample)
@@ -139,7 +131,7 @@ function mean(x::Symbol, design::StratifiedSample)
         p.Wₕ = p.Nₕ ./ sum(p.Nₕ)
         p = select!(p, Not(:Nₕ))
         return p
-    elseif isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
+    elseif isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
         p = combine(gdf, nrow => :counts)
         p.proportion = p.counts ./ sum(p.counts)
