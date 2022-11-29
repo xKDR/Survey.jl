@@ -45,17 +45,18 @@ julia> svymean(:enroll, srs)
 ```
 """
 function svymean(x::Symbol, design::SimpleRandomSample)
-    if isa(design.data[!, x], CategoricalArray)
+    if isa(x, Symbol) && isa(design.data[!, x], CategoricalArray)
         gdf = groupby(design.data, x)
         p = combine(gdf, nrow => :counts)
-        p.mean = p.counts ./ sum(p.counts)
+        p.proportion = p.counts ./ sum(p.counts)
         # variance of proportion
-        p.var = design.fpc .* p.mean .* (1 .- p.mean) ./ (design.sampsize - 1)
-        p.sem = sqrt.(p.var)
-        return select(p, Not([:counts, :var]))
+        p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1)
+        p.se = sqrt.(p.var)
+        return p
     end
     return DataFrame(mean=mean(design.data[!, x]), sem=sem(x, design::SimpleRandomSample))
 end
+
 function svymean(x::Vector{Symbol}, design::SimpleRandomSample)
     means_list = []
     for i in x
