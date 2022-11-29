@@ -6,7 +6,7 @@
     srs_new = SimpleRandomSample(apisrs_copy,popsize=:fpc,ignorefpc = true)
     # make a new copy to use for the old design
     apisrs_copy = copy(apisrs)
-    srs_old = svydesign(id = :1, data = apisrs)
+    srs_old = design(id = :1, data = apisrs)
     # `dim`
     @test dim(srs_new)[1] == dim(srs_old)[1]
     @test dim(srs_new)[2] == 42

@@ -1,7 +1,7 @@
 sturges(n::Integer) = ceil(Int, log2(n)) + 1
 sturges(vec::AbstractVector) = ceil(Int, log2(length(vec))) + 1
 sturges(df::DataFrame, var::Symbol) = ceil(Int, log2(size(df[!, var], 1))) + 1
-sturges(design::svydesign, var::Symbol) = sturges(design.variables, var)
+sturges(design::design, var::Symbol) = sturges(design.variables, var)
 
 """
     sturges(design::SurveyDesign, var::Symbol)
@@ -22,7 +22,7 @@ sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data, var)
 
 freedman_diaconis(v::AbstractVector) = round(Int, length(v)^(1 / 3) * (maximum(v) - minimum(v)) / (2 * iqr(v)))
 freedman_diaconis(df::DataFrame, var::Symbol) = freedman_diaconis(df[!, var])
-freedman_diaconis(design::svydesign, var::Symbol) = freedman_diaconis(design.variables[!, var])
+freedman_diaconis(design::design, var::Symbol) = freedman_diaconis(design.variables[!, var])
 
 """
     freedman_diaconis(design::SurveyDesign, var::Symbol)
@@ -42,7 +42,7 @@ julia> freedman_diaconis(srs, :enroll)
 freedman_diaconis(design::AbstractSurveyDesign, var::Symbol) = freedman_diaconis(design.data[!, var])
 
 """
-    svyhist(design, var, bins = freedman_diaconis; normalization = :density, kwargs...)
+    hist(design, var, bins = freedman_diaconis; normalization = :density, kwargs...)
 
 Histogram plot of a survey design variable given by `var`.
 
@@ -64,13 +64,13 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 ```@example histogram
 apisrs = load_data("apisrs");
 srs = SimpleRandomSample(apisrs;popsize=:fpc);
-h = svyhist(srs, :enroll)
+h = hist(srs, :enroll)
 save("hist.png", h); nothing # hide
 ```
 
 ![](assets/hist.png)
 """
-function svyhist(design::AbstractSurveyDesign, var::Symbol,
+function hist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
 				 normalization = :density,
 				 kwargs...
@@ -79,14 +79,14 @@ function svyhist(design::AbstractSurveyDesign, var::Symbol,
 	data(design.data) * mapping(var, weights = :weights) * hist |> draw
 end
 
-function svyhist(design::AbstractSurveyDesign, var::Symbol,
+function hist(design::AbstractSurveyDesign, var::Symbol,
 				 bins::Function;
 				 kwargs...
     			)
-    svyhist(design, var, bins(design, var); kwargs...)
+    hist(design, var, bins(design, var); kwargs...)
 end
 
-function svyhist(design::svydesign, var::Symbol,
+function hist(design::design, var::Symbol,
 				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
 				 normalization = :density,
 				 kwargs...
@@ -95,9 +95,9 @@ function svyhist(design::svydesign, var::Symbol,
 	data(design.variables) * mapping(var, weights = :weights) * hist |> draw
 end
 
-function svyhist(design::svydesign, var::Symbol,
+function hist(design::design, var::Symbol,
 				 bins::Function;
 				 kwargs...
     			)
-    svyhist(design, var, bins(design, var); kwargs...)
+    hist(design, var, bins(design, var); kwargs...)
 end
