@@ -47,7 +47,9 @@ function total(x::Symbol, design::SimpleRandomSample)
     return DataFrame(total=total, se_total=se_tot(x, design))
 end
 
-# Inner methods for `by`
+"""
+Inner methods for `by`
+"""
 function se_total_by(x::AbstractVector, design::SimpleRandomSample, _)
     # vector of length equal to `sampsize` containing `x` and zeros
     z = cat(zeros(design.sampsize - length(x)), x; dims=1)
@@ -56,12 +58,15 @@ function se_total_by(x::AbstractVector, design::SimpleRandomSample, _)
     # return the standard error
     return sqrt(variance)
 end
+
 function total(x::AbstractVector, design::SimpleRandomSample, weights)
     total = wsum(x, weights)
     return DataFrame(total=total, sem=se_total_by(x, design::SimpleRandomSample, weights))
 end
 
-# StratifiedSample
+"""
+total for StratifiedSample
+"""
 
 function total(x::Symbol, design::StratifiedSample)
     # TODO: check if statement
@@ -86,7 +91,10 @@ function total(x::Symbol, design::StratifiedSample)
     return DataFrame(grand_total=grand_total, SE=SE)
 end
 
-function total(x::Vector{Symbol}, design::SimpleRandomSample)
+"""
+Vectorise total operation over Vector{Symbol}
+"""
+function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
     totals_list = []
     for i in x
         push!(totals_list, total(i, design))
