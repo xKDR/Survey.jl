@@ -15,9 +15,8 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Examples" => "examples.md",
-        "Comparison with R" => "R_comparison.md",
-        "Performance" => "performance.md",
+        "Moving from R" => "R_comparison.md",
+        "API reference" => "api.md"
     ],
     checkdocs=:exports,
 )

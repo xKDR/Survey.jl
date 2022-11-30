@@ -20,8 +20,7 @@ end
 
 """
     mean(x, design)
-
-Compute the mean and SEM of the survey variable `x`.
+Estimate the population mean of a variable of a simple random sample, and the corresponding standard error.
 
 ```jldoctest
 julia> apisrs = load_data("apisrs");
@@ -121,7 +120,7 @@ function mean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVect
 end
 
 """
-    Survey mean for StratifiedSample objects.
+Estimate the population mean of a variable of a stratified sample, and the corresponding standard error.
     Ref: Cochran (1977)
 """
 function mean(x::Symbol, design::StratifiedSample)
