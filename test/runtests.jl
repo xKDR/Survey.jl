@@ -1,5 +1,6 @@
 using Survey
 using Test
+using CategoricalArrays
 
 @testset "Survey.jl" begin
     apiclus1 = load_data("apiclus1")

@@ -30,7 +30,6 @@
     @test mean_vec_sym.sem[2] ≈ 27.36836524766856 atol = 1e-4
     ##############################
     ### Categorical Array - estimating proportions
-    using CategoricalArrays
     apisrs_categ = copy(apisrs_original)
     apisrs_categ.stype = CategoricalArray(apisrs_categ.stype) # Convert a column to CategoricalArray
     srs_design_categ = SimpleRandomSample(apisrs_categ, popsize = :fpc)
