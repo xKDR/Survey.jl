@@ -1,8 +1,7 @@
 """
     AbstractSurveyDesign
 
-Supertype for every survey design type: [`SimpleRandomSample`](@ref), [`StratifiedSample`](@ref)
-and [`ClusterSample`](@ref).
+Supertype for every survey design type: [`SimpleRandomSample`](@ref) and [`StratifiedSample`](@ref).
 
 !!! note
 
@@ -35,17 +34,13 @@ If `popsize` not given, `weights` or `probs` must be given, so that in combinati
 with `sampsize`, `popsize` can be calculated.
 
 ```jldoctest
-julia> apisrs_original = load_data("apisrs");
+julia> apisrs = load_data("apisrs");
 
-julia> apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw;
-
-julia> apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1));
-
-julia> srs = SimpleRandomSample(apisrs_original; popsize=:fpc);
+julia> srs = SimpleRandomSample(apisrs; popsize=:fpc);
 
 julia> srs
 SimpleRandomSample:
-data: 200x44 DataFrame
+data: 200x42 DataFrame
 weights: 31.0, 31.0, 31.0, ..., 31.0
 probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
 fpc: 6194, 6194, 6194, ..., 6194
@@ -225,17 +220,13 @@ If `popsize` not given, `weights` or `probs` must be given, so that in combinati
 with `sampsize`, `popsize` can be calculated.
 
 ```jldoctest
-julia> apistrat_original = load_data("apistrat");
+julia> apistrat = load_data("apistrat");
 
-julia> apistrat_original[!, :derived_probs] = 1 ./ apistrat_original.pw;
+julia> dstrat = StratifiedSample(apistrat, :stype; popsize=:fpc);
 
-julia> apistrat_original[!, :derived_sampsize] = apistrat_original.fpc ./ apistrat_original.pw;
-
-julia> strat_pop = StratifiedSample(apistrat_original, :stype; popsize=:fpc);
-
-julia> strat_pop
+julia> dstrat
 StratifiedSample:
-data: 200x47 DataFrame
+data: 200x45 DataFrame
 strata: stype
 weights: 44.2, 44.2, 44.2, ..., 15.1
 probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
