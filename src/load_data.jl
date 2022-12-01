@@ -4,10 +4,7 @@ asset_path(args...) = joinpath(PKG_DIR, "assets", args...)
 """
     load_data(name)
 
-Load a dataset as a `DataFrame`.
-
-All available datasets can be found in the [`assets/`](https://github.com/xKDR/Survey.jl/tree/main/assets)
-directory.
+Load a sample dataset provided in the [`assets/`](https://github.com/xKDR/Survey.jl/tree/main/assets) directory a `DataFrame`.
 
 ```jldoctest
 julia> apisrs = load_data("apisrs")

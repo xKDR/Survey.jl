@@ -1,7 +1,7 @@
 """
     by(formula, by, design, function, params)
 
-Estimate the population parameters of for subpopulations of interest for a simple random sample. For example, you make have a simple random sample of heights of people, but you want the average height of male and female separately.  
+Estimate the population parameters of for subpopulations of interest for a simple random sample.  
 
 In the following example, the mean `api00` is estimated for each county. 
 ```jldoctest
@@ -42,7 +42,7 @@ end
 """
     by(formula, by, design, function)
 
-Estimate the population parameters of for subpopulations of interest for a stratified sample. For example, you make have a simple of heights of people stratified by region, but you want the average height of male and female separately.  
+Estimate the population parameters of for subpopulations of interest for a stratified sample.  
 
 In the following example, the average `api00` is estimated for each county. 
 
