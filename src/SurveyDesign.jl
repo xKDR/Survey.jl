@@ -1,7 +1,7 @@
 """
     AbstractSurveyDesign
 
-Supertype for every survey design type: [`SimpleRandomSample`](@ref) and [`StratifiedSample`](@ref).
+Supertype for every survey design type. 
 
 !!! note
 
@@ -13,7 +13,9 @@ abstract type AbstractSurveyDesign end
 """
     SimpleRandomSample <: AbstractSurveyDesign
 
-Survey design sampled by simple random sampling.
+
+A simple random sample dataset can be loaded from a data frame into a `SimpleRandomSample` object for downstream analyses. 
+
 # Required arguments:
 data - This is the survey dataset loaded as a DataFrame in memory. 
         Note: Keeping with Julia conventions, original data object
@@ -195,7 +197,7 @@ end
 """
     StratifiedSample <: AbstractSurveyDesign
 
-Survey design sampled by stratification.
+A stratified sample dataset can be loaded from a data frame into a `StatifiedSample` object for downstream analyses. 
 
 `strata` must be specified as a Symbol name of a column in `data`.
 
