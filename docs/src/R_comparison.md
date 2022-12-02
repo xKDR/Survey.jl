@@ -7,7 +7,7 @@ For the same operation, first the R and then the Julia code is presented.
 The `apisrs` data, which is provided in both `survey` and `Survey.jl`, is used as an example. It's a simple random sample of the Academic Performance Index of Californian schools.
 
 ### 1. Creating a design object
-The following example shows how to construct a design object for a simple random sample. 
+Instantiating a simple random sample survey design.
 
 ```R
 library(survey)
