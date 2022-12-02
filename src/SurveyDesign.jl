@@ -209,7 +209,7 @@ The `popsize`, `weights` and `probs` parameters follow the same rules as for [`S
 ```jldoctest
 julia> apistrat = load_data("apistrat");
 
-julia> dstrat = StratifiedSample(apistrat, :stype; popsize=:fpc);
+julia> dstrat = StratifiedSample(apistrat, :stype; popsize=:fpc)
 julia> dstrat
 StratifiedSample:
 data: 200x45 DataFrame
