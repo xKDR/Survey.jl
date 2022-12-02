@@ -1,5 +1,5 @@
 # Moving from R to Julia
-This sections presents examples to help move from R to Julia. Examples show R and Julia code for common operations in survey analysis. <br>
+This section presents examples to help move from R to Julia. Examples show R and Julia code for common operations in survey analysis. <br>
 For the same operation, first the R and then the Julia code is presented. 
 
 ## Simple random sample
