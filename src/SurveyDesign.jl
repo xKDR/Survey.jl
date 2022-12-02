@@ -196,25 +196,16 @@ A stratified sample dataset can be loaded from a data frame into a `StatifiedSam
 
 `strata` must be specified as a Symbol name of a column in `data`.
 
-# Required arguments:
-data    -   This is the survey dataset loaded as a DataFrame in memory. 
-            Note: Keeping with Julia conventions, original data object
-            is modified, not copied. Be careful
-strata  -   Column that is the stratification variable.
-# Optional arguments:
-sampsize -  Sample size of the survey, given as Symbol name of 
-            column in `data`, an `Unsigned` integer, or a Vector
-popsize  -  The (expected) population size of survey, given as Symbol 
-            name of column in `data`, an `Unsigned` integer, or a Vector
-weights  -  Sampling weights, passed as Symbol or Vector
-probs    -  Sampling probabilities, passed as Symbol or Vector
-ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
+# Arguments:
+`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+`strata::Symbol`: the stratification variable - must be given as a column in `data`.
+`sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=UInt(nrow(data))`:  the survey sample size.
+`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
+`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
+`probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
+`ignorefpc=false`: choose to ignore finite population correction and assume all weights equal to 1.0
 
-Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
-Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
-
-If `popsize` not given, `weights` or `probs` must be given, so that in combination 
-with `sampsize`, `popsize` can be calculated.
+The `popsize`, `weights` and `probs` parameters follow the same rules as for [`SimpleRandomSample`](@ref).
 
 ```jldoctest
 julia> apistrat = load_data("apistrat");
