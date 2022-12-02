@@ -14,7 +14,7 @@ abstract type AbstractSurveyDesign end
     SimpleRandomSample <: AbstractSurveyDesign
 
 
-A simple random sample dataset can be loaded from a data frame into a `SimpleRandomSample` object for downstream analyses. 
+Survey design sampled by simple random sampling.
 
 # Arguments:
 `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).

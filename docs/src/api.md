@@ -7,7 +7,7 @@ Module = [Survey]
 Order = [:type, :function]
 Private = false
 ```
-Survey data can be loaded from a `DataFrame` into a survey design object. The package currently supports simple random sample and stratified sample designs. 
+Survey data can be loaded from a `DataFrame` into a survey design. The package currently supports simple random sample and stratified sample designs. 
 ```@docs
 AbstractSurveyDesign
 SimpleRandomSample
