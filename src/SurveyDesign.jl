@@ -34,7 +34,6 @@ using the weights and the sample size.
 julia> apisrs = load_data("apisrs");
 
 julia> srs = SimpleRandomSample(apisrs; popsize=:fpc);
-
 julia> srs
 SimpleRandomSample:
 data: 200x42 DataFrame
