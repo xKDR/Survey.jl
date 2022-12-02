@@ -21,7 +21,7 @@ total(x::Symbol, design::SimpleRandomSample)
 quantile
 ```
 
-It is often required to estimate population parameters for sub-populations of interest. For example, you make have of heights of people, but you want the average height of male and female separately. 
+It is often required to estimate population parameters for sub-populations of interest. For example, you may have a sample of heights, but you want the average heights of males and females separately. 
 ```@docs
 by
 ```
