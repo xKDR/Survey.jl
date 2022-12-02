@@ -190,7 +190,7 @@ end
 """
     StratifiedSample <: AbstractSurveyDesign
 
-A stratified sample dataset can be loaded from a data frame into a `StatifiedSample` object for downstream analyses. 
+Survey design sampled by stratification.
 
 `strata` must be specified as a Symbol name of a column in `data`.
 
