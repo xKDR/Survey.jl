@@ -20,7 +20,6 @@ include("hist.jl")
 include("plot.jl")
 include("dimnames.jl")
 include("boxplot.jl")
-include("by.jl")
 include("show.jl")
 
 export load_data

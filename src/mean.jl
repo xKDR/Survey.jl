@@ -11,14 +11,14 @@ julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> mean(:enroll, srs)
 1×2 DataFrame
- Row │ mean     sem     
+ Row │ mean     se     
      │ Float64  Float64 
 ─────┼──────────────────
    1 │  584.61  27.3684
 ```
 """
 function mean(x::Symbol, design::SimpleRandomSample)
-    function sem(x::Symbol, design::SimpleRandomSample)
+    function se(x::Symbol, design::SimpleRandomSample)
         variance = design.fpc * Statistics.var(design.data[!, x]) / design.sampsize 
         return sqrt(variance)
     end
@@ -28,10 +28,10 @@ function mean(x::Symbol, design::SimpleRandomSample)
         p.mean = p.counts ./ sum(p.counts)
         # variance of proportion
         p.var = design.fpc .* p.mean .* (1 .- p.mean) ./ (design.sampsize - 1)
-        p.sem = sqrt.(p.var)
+        p.se = sqrt.(p.var)
         return select(p, Not([:counts, :var]))
     end
-    return DataFrame(mean=mean(design.data[!, x]), sem=sem(x, design))
+    return DataFrame(mean=mean(design.data[!, x]), se=se(x, design))
 end
 
 """
@@ -45,7 +45,7 @@ julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> mean([:api00, :api99], srs)
 2×3 DataFrame
- Row │ names   mean     sem     
+ Row │ names   mean     se     
      │ String  Float64  Float64 
 ─────┼──────────────────────────
    1 │ api00   656.585  9.24972
@@ -59,21 +59,38 @@ function mean(x::Vector{Symbol}, design::SimpleRandomSample)
 end
 
 """
-Inner method for `by` for SimpleRandomSample
+Calculates domain mean. 
+```jldoctest
+julia> using Survey; 
+
+julia> srs = load_data("apisrs"); 
+
+julia> srs = SimpleRandomSample(srs; popsize = :fpc);
+
+julia> mean(:api00, :cname, srs) |> first
+DataFrameRow
+ Row │ cname     mean     se     
+     │ String15  Float64  Float64 
+─────┼────────────────────────────
+   1 │ Kern        573.6  42.8026
+```
 """
-function mean(x::AbstractVector, design::SimpleRandomSample, weights)
-    function sem(x::AbstractVector, design::SimpleRandomSample)
-        nd = length(x)  # domain size
-        n = design.sampsize
-        fpc = design.fpc
-        variance = (nd / n)^(-2) / n * fpc * ((nd - 1) / (n - 1)) * var(x)
-        return sqrt(variance)
+function mean(x::Symbol, by::Symbol, design::SimpleRandomSample) 
+    function domain_mean(x::AbstractVector, design::SimpleRandomSample, weights)
+        function se(x::AbstractVector, design::SimpleRandomSample)
+            nd = length(x)  # domain size
+            n = design.sampsize
+            fpc = design.fpc
+            variance = (nd / n)^(-2) / n * fpc * ((nd - 1) / (n - 1)) * var(x)
+            return sqrt(variance)
+        end
+        return DataFrame(mean=Statistics.mean(x), se=se(x, design))
     end
-    return DataFrame(mean=Statistics.mean(x), sem=sem(x, design))
+    gdf = groupby(design.data, by)
+    combine(gdf, [x, :weights] => ((a, b) -> domain_mean(a, design, b)) => AsTable)
 end
 
 """
-Inner method for `by` for StratifiedSample
 Calculates domain mean and its std error, based example 10.3.3 on pg394 Sarndal (1992)
 
 ```jldoctest
@@ -83,7 +100,7 @@ julia> strat = load_data("apistrat");
 
 julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
 
-julia> by(:api00, :cname, dstrat, mean) |> first
+julia> mean(:api00, :cname, dstrat) |> first 
 DataFrameRow
  Row │ cname        domain_mean  domain_mean_se 
      │ String15     Float64      Float64        
@@ -91,20 +108,23 @@ DataFrameRow
    1 │ Los Angeles      633.511         21.3912
 ```
 """
-function mean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVector, sampfraction::AbstractVector, strata::AbstractVector)
-    df = DataFrame(x=x, popsize=popsize, sampsize=sampsize, sampfraction=sampfraction, strata=strata)
-    function calculate_components(x, popsize, sampsize, sampfraction)
-        return DataFrame(nsdh = length(x), nsh = length(x), substrata_domain_totals = sum(x), ȳsdh = mean(x), Nh = first(popsize), nh = first(sampsize),fh = first(sampfraction), sigma_ȳsh_squares = sum((x .- mean(x)).^2))
+function mean(x::Symbol, by::Symbol, design::StratifiedSample)
+    function domain_mean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVector, sampfraction::AbstractVector, strata::AbstractVector)
+        df = DataFrame(x=x, popsize=popsize, sampsize=sampsize, sampfraction=sampfraction, strata=strata)
+        function calculate_components(x, popsize, sampsize, sampfraction)
+            return DataFrame(nsdh = length(x), nsh = length(x), substrata_domain_totals = sum(x), ȳsdh = mean(x), Nh = first(popsize), nh = first(sampsize),fh = first(sampfraction), sigma_ȳsh_squares = sum((x .- mean(x)).^2))
+        end
+        components = combine(groupby(df, :strata), [:x, :popsize, :sampsize, :sampfraction] => calculate_components => AsTable)
+        domain_mean = sum(components.Nh .* components.substrata_domain_totals ./ components.nh) / sum(components.Nh .* components.nsdh ./ components.nh)
+        pdh = components.nsdh ./ components.nh
+        N̂d = sum(components.Nh .* pdh)
+        domain_var = sum(components.Nh .^ 2 .* (1 .- components.fh) .* (components.sigma_ȳsh_squares .+ (components.nsdh .* (1 .- pdh) .* (components.ȳsdh .- domain_mean) .^ 2)) ./ (components.nh .* (components.nh .- 1))) ./ N̂d .^ 2
+        domain_mean_se = sqrt(domain_var)
+        return DataFrame(domain_mean=domain_mean, domain_mean_se=domain_mean_se)
     end
-    components = combine(groupby(df, :strata), [:x, :popsize, :sampsize, :sampfraction] => calculate_components => AsTable)
-    domain_mean = sum(components.Nh .* components.substrata_domain_totals ./ components.nh) / sum(components.Nh .* components.nsdh ./ components.nh)
-    pdh = components.nsdh ./ components.nh
-    N̂d = sum(components.Nh .* pdh)
-    domain_var = sum(components.Nh .^ 2 .* (1 .- components.fh) .* (components.sigma_ȳsh_squares .+ (components.nsdh .* (1 .- pdh) .* (components.ȳsdh .- domain_mean) .^ 2)) ./ (components.nh .* (components.nh .- 1))) ./ N̂d .^ 2
-    domain_mean_se = sqrt(domain_var)
-    return DataFrame(domain_mean=domain_mean, domain_mean_se=domain_mean_se)
+    gdf_domain = groupby(design.data, by)
+    combine(gdf_domain, [x, :popsize,:sampsize,:sampfraction, design.strata] => domain_mean => AsTable)
 end
-
 """
 Estimate the population mean of a variable of a stratified sample, and the corresponding standard error.
     Ref: Cochran (1977)
@@ -118,7 +138,7 @@ julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
 
 julia> mean(:api00, dstrat)
 1×2 DataFrame
- Row │ mean     sem     
+ Row │ mean     se     
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 662.287  9.40894
@@ -151,7 +171,7 @@ function mean(x::Symbol, design::StratifiedSample)
     s²ₕ = combine(gdf, x => var => :s²h).s²h
     V̂Ȳ̂ = sum((Wₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-    return DataFrame(mean=Ȳ̂, sem=SE)
+    return DataFrame(mean=Ȳ̂, se=SE)
 end
 
 function mean(::Bool; x::Symbol, design::StratifiedSample)

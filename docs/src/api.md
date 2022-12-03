@@ -23,7 +23,8 @@ quantile
 
 It is often required to estimate population parameters for sub-populations of interest. For example, you make have of heights of people, but you want the average height of male and female separately. 
 ```@docs
-by
+mean(x::Symbol, by::Symbol, design::SimpleRandomSample) 
+total(x::Symbol, by::Symbol, design::SimpleRandomSample) 
 ```
 ```@docs
 plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
