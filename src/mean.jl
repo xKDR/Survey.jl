@@ -1,5 +1,3 @@
-# SimpleRandomSample
-
 """
     mean(x, design)
 Estimate the population mean of a variable of a simple random sample, and the corresponding standard error.
@@ -11,7 +9,7 @@ julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> mean(:enroll, srs)
 1×2 DataFrame
- Row │ mean     se     
+ Row │ mean     SE     
      │ Float64  Float64 
 ─────┼──────────────────
    1 │  584.61  27.3684
@@ -31,7 +29,7 @@ function mean(x::Symbol, design::SimpleRandomSample)
         p.se = sqrt.(p.var)
         return select(p, Not([:counts, :var]))
     end
-    return DataFrame(mean=mean(design.data[!, x]), se=se(x, design))
+    return DataFrame(mean=mean(design.data[!, x]), SE=se(x, design))
 end
 
 """
@@ -45,7 +43,7 @@ julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> mean([:api00, :api99], srs)
 2×3 DataFrame
- Row │ names   mean     se     
+ Row │ names   mean     SE     
      │ String  Float64  Float64 
 ─────┼──────────────────────────
    1 │ api00   656.585  9.24972
@@ -69,7 +67,7 @@ julia> srs = SimpleRandomSample(srs; popsize = :fpc);
 
 julia> mean(:api00, :cname, srs) |> first
 DataFrameRow
- Row │ cname     mean     se     
+ Row │ cname     mean     SE     
      │ String15  Float64  Float64 
 ─────┼────────────────────────────
    1 │ Kern        573.6  42.8026
@@ -84,7 +82,7 @@ function mean(x::Symbol, by::Symbol, design::SimpleRandomSample)
             variance = (nd / n)^(-2) / n * fpc * ((nd - 1) / (n - 1)) * var(x)
             return sqrt(variance)
         end
-        return DataFrame(mean=Statistics.mean(x), se=se(x, design))
+        return DataFrame(mean=Statistics.mean(x), SE=se(x, design))
     end
     gdf = groupby(design.data, by)
     combine(gdf, [x, :weights] => ((a, b) -> domain_mean(a, design, b)) => AsTable)
@@ -102,10 +100,10 @@ julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
 
 julia> mean(:api00, :cname, dstrat) |> first 
 DataFrameRow
- Row │ cname        domain_mean  domain_mean_se 
-     │ String15     Float64      Float64        
-─────┼──────────────────────────────────────────
-   1 │ Los Angeles      633.511         21.3912
+ Row │ cname        mean     SE      
+     │ String15     Float64  Float64 
+─────┼───────────────────────────────
+   1 │ Los Angeles  633.511  21.3912
 ```
 """
 function mean(x::Symbol, by::Symbol, design::StratifiedSample)
@@ -120,7 +118,7 @@ function mean(x::Symbol, by::Symbol, design::StratifiedSample)
         N̂d = sum(components.Nh .* pdh)
         domain_var = sum(components.Nh .^ 2 .* (1 .- components.fh) .* (components.sigma_ȳsh_squares .+ (components.nsdh .* (1 .- pdh) .* (components.ȳsdh .- domain_mean) .^ 2)) ./ (components.nh .* (components.nh .- 1))) ./ N̂d .^ 2
         domain_mean_se = sqrt(domain_var)
-        return DataFrame(domain_mean=domain_mean, domain_mean_se=domain_mean_se)
+        return DataFrame(mean=domain_mean, SE=domain_mean_se)
     end
     gdf_domain = groupby(design.data, by)
     combine(gdf_domain, [x, :popsize,:sampsize,:sampfraction, design.strata] => domain_mean => AsTable)
@@ -138,7 +136,7 @@ julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
 
 julia> mean(:api00, dstrat)
 1×2 DataFrame
- Row │ mean     se     
+ Row │ mean     SE     
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 662.287  9.40894
@@ -171,7 +169,7 @@ function mean(x::Symbol, design::StratifiedSample)
     s²ₕ = combine(gdf, x => var => :s²h).s²h
     V̂Ȳ̂ = sum((Wₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-    return DataFrame(mean=Ȳ̂, se=SE)
+    return DataFrame(mean=Ȳ̂, SE=SE)
 end
 
 function mean(::Bool; x::Symbol, design::StratifiedSample)

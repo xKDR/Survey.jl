@@ -6,7 +6,7 @@
 Estimate the population total for the variable specified by `x`.
 
 ```jldoctest
-julia> using  Survey;
+julia> using Survey;
 
 julia> apisrs = load_data("apisrs");
 
@@ -14,7 +14,7 @@ julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> total(:enroll, srs)
 1×2 DataFrame
- Row │ total      se 
+ Row │ total      SE 
      │ Float64    Float64  
 ─────┼─────────────────────
    1 │ 3.62107e6  1.6952e5
@@ -40,11 +40,11 @@ function total(x::Symbol, design::SimpleRandomSample)
     end
     m = mean(x,design)
     total = design.popsize * m.mean[1]
-    return DataFrame(total=total, se=se(x, design))
+    return DataFrame(total=total, SE=se(x, design))
 end
 
 """
-
+Estimate subpopulation total for a stratified sample. 
 ```jldoctest
 julia> using  Survey;
 
@@ -54,7 +54,7 @@ julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
 julia> total(:api00, :cname, srs) |> first
 DataFrameRow
- Row │ cname     total      se     
+ Row │ cname     total      SE     
      │ String15  Float64    Float64 
 ─────┼──────────────────────────────
    1 │ Kern      1.77644e5  55600.8
@@ -70,7 +70,7 @@ function total(x::Symbol, by::Symbol, design::SimpleRandomSample)
             return sqrt(variance)
         end
         total = wsum(x, weights)
-        return DataFrame(total=total, se=se(x, design::SimpleRandomSample, weights))
+        return DataFrame(total=total, SE=se(x, design::SimpleRandomSample, weights))
     end
     gdf = groupby(design.data, by)
     combine(gdf, [x, :weights] => ((a, b) -> domain_total(a, design, b)) => AsTable)
@@ -78,6 +78,21 @@ end
 
 """
 total for StratifiedSample
+
+```jldoctest
+julia> using Survey;
+
+julia> strat = load_data("apistrat");
+
+julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
+
+julia> total(:api00, dstrat)
+1×2 DataFrame
+ Row │ total      SE      
+     │ Float64    Float64 
+─────┼────────────────────
+   1 │ 4.10221e6  58279.0
+```
 """
 function total(x::Symbol, design::StratifiedSample)
     # TODO: check if statement
@@ -99,18 +114,30 @@ function total(x::Symbol, design::StratifiedSample)
     # the only difference between total and mean variance is the Nₕ instead of Wₕ
     V̂Ȳ̂ = sum((Nₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
-    return DataFrame(grand_total=grand_total, SE=SE)
+    return DataFrame(total=grand_total, SE=SE)
 end
 
 """
 Vectorise total operation over Vector{Symbol}
+
+```jldoctest
+julia> using Survey;
+
+julia> strat = load_data("apistrat");
+
+julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
+
+julia> total([:api00, :enroll], dstrat)
+2×3 DataFrame
+ Row │ names   total      SE            
+     │ String  Float64    Float64       
+─────┼──────────────────────────────────
+   1 │ api00   4.10221e6  58279.0
+   2 │ enroll  3.68718e6      1.14642e5
+```
 """
 function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
-    totals_list = []
-    for i in x
-        push!(totals_list, total(i, design))
-    end
-    df = reduce(vcat, totals_list)
+    df = reduce(vcat, [total(i, design) for i in x])
     insertcols!(df, 1, :names => String.(x))
     return df
 end
