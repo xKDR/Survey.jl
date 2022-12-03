@@ -4,42 +4,59 @@ CurrentModule = Survey
 
 # Survey
 
-This package is the Julia implementation of the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
+This package is used to study complex survey data. It aims to be a fast alternative to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
 
-## The need for moving the code to Julia.
+This package currently supports simple random sample and stratified sample. In future releases, it will support multistage sampling as well. 
 
-At [xKDR](https://xkdr.org/) we processed millions of records from household surveys using the survey package in R. This process took hours of computing time. By implementing the code in Julia, we are able to do the processing in seconds. In this package we have implemented the functions `mean`, `quantile` and `sum`. We have kept the syntax between the two packages similar so that we can easily move our existing code to the new language.
+## Basic demo
 
-## Index
+The following demo uses the
+[Academic Performance Index](https://r-survey.r-forge.r-project.org/survey/html/api.html)
+(API) dataset for Californian schools. The data sets contain information for all schools
+with at least 100 students and for various probability samples of the data.
 
-```@index
-Module = [Survey]
-Order = [:type, :function]
-Private = false
+The API program has been discontinued at the end of 2018. Information is archived at
+[https://www.cde.ca.gov/re/pr/api.asp](https://www.cde.ca.gov/re/pr/api.asp)
+
+Firstly, a survey design needs a dataset from which to gather information. 
+
+
+The sample datasets provided with the package can be loaded as `DataFrames` using the `load_data` function:
+
+```julia
+julia> apisrs = load_data("apisrs");
+```
+`apisrs` is a simple random sample of the Academic Performance Index of Californian schools.
+
+Next, we can build a design. The design corresponding to a simple random sample is [`SimpleRandomSample`](@ref), which can be instantiated by calling the constructor:
+
+```julia
+julia> srs = SimpleRandomSample(apisrs; weights = :pw)
+SimpleRandomSample:
+data: 200x42 DataFrame
+weights: 31.0, 31.0, 31.0, ..., 31.0
+probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
+fpc: 6194, 6194, 6194, ..., 6194
+popsize: 6194
+sampsize: 200
+sampfraction: 0.0323
+ignorefpc: false
 ```
 
-## API
-```@docs
-AbstractSurveyDesign
-SimpleRandomSample
-StratifiedSample
-ClusterSample
-design
-load_data
-mean(x::Symbol, design::SimpleRandomSample)
-total(x::Symbol, design::SimpleRandomSample)
-quantile
-by
-colnames(design::AbstractSurveyDesign)
-dim(design::AbstractSurveyDesign)
-dimnames(design::AbstractSurveyDesign)
-plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
-boxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
-hist(design::AbstractSurveyDesign, var::Symbol,
-				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
-				 normalization = :density,
-				 kwargs...
-    			)
-freedman_diaconis
-sturges
+With a `SimpleRandomSample` (as well as with any subtype of [`AbstractSurveyDesign`](@ref)) it is possible to calculate estimates of the mean, population total, etc., for a given variable, along with the corresponding standard errors.
+
+```julia
+julia> mean(:api00, srs)
+1×2 DataFrame
+ Row │ mean     sem     
+     │ Float64  Float64 
+─────┼──────────────────
+   1 │ 656.585  9.24972
+
+julia> total(:api00, srs)
+1×2 DataFrame
+ Row │ total      se_total 
+     │ Float64    Float64  
+─────┼─────────────────────
+   1 │ 4.06689e6   57292.8
 ```

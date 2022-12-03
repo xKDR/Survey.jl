@@ -1,8 +1,9 @@
 """
     by(formula, by, design, function, params)
 
-Generate subsets of a survey design.
+Estimate the population parameters of for subpopulations of interest for a simple random sample.  
 
+In the following example, the mean `api00` is estimated for each county. 
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
@@ -41,7 +42,9 @@ end
 """
     by(formula, by, design, function)
 
-Generate subsets of a StratifiedSample.
+Estimate the population parameters of for subpopulations of interest for a stratified sample.  
+
+In the following example, the average `api00` is estimated for each county. 
 
 ```jldoctest
 julia> apistrat = load_data("apistrat");

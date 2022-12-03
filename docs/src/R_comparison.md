@@ -1,98 +1,121 @@
-# Comparison with R
+# Moving from R to Julia
+This section presents examples to help move from R to Julia. Examples show R and Julia code for common operations in survey analysis. <br>
+For the same operation, first the R and then the Julia code is presented. 
 
-In the following examples, we'll compare Julia's performance to R's on the same set of operations.
+## Simple random sample
 
-## Installing and loading the package
-**R**
+The `apisrs` data, which is provided in both `survey` and `Survey.jl`, is used as an example. It's a simple random sample of the Academic Performance Index of Californian schools.
 
-```r
-install.package("survey")
+### 1. Creating a survey design
+Instantiating a simple random sample survey design.
+
+```R
 library(survey)
-```
-
-**Julia**
-```julia
-using Pkg
-Pkg.add(url = "https://github.com/xKDR/Survey.jl.git")
-using Survey
-```
-
-The following command in the Pkg REPL may also be used to install the package.
-```
-add "https://github.com/xKDR/Survey.jl.git"
-```
-
-## API data
-
-The Academic Performance Index is computed for all California schools based on standardised testing of students. The [data sets](https://cran.r-project.org/web/packages/survey/survey.pdf) contain information for all schools with at least 100 students and for various probability samples of the data. apiclus1 is a cluster sample of school districts, apistrat is a sample stratified by stype.
-
-In the following examples, we'll use the apiclus1 data from the api dataset.
-
-The api dataset can be loaded using the following command:
-
-**R**
-```r
 data(api)
+dsrs = svydesign(id = ~1, data = apisrs, weights = ~pw, fpc = ~fpc)
 ```
 
-**Julia**
 ```julia
-apiclus1 = load_data("apiclus1")
+using Survey
+srs = load_data("apisrs")
+dsrs = SimpleRandomSample(srs; popsize = :fpc)
 ```
 
-## svydesign
-[The ```svydesign``` object combines a data frame and all the survey design information needed to analyse it.](https://www.rdocumentation.org/packages/survey/versions/4.1-1/topics/svydesign)
+### 2. Mean
+In the following example the mean of the variable `api00` is calculated. 
 
-A ```design``` object can be constructed with the following command:
-
-**R**
-```r
-dclus1 <-svydesign(id = ~1, weights = ~pw, data = apiclus1, fpc = ~fpc)
+```R
+svymean(~api00, dsrs)
 ```
-
-**Julia**
 ```julia
-dclus1 = design(id = :1, weights = :pw, data = apiclus1, fpc = :fpc)
+mean(:api00, dsrs)
 ```
 
-## by
-The `by` function can be used to generate stratified estimates.
+### 3. Total
+In the following example the sum of the variable `api00` is calculated. 
 
-### Mean
-Weighted mean of a variable by strata can be computed using the following command:
-
-**R**
-```r
-svyby(~api00, by = ~cname, design = dclus1, svymean)
+```R
+svytotal(~api00, dsrs)
 ```
-
-**Julia**
 ```julia
-by(:api00, :cname, dclus1, mean)
+total(:api00, dsrs)
 ```
 
-### Sum
-Weighted sum of a variable by strata can be computed using the following command:
-
-**R**
-```r
-svyby(~api00, by = ~cname, design = dclus1, svytotal)
+### 4. Quantile
+In the following example the median of the variable `api00` is calculated.
+```R
+svyquantile(~api00, dsrs, 0.5)
 ```
-
-**Julia**
 ```julia
-by(:api00, :cname, dclus1, total)
+quantile(:api00, dsrs, 0.5)
 ```
 
-### Quantile
-Weighted quantile of a variable by strata can be computed using the following command:
+### 5. Domain estimation
+In the following example the mean of the variable `api00` is calculated grouped by the variable `cname`. 
 
-**R**
-```r
-svyby(~api00, by = ~cname, design = dclus1, svyquantile, quantile = 0.63)
+```R
+svyby(~api00, ~cname, dsrs, svymean)
 ```
 
-**Julia**
 ```julia
-by(:api00, :cname, dclus1, quantile, 0.63)
+by(:api00, :cname, dsrs, mean)
+```
+
+## Stratified sample
+
+The `apistrat` data, which is provided in both `survey` and `Survey`, is used as an example. It's a stratified sample of the Academic Performance Index of Californian schools.
+
+### 1. Creating a design object
+The following example shows how to construct a design object for a stratified sample. 
+
+```R
+library(survey)
+data(api)
+dstrat = svydesign(id = ~1, data = apistrat, strata = ~stype, weights = ~pw, fpc = ~fpc)
+```
+
+```julia
+using Survey
+strat = load_data("apistrat")
+dstrat = StratifiedSample(strat, :stype; popsize  = :fpc)
+```
+
+### 2. Mean
+In the following example the mean of the variable `api00` is calculated. 
+
+```R
+svymean(~api00, dstrat)
+```
+```julia
+mean(:api00, dstrat)
+```
+
+### 3. Total
+In the following example the sum of the variable `api00` is calculated. 
+
+```R
+svytotal(~api00, dstrat)
+```
+```julia
+total(:api00, dstrat)
+```
+
+### 4. Quantile
+In the following example the median of the variable `api00` is calculated.
+```R
+svyquantile(~api00, dstrat, 0.5)
+```
+```julia
+quantile(:api00, dstrat, 0.5)
+```
+
+### 5. Domain estimation
+In the following example the mean of the variable `api00` is calculated grouped by the variable `cname`. 
+
+```R
+svyby(~api00, ~cname, dstrat, svymean)
+```
+
+```julia
+by(:api00, :cname, dstrat, mean)
 ```

@@ -1,8 +1,7 @@
 """
     AbstractSurveyDesign
 
-Supertype for every survey design type: [`SimpleRandomSample`](@ref), [`StratifiedSample`](@ref)
-and [`ClusterSample`](@ref).
+Supertype for every survey design type. 
 
 !!! note
 
@@ -14,38 +13,29 @@ abstract type AbstractSurveyDesign end
 """
     SimpleRandomSample <: AbstractSurveyDesign
 
+
 Survey design sampled by simple random sampling.
-# Required arguments:
-data - This is the survey dataset loaded as a DataFrame in memory. 
-        Note: Keeping with Julia conventions, original data object
-        is modified, not copied. Be careful
-# Optional arguments:
-sampsize -  Sample size of the survey, given as Symbol name of 
-            column in `data`, an `Unsigned` integer, or a Vector
-popsize  -  The (expected) population size of survey, given as Symbol 
-            name of column in `data`, an `Unsigned` integer, or a Vector
-weights  -  Sampling weights, passed as Symbol or Vector
-probs    -  Sampling probabilities, passed as Symbol or Vector
-ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
 
-Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
-Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
+# Arguments:
+`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+`sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=UInt(nrow(data))`:  the survey sample size.
+`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
+`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
+`probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
+`ignorefpc=false`: choose to ignore finite population correction and assume all weights equal to 1.0
 
-If `popsize` not given, `weights` or `probs` must be given, so that in combination 
-with `sampsize`, `popsize` can be calculated.
+The precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs`.
+E.g. If `popsize` is given then it is assumed to be the ground truth over `weights` or `probs`.
+
+If `popsize` is not given `weights` or `probs` must be given. `popsize` is then calculated
+using the weights and the sample size.
 
 ```jldoctest
-julia> apisrs_original = load_data("apisrs");
+julia> apisrs = load_data("apisrs");
 
-julia> apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw;
-
-julia> apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1));
-
-julia> srs = SimpleRandomSample(apisrs_original; popsize=:fpc);
-
-julia> srs
+julia> srs = SimpleRandomSample(apisrs; popsize=:fpc)
 SimpleRandomSample:
-data: 200x44 DataFrame
+data: 200x42 DataFrame
 weights: 31.0, 31.0, 31.0, ..., 31.0
 probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
 fpc: 6194, 6194, 6194, ..., 6194
@@ -204,38 +194,23 @@ Survey design sampled by stratification.
 
 `strata` must be specified as a Symbol name of a column in `data`.
 
-# Required arguments:
-data    -   This is the survey dataset loaded as a DataFrame in memory. 
-            Note: Keeping with Julia conventions, original data object
-            is modified, not copied. Be careful
-strata  -   Column that is the stratification variable.
-# Optional arguments:
-sampsize -  Sample size of the survey, given as Symbol name of 
-            column in `data`, an `Unsigned` integer, or a Vector
-popsize  -  The (expected) population size of survey, given as Symbol 
-            name of column in `data`, an `Unsigned` integer, or a Vector
-weights  -  Sampling weights, passed as Symbol or Vector
-probs    -  Sampling probabilities, passed as Symbol or Vector
-ignorefpc-  Ignore finite population correction and assume all weights equal to 1.0
+# Arguments:
+`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+`strata::Symbol`: the stratification variable - must be given as a column in `data`.
+`sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=UInt(nrow(data))`:  the survey sample size.
+`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
+`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
+`probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
+`ignorefpc=false`: choose to ignore finite population correction and assume all weights equal to 1.0
 
-Precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs` 
-Eg. if `popsize` given then assumed ground truth over `weights` or `probs`
-
-If `popsize` not given, `weights` or `probs` must be given, so that in combination 
-with `sampsize`, `popsize` can be calculated.
+The `popsize`, `weights` and `probs` parameters follow the same rules as for [`SimpleRandomSample`](@ref).
 
 ```jldoctest
-julia> apistrat_original = load_data("apistrat");
+julia> apistrat = load_data("apistrat");
 
-julia> apistrat_original[!, :derived_probs] = 1 ./ apistrat_original.pw;
-
-julia> apistrat_original[!, :derived_sampsize] = apistrat_original.fpc ./ apistrat_original.pw;
-
-julia> strat_pop = StratifiedSample(apistrat_original, :stype; popsize=:fpc);
-
-julia> strat_pop
+julia> dstrat = StratifiedSample(apistrat, :stype; popsize=:fpc)
 StratifiedSample:
-data: 200x47 DataFrame
+data: 200x45 DataFrame
 strata: stype
 weights: 44.2, 44.2, 44.2, ..., 15.1
 probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
