@@ -1,5 +1,6 @@
 """
     mean(x, design)
+
 Estimate the population mean of a variable of a simple random sample, and the corresponding standard error.
 
 The calculations were done according to the book [Sampling Techniques](https://www.academia.edu/29684662/Cochran_1977_Sampling_Techniques_Third_Edition)
@@ -90,7 +91,9 @@ function mean(x::Symbol, design::StratifiedSample)
 end
 
 """
-Estimate domain-wise mean.
+    mean(x, by, design)
+
+Estimate the subpopulation mean of a variable `x`.
 
 The calculations were done according to the book [Calibration Estimators in Survey Sampling](https://www.tandfonline.com/doi/abs/10.1080/01621459.1992.10475217)
 by Jean-Claude Deville and Carl-Erik Sarndal.
