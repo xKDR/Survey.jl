@@ -9,25 +9,25 @@
     apisrs = copy(apisrs_original)
     srs = SimpleRandomSample(apisrs, popsize = :fpc)
     @test mean(:api00, srs).mean[1] ≈ 656.585 atol = 1e-4
-    @test mean(:api00, srs).sem[1] ≈ 9.249722039282807 atol = 1e-4
+    @test mean(:api00, srs).SE[1] ≈ 9.249722039282807 atol = 1e-4
     @test mean(:enroll, srs).mean[1] ≈ 584.61 atol = 1e-4
-    @test mean(:enroll, srs).sem[1] ≈ 27.36836524766856 atol = 1e-4
+    @test mean(:enroll, srs).SE[1] ≈ 27.36836524766856 atol = 1e-4
     # ignorefpc = true
     apisrs = copy(apisrs_original)
     srs = SimpleRandomSample(apisrs, popsize=:fpc,ignorefpc = true)
     @test mean(:api00, srs).mean[1] ≈ 656.585 atol = 1e-4
-    @test mean(:api00, srs).sem[1] ≈ 9.402772170880636 atol = 1e-4
+    @test mean(:api00, srs).SE[1] ≈ 9.402772170880636 atol = 1e-4
     @test mean(:enroll, srs).mean[1] ≈ 584.61 atol = 1e-4
-    @test mean(:enroll, srs).sem[1] ≈ 27.821214737089324 atol = 1e-4
+    @test mean(:enroll, srs).SE[1] ≈ 27.821214737089324 atol = 1e-4
     ##############################
     ### Vector of Symbols
     apisrs = copy(apisrs_original)
     srs = SimpleRandomSample(apisrs, popsize = :fpc)
     mean_vec_sym = mean([:api00,:enroll], srs)
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
-    @test mean_vec_sym.sem[1] ≈ 9.249722039282807 atol = 1e-4
+    @test mean_vec_sym.SE[1] ≈ 9.249722039282807 atol = 1e-4
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
-    @test mean_vec_sym.sem[2] ≈ 27.36836524766856 atol = 1e-4
+    @test mean_vec_sym.SE[2] ≈ 27.36836524766856 atol = 1e-4
     ##############################
     ### Categorical Array - estimating proportions
     apisrs_categ = copy(apisrs_original)
