@@ -167,7 +167,7 @@ function mean(x::Symbol, design::StratifiedSample)
         p.proportion = p.counts ./ sum(p.counts)
         # variance of proportion
         p.var = design.fpc .* p.proportion .* (1 .- p.proportion) ./ (design.sampsize - 1)
-        p.se = sqrt.(p.var)
+        p.SE = sqrt.(p.var)
         return p
     end
     gdf = groupby(design.data, design.strata)
