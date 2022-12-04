@@ -57,7 +57,7 @@ function mean(x::Vector{Symbol}, design::SimpleRandomSample)
 end
 
 """
-Calculates domain mean. 
+Estimates domain-wise mean. 
 ```jldoctest
 julia> using Survey; 
 
