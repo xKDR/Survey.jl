@@ -57,7 +57,9 @@ function mean(x::Vector{Symbol}, design::SimpleRandomSample)
 end
 
 """
-Estimate domain-wise mean. 
+Estimate domain-wise mean.
+
+The calculations were done according to the book [Calibration Estimators in Survey Sampling] by Jean-Claude Deville and Carl-Erik Sarndal(https://www.tandfonline.com/doi/abs/10.1080/01621459.1992.10475217).
 ```jldoctest
 julia> using Survey; 
 
