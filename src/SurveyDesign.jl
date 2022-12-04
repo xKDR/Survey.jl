@@ -143,7 +143,6 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             if ignorefpc && !(isapprox(sum(weights), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
                 error("sum of sampling weights should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
-                @show sum(weights)
                 error("sum of sampling weights must be equal to `popsize` for `SimpleRandomSample`")
             end
         end
@@ -152,7 +151,6 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
                 error("sum of inverse sampling probabilities should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
-                @show sum(1 ./ probs)
                 error("sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
             end
         end
@@ -296,7 +294,6 @@ struct StratifiedSample <: AbstractSurveyDesign
         end
         # If sampsize greater than popsize than illogical arguments specified.
         if any(sampsize .> popsize)
-            @show sampsize, popsize
             error("population sizes were estimated to be less than sampsize. please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??
