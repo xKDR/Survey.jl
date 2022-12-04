@@ -110,7 +110,16 @@ function mean(x::Symbol, by::Symbol, design::StratifiedSample)
     function domain_mean(x::AbstractVector, popsize::AbstractVector, sampsize::AbstractVector, sampfraction::AbstractVector, strata::AbstractVector)
         df = DataFrame(x=x, popsize=popsize, sampsize=sampsize, sampfraction=sampfraction, strata=strata)
         function calculate_components(x, popsize, sampsize, sampfraction)
-            return DataFrame(nsdh = length(x), nsh = length(x), substrata_domain_totals = sum(x), ȳsdh = mean(x), Nh = first(popsize), nh = first(sampsize),fh = first(sampfraction), sigma_ȳsh_squares = sum((x .- mean(x)).^2))
+            return DataFrame(
+                nsdh = length(x),
+                nsh = length(x),
+                substrata_domain_totals = sum(x),
+                ȳsdh = mean(x),
+                Nh = first(popsize),
+                nh = first(sampsize),
+                fh = first(sampfraction),
+                sigma_ȳsh_squares = sum((x .- mean(x)).^2)
+                )
         end
         components = combine(groupby(df, :strata), [:x, :popsize, :sampsize, :sampfraction] => calculate_components => AsTable)
         domain_mean = sum(components.Nh .* components.substrata_domain_totals ./ components.nh) / sum(components.Nh .* components.nsdh ./ components.nh)
