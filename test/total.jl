@@ -10,7 +10,7 @@
     srs = SimpleRandomSample(apisrs, popsize = :fpc)
     tot = total(:api00, srs)
     @test tot.total[1] ≈ 4.06688749e6 atol = 1e-4
-    @test tot.se_total[1] ≈ 57292.7783113177 atol = 1e-4
+    @test tot.SE[1] ≈ 57292.7783113177 atol = 1e-4
     # TODO: ignorefpc tests dont actaully work??
     # # without fpc
     srs_ignorefpc = SimpleRandomSample(apisrs, popsize = :fpc, ignorefpc = true)

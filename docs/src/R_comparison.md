@@ -58,7 +58,17 @@ svyby(~api00, ~cname, dsrs, svymean)
 ```
 
 ```julia
-by(:api00, :cname, dsrs, mean)
+mean(:api00, :cname, dsrs)
+```
+
+In the following example the total of the variable `api00` is calculated grouped by the variable `cname`. 
+
+```R
+svyby(~api00, ~cname, dsrs, svytotal)
+```
+
+```julia
+total(:api00, :cname, dsrs)
 ```
 
 ## Stratified sample
@@ -117,5 +127,5 @@ svyby(~api00, ~cname, dstrat, svymean)
 ```
 
 ```julia
-by(:api00, :cname, dstrat, mean)
+mean(:api00, :cname, dstrat)
 ```
