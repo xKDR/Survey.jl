@@ -165,10 +165,3 @@ function mean(x::Symbol, by::Symbol, design::StratifiedSample)
     gdf_domain = groupby(design.data, by)
     combine(gdf_domain, [x, :popsize,:sampsize,:sampfraction, design.strata] => domain_mean => AsTable)
 end
-
-function mean(::Bool; x::Symbol, design::StratifiedSample)
-    gdf = groupby(design.data, design.strata)
-    ȳₕ = combine(gdf, x => mean => :mean).mean
-    s²ₕ = combine(gdf, x => var => :s²h).s²h
-    return DataFrame(ȳₕ, s²ₕ)
-end
