@@ -35,7 +35,7 @@ function total(x::Symbol, design::SimpleRandomSample)
         p = select!(p, Not(:count)) # count column is not necessary for `total`
         p.var = design.popsize^2 .* design.fpc .* p.proportion .*
                 (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* variance of proportion
-        p.se_tot = sqrt.(p.var)
+        p.SE = sqrt.(p.var)
         return select(p, Not([:proportion, :var]))
     end
     m = mean(x,design)
