@@ -67,14 +67,11 @@ function total(x::Symbol, design::StratifiedSample)
         return combine(gdf, :weights => sum => :Nₕ)
     end
     gdf = groupby(design.data, design.strata)
-    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total) # works
+    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total)
     # variance estimation using closed-form formula
-    ȳₕ = combine(gdf, x => mean => :mean).mean
     Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
     nₕ = combine(gdf, nrow => :nₕ).nₕ
     fₕ = nₕ ./ Nₕ
-    Wₕ = Nₕ ./ sum(Nₕ)
-    Ȳ̂ = sum(Wₕ .* ȳₕ)
 
     s²ₕ = combine(gdf, x => var => :s²h).s²h
     # the only difference between total and mean variance is the Nₕ instead of Wₕ
