@@ -37,7 +37,14 @@
     @test tot.SE[2] ≈ 169520 atol = 1
 
     # subpopulation
-    # TODO: add tests
+    apisrs = copy(apisrs_original)
+    srs = SimpleRandomSample(apisrs; popsize = :fpc)
+    tot = total(:api00, :cname, srs)
+    @test size(tot)[1] == apisrs.cname |> unique |> length
+    @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 917238.49 atol = 1e-2
+    @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 122289.00 atol = 1e-2
+    @test filter(:cname => ==("Monterey"), tot).total[1] ≈ 74947.40 atol = 1e-2
+    @test filter(:cname => ==("Monterey"), tot).SE[1] ≈ 37616.17 atol = 1e-2
 end
 
 @testset "total_Stratified" begin
@@ -50,6 +57,7 @@ end
     @test tot.total[1] ≈ 4102208 atol = 1e-1
     @test tot.SE[1] ≈ 58279 atol = 1e-1
     # without fpc
+    apistrat = copy(apistrat_original)
     strat_ignorefpc = StratifiedSample(apistrat, :stype; popsize = :fpc, ignorefpc = true)
     tot = total(:api00, strat_ignorefpc)
     @test tot.total[1] ≈ 130564 atol = 1e-4
@@ -81,5 +89,6 @@ end
     @test tot.SE[2] ≈ 114642 atol = 1
 
     # subpopulation
+    # TODO: add functionality in `src/total.jl`
     # TODO: add tests
 end
