@@ -22,7 +22,7 @@ Survey design sampled by simple random sampling.
 `popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
 `weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
 `probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
-`ignorefpc=false`: choose to ignore finite population correction and assume all weights equal to 1.0
+`ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0
 
 The precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs`.
 E.g. If `popsize` is given then it is assumed to be the ground truth over `weights` or `probs`.
@@ -53,27 +53,12 @@ struct SimpleRandomSample <: AbstractSurveyDesign
     fpc::Float64
     ignorefpc::Bool
     function SimpleRandomSample(data::AbstractDataFrame;
-        popsize=nothing,
-        sampsize=nrow(data) |> UInt,
-        weights=nothing,
-        probs=nothing,
-        ignorefpc=false
+        popsize::Union{Nothing,Symbol,Unsigned,Vector{<:Real}}=nothing,
+        sampsize::Union{Nothing,Symbol,Unsigned,Vector{<:Real}}=nrow(data) |> UInt,
+        weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
+        probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
+        ignorefpc::Bool=false
     )
-        # Only valid argument types given to constructor
-        argtypes_weights = Union{Nothing,Symbol,Vector{<:Real}}
-        argtypes_probs = Union{Nothing,Symbol,Vector{<:Real}}
-        argtypes_popsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}
-        argtypes_sampsize = Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}
-        # If any invalid type raise error
-        if !(isa(weights, argtypes_weights))
-            error("invalid type of argument given for `weights` argument")
-        elseif !(isa(probs, argtypes_probs))
-            error("invalid type of argument given for `probs` argument")
-        elseif !(isa(popsize, argtypes_popsize))
-            error("invalid type of argument given for `popsize` argument")
-        elseif !(isa(sampsize, argtypes_sampsize))
-            error("invalid type of argument given for `sampsize` argument")
-        end
         # If any of weights or probs given as Symbol,
         # find the corresponding column in `data`
         if isa(weights, Symbol)
@@ -158,7 +143,6 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             if ignorefpc && !(isapprox(sum(weights), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
                 error("sum of sampling weights should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
-                @show sum(weights)
                 error("sum of sampling weights must be equal to `popsize` for `SimpleRandomSample`")
             end
         end
@@ -167,7 +151,6 @@ struct SimpleRandomSample <: AbstractSurveyDesign
             if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
                 error("sum of inverse sampling probabilities should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
             elseif !ignorefpc
-                @show sum(1 ./ probs)
                 error("sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
             end
         end
@@ -201,7 +184,7 @@ Survey design sampled by stratification.
 `popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
 `weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
 `probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
-`ignorefpc=false`: choose to ignore finite population correction and assume all weights equal to 1.0
+`ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0
 
 The `popsize`, `weights` and `probs` parameters follow the same rules as for [`SimpleRandomSample`](@ref).
 
@@ -226,27 +209,12 @@ struct StratifiedSample <: AbstractSurveyDesign
     strata::Symbol
     ignorefpc::Bool
     function StratifiedSample(data::AbstractDataFrame, strata::Symbol;
-        popsize=nothing,
-        sampsize=nothing,
-        weights=nothing,
-        probs=nothing,
-        ignorefpc=false
+        popsize::Union{Nothing,Symbol}=nothing,
+        sampsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
+        probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
+        ignorefpc::Bool=false
     )
-        # Only valid argument types given to constructor
-        argtypes_weights = Union{Nothing,Symbol,Vector{<:Real}}
-        argtypes_probs = Union{Nothing,Symbol,Vector{<:Real}}
-        argtypes_popsize = Union{Nothing,Symbol}
-        argtypes_sampsize = Union{Nothing,Symbol}
-        # If any invalid type raise error
-        if !(isa(weights, argtypes_weights))
-            error("invalid type of argument given for `weights` argument")
-        elseif !(isa(probs, argtypes_probs))
-            error("invalid type of argument given for `probs` argument")
-        elseif !(isa(popsize, argtypes_popsize))
-            error("invalid type of argument given for `popsize` argument. Please give Symbol of the column in data")
-        elseif !(isa(sampsize, argtypes_sampsize))
-            error("invalid type of argument given for `sampsize` argument. Please give Symbol of the column in data")
-        end
         # Store the iterator over each strata, as used multiple times
         data_groupedby_strata = groupby(data, strata)
         # If any of weights or probs given as Symbol, find the corresponding column in `data`
@@ -326,7 +294,6 @@ struct StratifiedSample <: AbstractSurveyDesign
         end
         # If sampsize greater than popsize than illogical arguments specified.
         if any(sampsize .> popsize)
-            @show sampsize, popsize
             error("population sizes were estimated to be less than sampsize. please check input arguments.")
         end
         # If ignorefpc then set weights to 1 ??

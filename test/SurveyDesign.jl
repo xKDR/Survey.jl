@@ -8,11 +8,11 @@
     ##############################
     ### Valid type checking tests
     apisrs = copy(apisrs_original)
-    @test_throws ErrorException SimpleRandomSample(apisrs, popsize=-2.83, ignorefpc=true)
-    @test_throws ErrorException SimpleRandomSample(apisrs, sampsize=-300)
-    @test_throws ErrorException SimpleRandomSample(apisrs, sampsize=-2.8, ignorefpc=true)
-    @test_throws ErrorException SimpleRandomSample(apisrs, weights=50)
-    @test_throws ErrorException SimpleRandomSample(apisrs, probs=1)
+    @test_throws TypeError SimpleRandomSample(apisrs, popsize=-2.83, ignorefpc=true)
+    @test_throws TypeError SimpleRandomSample(apisrs, sampsize=-300)
+    @test_throws TypeError SimpleRandomSample(apisrs, sampsize=-2.8, ignorefpc=true)
+    @test_throws TypeError SimpleRandomSample(apisrs, weights=50)
+    @test_throws TypeError SimpleRandomSample(apisrs, probs=1)
     ##############################
     ### weights or probs as Symbol
     apisrs = copy(apisrs_original)
@@ -105,11 +105,11 @@ end
     ##############################
     ### Valid type checking tests
     apistrat = copy(apistrat_original)
-    @test_throws ErrorException StratifiedSample(apistrat,:stype; popsize=-2.83, ignorefpc=true)
-    @test_throws ErrorException StratifiedSample(apistrat,:stype; sampsize=-300)
-    @test_throws ErrorException StratifiedSample(apistrat,:stype; sampsize=-2.8, ignorefpc=true)
-    @test_throws ErrorException StratifiedSample(apistrat,:stype; weights=50)
-    @test_throws ErrorException StratifiedSample(apistrat,:stype; probs=1)
+    @test_throws TypeError StratifiedSample(apistrat,:stype; popsize=-2.83, ignorefpc=true)
+    @test_throws TypeError StratifiedSample(apistrat,:stype; sampsize=-300)
+    @test_throws TypeError StratifiedSample(apistrat,:stype; sampsize=-2.8, ignorefpc=true)
+    @test_throws TypeError StratifiedSample(apistrat,:stype; weights=50)
+    @test_throws TypeError StratifiedSample(apistrat,:stype; probs=1)
     ##############################
     ### weights as Symbol
     apistrat = copy(apistrat_original)
@@ -134,7 +134,7 @@ end
     @test strat_pop.data.probs == 1 ./ strat_pop.data.weights
     ### popsize given as Vector (should give error for now, not implemented Vector input directly for popsize)
     apistrat = copy(apistrat_original)
-    @test_throws ErrorException StratifiedSample(apistrat,:stype; popsize=apistrat.fpc)
+    @test_throws TypeError StratifiedSample(apistrat,:stype; popsize=apistrat.fpc)
     ##############################
     ### sampsize given as Symbol
     apistrat = copy(apistrat_original)
