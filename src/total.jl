@@ -109,14 +109,14 @@ DataFrameRow
 """
 function total(x::Symbol, by::Symbol, design::SimpleRandomSample)
     function domain_total(x::AbstractVector, design::SimpleRandomSample, weights)
-        function se(x::AbstractVector, design::SimpleRandomSample, _)
+        function se(x::AbstractVector, design::SimpleRandomSample)
             # vector of length equal to `sampsize` containing `x` and zeros
             z = cat(zeros(design.sampsize - length(x)), x; dims=1)
             variance = design.popsize^2 / design.sampsize * design.fpc * var(z)
             return sqrt(variance)
         end
         total = wsum(x, weights)
-        return DataFrame(total=total, SE=se(x, design::SimpleRandomSample, weights))
+        return DataFrame(total=total, SE=se(x, design::SimpleRandomSample))
     end
     gdf = groupby(design.data, by)
     combine(gdf, [x, :weights] => ((a, b) -> domain_total(a, design, b)) => AsTable)
