@@ -67,14 +67,11 @@ function total(x::Symbol, design::StratifiedSample)
         return combine(gdf, :weights => sum => :Nₕ)
     end
     gdf = groupby(design.data, design.strata)
-    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total) # works
+    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total)
     # variance estimation using closed-form formula
-    ȳₕ = combine(gdf, x => mean => :mean).mean
     Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
     nₕ = combine(gdf, nrow => :nₕ).nₕ
     fₕ = nₕ ./ Nₕ
-    Wₕ = Nₕ ./ sum(Nₕ)
-    Ȳ̂ = sum(Wₕ .* ȳₕ)
 
     s²ₕ = combine(gdf, x => var => :s²h).s²h
     # the only difference between total and mean variance is the Nₕ instead of Wₕ
@@ -112,14 +109,14 @@ DataFrameRow
 """
 function total(x::Symbol, by::Symbol, design::SimpleRandomSample)
     function domain_total(x::AbstractVector, design::SimpleRandomSample, weights)
-        function se(x::AbstractVector, design::SimpleRandomSample, _)
+        function se(x::AbstractVector, design::SimpleRandomSample)
             # vector of length equal to `sampsize` containing `x` and zeros
             z = cat(zeros(design.sampsize - length(x)), x; dims=1)
             variance = design.popsize^2 / design.sampsize * design.fpc * var(z)
             return sqrt(variance)
         end
         total = wsum(x, weights)
-        return DataFrame(total=total, SE=se(x, design::SimpleRandomSample, weights))
+        return DataFrame(total=total, SE=se(x, design::SimpleRandomSample))
     end
     gdf = groupby(design.data, by)
     combine(gdf, [x, :weights] => ((a, b) -> domain_total(a, design, b)) => AsTable)
