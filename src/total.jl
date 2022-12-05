@@ -1,5 +1,3 @@
-# SimpleRandomSample
-
 """
     total(x, design)
 
@@ -10,7 +8,7 @@ julia> using Survey;
 
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SimpleRandomSample(apisrs; popsize=:fpc);
 
 julia> total(:enroll, srs)
 1×2 DataFrame
@@ -18,6 +16,25 @@ julia> total(:enroll, srs)
      │ Float64    Float64  
 ─────┼─────────────────────
    1 │ 3.62107e6  1.6952e5
+
+julia> strat = load_data("apistrat");
+
+julia> dstrat = StratifiedSample(strat, :stype; popsize=:fpc);
+
+julia> total(:api00, dstrat)
+1×2 DataFrame
+ Row │ total      SE      
+     │ Float64    Float64 
+─────┼────────────────────
+   1 │ 4.10221e6  58279.0
+
+julia> total([:api00, :enroll], dstrat)
+2×3 DataFrame
+ Row │ names   total      SE            
+     │ String  Float64    Float64       
+─────┼──────────────────────────────────
+   1 │ api00   4.10221e6  58279.0
+   2 │ enroll  3.68718e6      1.14642e5
 ```
 """
 function total(x::Symbol, design::SimpleRandomSample)
@@ -43,8 +60,40 @@ function total(x::Symbol, design::SimpleRandomSample)
     return DataFrame(total=total, SE=se(x, design))
 end
 
+function total(x::Symbol, design::StratifiedSample)
+    # TODO: check if statement
+    if x == design.strata
+        gdf = groupby(design.data, x)
+        return combine(gdf, :weights => sum => :Nₕ)
+    end
+    gdf = groupby(design.data, design.strata)
+    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total) # works
+    # variance estimation using closed-form formula
+    ȳₕ = combine(gdf, x => mean => :mean).mean
+    Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
+    nₕ = combine(gdf, nrow => :nₕ).nₕ
+    fₕ = nₕ ./ Nₕ
+    Wₕ = Nₕ ./ sum(Nₕ)
+    Ȳ̂ = sum(Wₕ .* ȳₕ)
+
+    s²ₕ = combine(gdf, x => var => :s²h).s²h
+    # the only difference between total and mean variance is the Nₕ instead of Wₕ
+    V̂Ȳ̂ = sum((Nₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
+    SE = sqrt(V̂Ȳ̂)
+    return DataFrame(total=grand_total, SE=SE)
+end
+
+function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
+    df = reduce(vcat, [total(i, design) for i in x])
+    insertcols!(df, 1, :names => String.(x))
+    return df
+end
+
 """
-Estimate subpopulation total for a stratified sample. 
+    total(x, by, design)
+
+Estimate the subpopulation total of a variable `x`.
+
 ```jldoctest
 julia> using  Survey;
 
@@ -74,70 +123,4 @@ function total(x::Symbol, by::Symbol, design::SimpleRandomSample)
     end
     gdf = groupby(design.data, by)
     combine(gdf, [x, :weights] => ((a, b) -> domain_total(a, design, b)) => AsTable)
-end
-
-"""
-total for StratifiedSample
-
-```jldoctest
-julia> using Survey;
-
-julia> strat = load_data("apistrat");
-
-julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
-
-julia> total(:api00, dstrat)
-1×2 DataFrame
- Row │ total      SE      
-     │ Float64    Float64 
-─────┼────────────────────
-   1 │ 4.10221e6  58279.0
-```
-"""
-function total(x::Symbol, design::StratifiedSample)
-    # TODO: check if statement
-    if x == design.strata
-        gdf = groupby(design.data, x)
-        return combine(gdf, :weights => sum => :Nₕ)
-    end
-    gdf = groupby(design.data, design.strata)
-    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total) # works
-    # variance estimation using closed-form formula
-    ȳₕ = combine(gdf, x => mean => :mean).mean
-    Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
-    nₕ = combine(gdf, nrow => :nₕ).nₕ
-    fₕ = nₕ ./ Nₕ
-    Wₕ = Nₕ ./ sum(Nₕ)
-    Ȳ̂ = sum(Wₕ .* ȳₕ)
-
-    s²ₕ = combine(gdf, x => var => :s²h).s²h
-    # the only difference between total and mean variance is the Nₕ instead of Wₕ
-    V̂Ȳ̂ = sum((Nₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
-    SE = sqrt(V̂Ȳ̂)
-    return DataFrame(total=grand_total, SE=SE)
-end
-
-"""
-Vectorise total operation over Vector{Symbol}
-
-```jldoctest
-julia> using Survey;
-
-julia> strat = load_data("apistrat");
-
-julia> dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
-
-julia> total([:api00, :enroll], dstrat)
-2×3 DataFrame
- Row │ names   total      SE            
-     │ String  Float64    Float64       
-─────┼──────────────────────────────────
-   1 │ api00   4.10221e6  58279.0
-   2 │ enroll  3.68718e6      1.14642e5
-```
-"""
-function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
-    df = reduce(vcat, [total(i, design) for i in x])
-    insertcols!(df, 1, :names => String.(x))
-    return df
 end
