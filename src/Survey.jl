@@ -2,6 +2,7 @@ module Survey
 
 using DataFrames
 using Statistics
+import Statistics: quantile
 using StatsBase
 import StatsBase: mean,quantile
 using CSV
