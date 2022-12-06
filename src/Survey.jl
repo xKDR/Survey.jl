@@ -11,7 +11,6 @@ using AlgebraOfGraphics
 using CategoricalArrays
 
 include("SurveyDesign.jl")
-include("design.jl")
 include("mean.jl")
 include("quantile.jl")
 include("total.jl")
@@ -25,7 +24,6 @@ include("show.jl")
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
 export SurveyDesign
-export design
 export by
 export ht_calc
 export dim, colnames, dimnames
