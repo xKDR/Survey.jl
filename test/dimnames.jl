@@ -3,22 +3,14 @@
     apisrs = load_data("apisrs")
     # make a copy to not modify the original dataset
     apisrs_copy = copy(apisrs)
-    srs_new = SimpleRandomSample(apisrs_copy,popsize=:fpc,ignorefpc = true)
-    # make a new copy to use for the old design
-    apisrs_copy = copy(apisrs)
-    srs_old = design(id = :1, data = apisrs)
+    srs = SimpleRandomSample(apisrs_copy,popsize=:fpc,ignorefpc = true)
     # `dim`
-    @test dim(srs_new)[1] == dim(srs_old)[1]
-    @test dim(srs_new)[2] == 42
-    @test dim(srs_old)[2] == 45
+    @test dim(srs)[2] == 42
     # `colnames`
-    @test length(colnames(srs_new)) == dim(srs_new)[2]
-    @test length(colnames(srs_old)) == dim(srs_old)[2]
+    @test length(colnames(srs)) == dim(srs)[2]
     # `dimnames`
-    @test length(dimnames(srs_new)[1]) == parse(Int, last(dimnames(srs_new)[1]))
-    @test dimnames(srs_new)[2] == colnames(srs_new)
-    @test length(dimnames(srs_old)[1]) == parse(Int, last(dimnames(srs_old)[1]))
-    @test dimnames(srs_old)[2] == colnames(srs_old)
+    @test length(dimnames(srs)[1]) == parse(Int, last(dimnames(srs)[1]))
+    @test dimnames(srs)[2] == colnames(srs)
 
     # Stratified sampling tests
 end
