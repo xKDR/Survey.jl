@@ -23,11 +23,3 @@ function boxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 
 	data * visual(BoxPlot) * map |> draw
 end
-
-function boxplot(design::design, x::Symbol, y::Symbol; kwargs...)
-    # TODO: change function, make it a wrapper
-	map = mapping(x, y; kwargs...)
-	data = AlgebraOfGraphics.data(design.variables)
-
-	data * visual(BoxPlot) * map |> draw
-end
