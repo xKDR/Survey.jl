@@ -18,7 +18,3 @@ save("scatter.png", s); nothing # hide
 function plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
     data(design.data) * mapping(x, y, markersize = :weights) * visual(Scatter, marker = '￮') |> draw
 end
-
-function plot(design::design, x::Symbol, y::Symbol; kwargs...)
-	data(design.variables) * mapping(x, y, markersize = :weights) * visual(Scatter, marker = '￮') |> draw
-end

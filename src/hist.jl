@@ -1,7 +1,6 @@
 sturges(n::Integer) = ceil(Int, log2(n)) + 1
 sturges(vec::AbstractVector) = ceil(Int, log2(length(vec))) + 1
 sturges(df::DataFrame, var::Symbol) = ceil(Int, log2(size(df[!, var], 1))) + 1
-sturges(design::design, var::Symbol) = sturges(design.variables, var)
 
 """
     sturges(design::SurveyDesign, var::Symbol)
@@ -22,7 +21,6 @@ sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data, var)
 
 freedman_diaconis(v::AbstractVector) = round(Int, length(v)^(1 / 3) * (maximum(v) - minimum(v)) / (2 * iqr(v)))
 freedman_diaconis(df::DataFrame, var::Symbol) = freedman_diaconis(df[!, var])
-freedman_diaconis(design::design, var::Symbol) = freedman_diaconis(design.variables[!, var])
 
 """
     freedman_diaconis(design::SurveyDesign, var::Symbol)
@@ -80,22 +78,6 @@ function hist(design::AbstractSurveyDesign, var::Symbol,
 end
 
 function hist(design::AbstractSurveyDesign, var::Symbol,
-				 bins::Function;
-				 kwargs...
-    			)
-    hist(design, var, bins(design, var); kwargs...)
-end
-
-function hist(design::design, var::Symbol,
-				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
-				 normalization = :density,
-				 kwargs...
-    			)
-	hist = histogram(bins = bins, normalization = normalization, kwargs...)
-	data(design.variables) * mapping(var, weights = :weights) * hist |> draw
-end
-
-function hist(design::design, var::Symbol,
 				 bins::Function;
 				 kwargs...
     			)
