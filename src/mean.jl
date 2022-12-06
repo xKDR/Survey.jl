@@ -95,8 +95,8 @@ end
 
 Estimate the subpopulation mean of a variable `x`.
 
-The calculations were done according to the book [Calibration Estimators in Survey Sampling](https://www.tandfonline.com/doi/abs/10.1080/01621459.1992.10475217)
-by Jean-Claude Deville and Carl-Erik Sarndal.
+The calculations were done according to the book [Model-Assisted Survey Sampling](https://link.springer.com/book/9780387406206)
+by Carl-Erik Sarndal, Bengt Swensson, Jan Wretman, section 3.3 and Chap 10. Assumes popsize is known and subpopulation size is unknown.
 
 ```jldoctest
 julia> using Survey; 
