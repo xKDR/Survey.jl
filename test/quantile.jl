@@ -8,6 +8,8 @@
     ### weights or probs as Symbol
     apisrs = copy(apisrs_original)
     srs_design = SimpleRandomSample(apisrs,popsize=:fpc)
+    @test quantile(:api00,srs_design,0.5)[!,2] ≈ 659 atol = 1e-4
+    @test quantile(:enroll,srs_design,[0.1,0.2,0.5,0.75,0.95])[!,2] ≈ [245.5,317.6,453.0,668.5,1473.1] atol = 1e-4 
 end
 
 @testset "quantile_Stratified" begin

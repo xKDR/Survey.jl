@@ -42,9 +42,9 @@ function quantile(var::Symbol, design::SimpleRandomSample, p::Union{<:Real,Vecto
     return df
 end
 
-function quantile(var::Symbol, design::StratifiedSample, p::Union{<:Real,Vector{<:Real}}; kwargs...)
+function quantile(var::Symbol, design::StratifiedSample, p::Union{<:Real,Vector{<:Real}}; ci::Bool=false, se::Bool=false, kwargs...)
     v = design.data[!, var]
     probs = design.data[!, :probs]
-    df = DataFrame(qth_quantile = p, quantile = Statistics.quantile(v, ProbabilityWeights(probs), p))
+    df = DataFrame(probability = p, quantile = Statistics.quantile(v, ProbabilityWeights(probs), p))
     return df
 end
