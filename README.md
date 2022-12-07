@@ -29,21 +29,21 @@ dsrs = SimpleRandomSample(srs; weights = :pw)
 
 mean(:api00, dsrs)
 1×2 DataFrame
- Row │ mean     sem     
+ Row │ mean     SE      
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 656.585  9.24972
 
 total(:enroll, dsrs)
 1×2 DataFrame
- Row │ total      se_total 
+ Row │ total      SE       
      │ Float64    Float64  
 ─────┼─────────────────────
-   1 │ 3.62107e6  1.6952e5   
+   1 │ 3.62107e6  1.6952e5  
 
-by(:api00, :cname, dsrs, mean)
+mean(:api00, :cname, dsrs)
 38×3 DataFrame
- Row │ cname            mean     sem      
+ Row │ cname            mean     SE       
      │ String15         Float64  Float64  
 ─────┼────────────────────────────────────
    1 │ Kern             573.6     42.8026
@@ -68,30 +68,29 @@ dstrat = StratifiedSample(strat, :stype; weights = :pw, popsize = :fpc)
 
 mean(:api00, dstrat)
 1×2 DataFrame
- Row │ Ȳ̂        SE      
+ Row │ mean     SE      
      │ Float64  Float64 
 ─────┼──────────────────
    1 │ 662.287  9.40894
 
 total(:api00, dstrat)
 1×2 DataFrame
- Row │ grand_total  SE      
-     │ Float64      Float64 
-─────┼──────────────────────
-   1 │   4.10221e6  58279.0
+ Row │ total      SE      
+     │ Float64    Float64 
+─────┼────────────────────
+   1 │ 4.10221e6  58279.0
 
-by(:api00, :cname, dstrat, mean)
+mean(:api00, :cname, dstrat)
 40×3 DataFrame
- Row │ cname           domain_mean  domain_mean_se 
-     │ String15        Float64      Float64        
-─────┼─────────────────────────────────────────────
-   1 │ Los Angeles         633.511    21.3912
-   2 │ Ventura             707.172    31.6856
-   3 │ Kern                678.235    53.1337
-  ⋮  │       ⋮              ⋮             ⋮
-  38 │ Mariposa            706.0       0.0
-  39 │ Mendocino           632.018     1.04942
-  40 │ Butte               627.0       0.0
+ Row │ cname           mean     SE           
+     │ String15        Float64  Float64      
+─────┼───────────────────────────────────────
+   1 │ Los Angeles     633.511  21.3912
+   2 │ Ventura         707.172  31.6856
+   3 │ Kern            678.235  53.1337
+  ⋮  │       ⋮            ⋮          ⋮
+  39 │ Mendocino       632.018   1.04942
+  40 │ Butte           627.0     0.0
 ```
 
 ## Strategic goals
