@@ -34,17 +34,20 @@ julia> quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
    5 │        0.95    1473.1
 ```
 """
-function quantile(var::Symbol, design::SimpleRandomSample, p::Union{<:Real,Vector{<:Real}}; ci::Bool=false, se::Bool=false, kwargs...)
+function quantile(var::Symbol, design::SimpleRandomSample, p::Union{<:Real,Vector{<:Real}}; 
+    alpha::Float64=0.05, ci::Bool=false, se::Bool=false, qrule="hf7",kwargs...)
     v = design.data[!, var]
     probs = design.data[!, :probs]
-    df = DataFrame(probability = p, quantile = Statistics.quantile(v, ProbabilityWeights(probs),p))
+    df = DataFrame(probability=p, quantile=Statistics.quantile(v, ProbabilityWeights(probs), p))
     # TODO: Add CI and SE of the quantile
     return df
 end
 
-function quantile(var::Symbol, design::StratifiedSample, p::Union{<:Real,Vector{<:Real}}; ci::Bool=false, se::Bool=false, kwargs...)
+function quantile(var::Symbol, design::StratifiedSample, p::Union{<:Real,Vector{<:Real}}; 
+    alpha::Float64=0.05, ci::Bool=false, se::Bool=false, qrule="hf7",kwargs...)
     v = design.data[!, var]
     probs = design.data[!, :probs]
-    df = DataFrame(probability = p, quantile = Statistics.quantile(v, ProbabilityWeights(probs), p))
+    df = DataFrame(probability=p, quantile=Statistics.quantile(v, ProbabilityWeights(probs), p)) # Not sure which quantile defintion this returns
+    # TODO: Add CI and SE of the quantile
     return df
 end
