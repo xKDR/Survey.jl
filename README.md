@@ -53,6 +53,17 @@ mean(:api00, :cname, dsrs)
   36 │ Napa             727.0     46.722
   37 │ Lake             804.0    NaN
   38 │ Merced           595.0    NaN
+
+quantile(:enroll,dsrs,[0.1,0.2,0.5,0.75,0.95])
+5×2 DataFrame
+ Row │ probability  quantile 
+     │ Float64      Float64  
+─────┼───────────────────────
+   1 │        0.1      245.5
+   2 │        0.2      317.6
+   3 │        0.5      453.0
+   4 │        0.75     668.5
+   5 │        0.95    1473.1
 ```
 
 ### Stratified Sample
