@@ -1,15 +1,16 @@
-using Survey
-using Test
-
 @testset "dimnames.jl" begin
-	apistrat = load_data("apistrat")
-	dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc)
+    # Simple random sampling tests
+    apisrs = load_data("apisrs")
+    # make a copy to not modify the original dataset
+    apisrs_copy = copy(apisrs)
+    srs = SimpleRandomSample(apisrs_copy,popsize=:fpc,ignorefpc = true)
+    # `dim`
+    @test dim(srs)[2] == 42
+    # `colnames`
+    @test length(colnames(srs)) == dim(srs)[2]
+    # `dimnames`
+    @test length(dimnames(srs)[1]) == parse(Int, last(dimnames(srs)[1]))
+    @test dimnames(srs)[2] == colnames(srs)
 
-	@test dim(dstrat)[1] == 200
-	@test dim(dstrat)[2] == size(dstrat.variables, 2)
-
-	@test length(colnames(dstrat)) == dim(dstrat)[2]
-
-	@test length(dimnames(dstrat)[1]) == parse(Int, last(dimnames(dstrat)[1]))
-	@test dimnames(dstrat)[2] == colnames(dstrat)
+    # Stratified sampling tests
 end

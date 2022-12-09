@@ -1,33 +1,31 @@
 """
 	dim(design)
-Get the dimensions of a survey design.
+
+Get the dimensions of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
+julia> apisrs = load_data("apisrs");
 
-julia> apistrat = load_data("apistrat");
+julia> srs = SimpleRandomSample(apisrs; popsize =:fpc);
 
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-
-julia> dim(dstrat)
-(200, 45)
+julia> dim(srs)
+(200, 42)
 ```
 """
-dim(design::svydesign) = size(design.variables)
+dim(design::AbstractSurveyDesign) = size(design.data)
 
 """
 	colnames(design)
-Get the column names of a survey design.
+
+Get the column names of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
+julia> apisrs = load_data("apisrs");
 
-julia> apistrat = load_data("apistrat");
+julia> srs = SimpleRandomSample(apisrs; popsize=:fpc);
 
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-
-julia> colnames(dstrat)
-45-element Vector{String}:
+julia> colnames(srs)
+42-element Vector{String}:
  "Column1"
  "cds"
  "stype"
@@ -39,34 +37,33 @@ julia> colnames(dstrat)
  "cname"
  "cnum"
  ⋮
+ "avg.ed"
+ "full"
+ "emer"
  "enroll"
  "api.stu"
  "pw"
  "fpc"
- "probs"
  "weights"
- "popsize"
- "sampsize"
- "strata"
+ "probs"
 ```
 """
-colnames(design::svydesign) = names(design.variables)
+colnames(design::AbstractSurveyDesign) = names(design.data)
 
 """
 	dimnames(design)
-Get the names of the rows and columns of a survey design.
+
+Get the names of the rows and columns of a `SurveyDesign`.
 
 ```jldoctest
-julia> using Survey
+julia> apisrs = load_data("apisrs");
 
-julia> apistrat = load_data("apistrat");
+julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
 
-julia> dstrat = svydesign(data = apistrat, id = :1, strata = :stype, weights = :pw, fpc = :fpc);
-
-julia> dimnames(dstrat)
+julia> dimnames(srs)
 2-element Vector{Vector{String}}:
  ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"  …  "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"]
- ["Column1", "cds", "stype", "name", "sname", "snum", "dname", "dnum", "cname", "cnum"  …  "emer", "enroll", "api.stu", "pw", "fpc", "probs", "weights", "popsize", "sampsize", "strata"]
+ ["Column1", "cds", "stype", "name", "sname", "snum", "dname", "dnum", "cname", "cnum"  …  "grad.sch", "avg.ed", "full", "emer", "enroll", "api.stu", "pw", "fpc", "weights", "probs"]
 ```
 """
-dimnames(design::svydesign) = [string.(1:size(design.variables, 1)), names(design.variables)]
+dimnames(design::AbstractSurveyDesign) = [string.(1:size(design.data, 1)), names(design.data)]
