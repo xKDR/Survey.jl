@@ -2,43 +2,36 @@ module Survey
 
 using DataFrames
 using Statistics
+import Statistics: quantile
 using StatsBase
+import StatsBase: mean,quantile
 using CSV
-using GLM
 using LinearAlgebra
 using CairoMakie
 using AlgebraOfGraphics
+using CategoricalArrays
 
-include("svydesign.jl")
-include("svyby.jl")
-include("example.jl")
-include("svyglm.jl")
-include("svyhist.jl")
-include("svyplot.jl")
+include("SurveyDesign.jl")
+include("mean.jl")
+include("quantile.jl")
+include("total.jl")
+include("load_data.jl")
+include("hist.jl")
+include("plot.jl")
 include("dimnames.jl")
-include("svyboxplot.jl")
+include("boxplot.jl")
+include("show.jl")
 
-export svydesign, svyby, svyglm
 export load_data
-export svymean, svytotal, svyquantile
-export @formula
-export svyhist, sturges, freedman_diaconis
-export svyplot
+export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
+export SurveyDesign
+export by
+export ht_calc
 export dim, colnames, dimnames
-export svyboxplot
-export
-    #families
-    Normal,
-    Binomial,
-    Gamma,
-    Poisson,
-    #links
-    IdentityLink,
-    InverseLink,
-    LogLink,
-    LogitLink,
-    ProbitLink,
-    CauchitLink,
-    CloglogLink,
-    SqrtLink
+export mean, total, quantile
+export plot
+export hist, sturges, freedman_diaconis
+export boxplot
+export ht_total, ht_mean
+
 end
