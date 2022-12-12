@@ -328,7 +328,7 @@ end
 Survey design sampled by two stage cluster sampling, with SRS in second stage.
 Assumes each individual in one and only one cluster; disjoint and nested clusters.
 
-`cluster` must be specified as a Symbol name of a column in `data`.
+`cluster` must be specified as a Symbol name, or Vector of Symbol names of a column in `data`.
 
 # Arguments:
 `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
@@ -336,7 +336,6 @@ Assumes each individual in one and only one cluster; disjoint and nested cluster
 `sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`:  the survey sample size.
 `popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
 `weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
-`probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
 `ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0
 
 The `popsize`, `weights` and `probs` parameters follow the same rules as for [`SimpleRandomSample`](@ref).
@@ -369,12 +368,17 @@ struct ClusterSample <: AbstractSurveyDesign
             end
             popsize = data[!, popsize]
         elseif isa(popsize, Vector{Symbol})
+            for (i,eachpopsize) in enumerate(popsize)    
+                if typeof(data[!,eachpopsize]) <: Vector{<:Real}
+                    error("a given popsize column is not of numeric type")
+                end
                 for each_cluster in keys(data_groupedby_cluster)
-                    if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, popsize]), data_groupedby_cluster[each_cluster][!, popsize])
+                    if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, eachpopsize]), data_groupedby_cluster[each_cluster][!, eachpopsize])
                         error("popsize must be same for all observations within each cluster in ClusterSample")
                     end
                 end
-                popsize = data[!, popsize]
+                data[!, Symbol(:popsize,'_',string(i))] = data[!, eachpopsize]
+            end
         end
         # If sampsize given as Symbol, check all records equal 
         if isa(sampsize, Symbol)
@@ -400,20 +404,12 @@ struct ClusterSample <: AbstractSurveyDesign
             end
             # Estimate population size
             popsize = sampsize .* weights
-        elseif isa(popsize,Symbol)
+        elseif isa(popsize,Vector{<:Real})
             # TODO
             if typeof(popsize) <: Vector{<:Real}
                 error("a given popsize column is not of numeric type")
             end
             data[!, :popsize] = data[!, popsize]
-        elseif isa(popsize,Vector{Symbol})
-            # TODO
-            for (i,eachpopsize) in enumerate(popsize)
-                if typeof(data[!,eachpopsize]) <: Vector{<:Real}
-                    error("a given popsize column is not of numeric type")
-                end
-                data[!, Symbol(:popsize,'_',string(i))] = data[!, eachpopsize]
-            end
         else
             @show typeof(popsize)
             @show popsize, sampsize
