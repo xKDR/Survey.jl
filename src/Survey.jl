@@ -23,7 +23,7 @@ include("boxplot.jl")
 include("show.jl")
 
 export load_data
-export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
+export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample, ClusterSample
 export SurveyDesign
 export by
 export ht_calc
