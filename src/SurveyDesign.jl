@@ -343,81 +343,53 @@ The `popsize`, `weights` and `probs` parameters follow the same rules as for [`S
 """
 struct ClusterSample <: AbstractSurveyDesign
     data::AbstractDataFrame
-    cluster::Vector{Symbol}
-    function ClusterSample(data::AbstractDataFrame, clusters::Vector{Symbol};
-        popsize::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
-        sampsize::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
-        weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing
-    )
-        # If single cluster then store as Symbol not Vector
-        # if size(cluster,1) == 1
-        #     cluster = cluster[1]
-        # end
-        # Store the iterator over each cluster, as used multiple times
-        data_groupedby_cluster = groupby(data, clusters)
-        # If any of weights or probs given as Symbol, find the corresponding column in `data`
-        if isa(weights, Symbol)
-            weights = data[!, weights] # If all good with weights column, then store it as Vector
+    cluster::Union{Symbol,Vector{Symbol}}
+    popsize::Union{Nothing,Symbol,Vector{Symbol}}
+    sampsize::Union{Symbol,Vector{Symbol}}
+    pps::Bool
+    has_strata::Bool
+    # Single stage cluster sample, like apiclus1
+    function ClusterSample(data::AbstractDataFrame, cluster::Symbol, popsize::Symbol; kwargs...)
+        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
+        if !(typeof(data[!, popsize]) <: Vector{<:Real})
+            error(string("given popsize column ", popsize , " is not of numeric type"))
         end
-        # If popsize given as Symbol or Vector, check all records equal in each cluster
-        ###########
-        if isa(popsize, Symbol)
-            if !(typeof(data[!,popsize]) <: Vector{<:Real})
-                error("a given popsize column is not of numeric type")
+        if !all(w -> w == first(data[!, popsize]), data[!, popsize])
+            error("popsize must be same for all observations within the cluster in ClusterSample")
+        end
+        sampsize_labels = :sampsize
+        data_groupedby_cluster = groupby(data, cluster)
+        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
+        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
+        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
+        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        data[!, :strata] = ones(nrow(data))
+        new(data, cluster, popsize, sampsize_labels, false, false)
+    end
+    # Multi-stage cluster sample with popsize and fpc known, like apiclus2
+    function ClusterSample(data::AbstractDataFrame, cluster::Vector{Symbol}, popsize::Vector{Symbol}; kwargs...)
+        if size(cluster,1) != size(popsize,1)
+            error("`cluster` and `popsize` should be of same size")
+        end
+        data_groupedby_cluster = groupby(data, cluster)
+        for eachpopsize in popsize
+            if !(typeof(data[!,eachpopsize]) <: Vector{<:Real})
+                error(string("given popsize column ", eachpopsize , " is not of numeric type"))
             end
             for each_cluster in keys(data_groupedby_cluster)
-                if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, popsize]), data_groupedby_cluster[each_cluster][!, popsize])
+                if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, eachpopsize]), data_groupedby_cluster[each_cluster][!, eachpopsize])
                     error("popsize must be same for all observations within each cluster in ClusterSample")
                 end
             end
-            data[!, :popsize] = data[!, popsize]
-        elseif isa(popsize, Vector{Symbol})
-            for (i,eachpopsize) in enumerate(popsize)    
-                if typeof(data[!,eachpopsize]) <: Vector{<:Real}
-                    error("a given popsize column is not of numeric type")
-                end
-                for each_cluster in keys(data_groupedby_cluster)
-                    if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, eachpopsize]), data_groupedby_cluster[each_cluster][!, eachpopsize])
-                        error("popsize must be same for all observations within each cluster in ClusterSample")
-                    end
-                end
-                data[!, Symbol(:popsize,'_',string(i))] = data[!, eachpopsize]
-            end
-        else
-            error("Incorrect type of popsize argument given")
         end
-        # If sampsize given as Symbol, check all records equal 
-        if isa(sampsize, Symbol)
-            if isnothing(popsize) && isnothing(weights)
-                error("if sampsize given, and popsize not given, then weights must given to calculate popsize")
-            end
-            for each_cluster in keys(data_groupedby_cluster)
-                if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, sampsize]), data_groupedby_cluster[each_cluster][!, sampsize])
-                    error("sampsize must be same for all observations within each cluster in ClusterSample")
-                end
-            end
-            # original_sampsize_colname = copy(sampsize)
-            sampsize = data[!, sampsize]
-            # If sampsize column not provided in constructor call, set it as nrow of cluster
-        elseif isnothing(sampsize)
-            sampsize = transform(data_groupedby_cluster, nrow => :counts).counts
-            #TODO, should have loop for arbitrary number of sampsize columns like popsize??
-        end
-        # If popsize not given then weights must have been given to estimate popsize
-        if isnothing(popsize)
-            # TODO
-            if !(typeof(weights) <: Vector{<:Real})
-                error("`weights` must be given if `popsize` is not given")
-            end
-            # Estimate population size(s)
-            @warn "using single-stage approximation of population sizes based on weights and sample size"
-            data[!,:popsize] = sampsize .* weights
-        end
-        ## Set remaining parts of data structure
-        # add columns for frequency and probability weights to `data`
-        data[!, :weights] = weights
+        sampsize_labels = :sampsize
+        data_groupedby_cluster = groupby(data, cluster)
+        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
+        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
         data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :sampsize] = sampsize
-        new(data, clusters)
+        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        data[!, :strata] = ones(nrow(data))
+        new(data, cluster, popsize, sampsize_labels, false, false)
     end
 end
+
