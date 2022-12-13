@@ -344,29 +344,33 @@ The `popsize`, `weights` and `probs` parameters follow the same rules as for [`S
 struct ClusterSample <: AbstractSurveyDesign
     data::AbstractDataFrame
     cluster::Vector{Symbol}
-    function ClusterSample(data::AbstractDataFrame, cluster::Vector{Symbol};
+    function ClusterSample(data::AbstractDataFrame, clusters::Vector{Symbol};
         popsize::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
         sampsize::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
         weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing
     )
         # If single cluster then store as Symbol not Vector
-        if size(cluster,1) == 1
-            cluster = cluster[1]
-        end
+        # if size(cluster,1) == 1
+        #     cluster = cluster[1]
+        # end
         # Store the iterator over each cluster, as used multiple times
-        data_groupedby_cluster = groupby(data, cluster)
+        data_groupedby_cluster = groupby(data, clusters)
         # If any of weights or probs given as Symbol, find the corresponding column in `data`
         if isa(weights, Symbol)
             weights = data[!, weights] # If all good with weights column, then store it as Vector
         end
         # If popsize given as Symbol or Vector, check all records equal in each cluster
+        ###########
         if isa(popsize, Symbol)
+            if !(typeof(data[!,popsize]) <: Vector{<:Real})
+                error("a given popsize column is not of numeric type")
+            end
             for each_cluster in keys(data_groupedby_cluster)
                 if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, popsize]), data_groupedby_cluster[each_cluster][!, popsize])
                     error("popsize must be same for all observations within each cluster in ClusterSample")
                 end
             end
-            popsize = data[!, popsize]
+            data[!, :popsize] = data[!, popsize]
         elseif isa(popsize, Vector{Symbol})
             for (i,eachpopsize) in enumerate(popsize)    
                 if typeof(data[!,eachpopsize]) <: Vector{<:Real}
@@ -379,6 +383,8 @@ struct ClusterSample <: AbstractSurveyDesign
                 end
                 data[!, Symbol(:popsize,'_',string(i))] = data[!, eachpopsize]
             end
+        else
+            error("Incorrect type of popsize argument given")
         end
         # If sampsize given as Symbol, check all records equal 
         if isa(sampsize, Symbol)
@@ -395,31 +401,23 @@ struct ClusterSample <: AbstractSurveyDesign
             # If sampsize column not provided in constructor call, set it as nrow of cluster
         elseif isnothing(sampsize)
             sampsize = transform(data_groupedby_cluster, nrow => :counts).counts
+            #TODO, should have loop for arbitrary number of sampsize columns like popsize??
         end
-        # New popsize correction if-else ladder
+        # If popsize not given then weights must have been given to estimate popsize
         if isnothing(popsize)
             # TODO
             if !(typeof(weights) <: Vector{<:Real})
                 error("`weights` must be given if `popsize` is not given")
             end
-            # Estimate population size
-            popsize = sampsize .* weights
-        elseif isa(popsize,Vector{<:Real})
-            # TODO
-            if typeof(popsize) <: Vector{<:Real}
-                error("a given popsize column is not of numeric type")
-            end
-            data[!, :popsize] = data[!, popsize]
-        else
-            @show typeof(popsize)
-            @show popsize, sampsize
-            error("something went wrong. Please check validity of inputs.")
+            # Estimate population size(s)
+            @warn "using single-stage approximation of population sizes based on weights and sample size"
+            data[!,:popsize] = sampsize .* weights
         end
         ## Set remaining parts of data structure
         # add columns for frequency and probability weights to `data`
         data[!, :weights] = weights
         data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
         data[!, :sampsize] = sampsize
-        new(data, cluster)
+        new(data, clusters)
     end
 end
