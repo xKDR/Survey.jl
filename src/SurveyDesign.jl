@@ -382,13 +382,26 @@ struct ClusterSample <: AbstractSurveyDesign
                 end
             end
         end
-        sampsize_labels = :sampsize
-        data_groupedby_cluster = groupby(data, cluster)
-        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        data[!, :strata] = ones(nrow(data))
+        # Calc sampsizes
+        sampsize_labels = []
+        previous_cluster = nothing
+        for (i,eachcluster) in enumerate(cluster)
+            if i == size(cluster,1) # assumes last cluster is Ultimate Cluster Unit
+                push!(sampsize_labels, Symbol(:sampsize,'_',string(i)))
+                data_groupedby_eachcluster = groupby(data, previous_cluster)
+                data[!, sampsize_labels[i]] = transform(data_groupedby_cluster, nrow => :counts).counts
+                break
+            end
+            push!(sampsize_labels, Symbol(:sampsize,'_',string(i)))
+            data_groupedby_eachcluster = groupby(data, eachcluster)
+            data[!, sampsize_labels[i]] = fill(size(data_groupedby_eachcluster, 1),(nrow(data),))
+            previous_cluster = eachcluster
+        end
+        # TODO:
+        # data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
+        # data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
+        # data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        # data[!, :strata] = ones(nrow(data))
         new(data, cluster, popsize, sampsize_labels, false, false)
     end
 end
