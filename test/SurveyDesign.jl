@@ -165,19 +165,31 @@ end
     @test_throws ErrorException StratifiedSample(apistrat, :stype; popsize= :pw, sampsize=:fpc) 
 end
 
-@testset "ClusterSample" begin
+@testset "OneStageClusterSample" begin
     # Load API datasets
     apiclus1_original = load_data("apiclus1")
     apiclus1_original[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
-    apiclus2_original = load_data("apiclus2")
-
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus2 = ClusterSample(apiclus1, :dnum, :fpc)
-    # two-stage cluster sample
-    dclus2 = ClusterSample(apiclus2, [:dnum,:snum], [:fpc1,:fpc2])
-    # two-stage `with replacement'
-    dclus2wr = ClusterSample(apiclus2, [:dnum,:snum]; weights=:pw)
- 
+    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+    @test dclus1.data[!,:weights] ≈ fill(50.4667,size(apiclus1,1)) atol = 1e-3
+    @test dclus1.data[!,dclus1.sampsize] ≈ fill(15,size(apiclus1,1))
+    @test dclus1.data[!,:allprobs] ≈ dclus1.data[!,:probs] atol = 1e-4
 end
+
+# @testset "ClusterSample" begin
+#     # # Load API datasets
+#     # apiclus1_original = load_data("apiclus1")
+#     # apiclus1_original[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
+#     # apiclus2_original = load_data("apiclus2")
+#     ##############################
+#     ### TODO when they are implemented
+#     # one-stage cluster sample
+#     # apiclus1 = copy(apiclus1_original)
+#     # dclus2 = ClusterSample(apiclus1, :dnum, :fpc)
+#     # # two-stage cluster sample
+#     # dclus2 = ClusterSample(apiclus2, [:dnum,:snum], [:fpc1,:fpc2])
+#     # # two-stage `with replacement'
+#     # dclus2wr = ClusterSample(apiclus2, [:dnum,:snum]; weights=:pw)
+# end

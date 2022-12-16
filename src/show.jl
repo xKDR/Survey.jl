@@ -49,7 +49,7 @@ function Base.show(io::IO, ::MIME"text/plain", design::StratifiedSample)
 end
 
 "Print information about a survey design."
-function Base.show(io::IO, ::MIME"text/plain", design::ClusterSample)
+function Base.show(io::IO, ::MIME"text/plain", design::OneStageClusterSample)
     type = typeof(design)
     printstyled(io, "$type:\n"; bold=true)
     printstyled(io, "data: "; bold=true)

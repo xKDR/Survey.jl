@@ -323,33 +323,30 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 """
-    ClusterSample <: AbstractSurveyDesign
+    OneStageClusterSample <: AbstractSurveyDesign
 
-Survey design sampled by two stage cluster sampling, with SRS in second stage.
+Survey design sampled by one stage cluster sampling.
+Clusters chosen by SRS followed by complete sampling of selected clusters.
 Assumes each individual in one and only one cluster; disjoint and nested clusters.
 
-`cluster` must be specified as a Symbol name, or Vector of Symbol names of a column in `data`.
+`cluster` must be specified as a Symbol name of a column in `data`.
 
 # Arguments:
 `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
 `cluster::Symbol`: the stratification variable - must be given as a column in `data`.
-`sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`:  the survey sample size.
-`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
+`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size. For 
+
 `weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
-`ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0
-
-The `popsize`, `weights` and `probs` parameters follow the same rules as for [`SimpleRandomSample`](@ref).
-
 """
-struct ClusterSample <: AbstractSurveyDesign
+struct OneStageClusterSample <: AbstractSurveyDesign
     data::AbstractDataFrame
-    cluster::Union{Symbol,Vector{Symbol}}
-    popsize::Union{Nothing,Symbol,Vector{Symbol}}
-    sampsize::Union{Symbol,Vector{Symbol}}
+    cluster::Symbol
+    popsize::Symbol
+    sampsize::Symbol
     pps::Bool
     has_strata::Bool
     # Single stage cluster sample, like apiclus1
-    function ClusterSample(data::AbstractDataFrame, cluster::Symbol, popsize::Symbol; kwargs...)
+    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol, popsize::Symbol; kwargs...) # Right now kwargs does nothing, for expansion
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
         if !(typeof(data[!, popsize]) <: Vector{<:Real})
             error(string("given popsize column ", popsize , " is not of numeric type"))
@@ -357,6 +354,7 @@ struct ClusterSample <: AbstractSurveyDesign
         if !all(w -> w == first(data[!, popsize]), data[!, popsize])
             error("popsize must be same for all observations within the cluster in ClusterSample")
         end
+        # For one-stage sample only one sampsize vector
         sampsize_labels = :sampsize
         data_groupedby_cluster = groupby(data, cluster)
         data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
@@ -364,46 +362,9 @@ struct ClusterSample <: AbstractSurveyDesign
         data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
         data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         data[!, :strata] = ones(nrow(data))
-        new(data, cluster, popsize, sampsize_labels, false, false)
-    end
-    # Multi-stage cluster sample with popsize and fpc known, like apiclus2
-    # Implicitly assuming nesting is true and no strata in below constructor
-    function ClusterSample(data::AbstractDataFrame, cluster::Vector{Symbol}, popsize::Vector{Symbol}; nest::Bool=true, kwargs...)
-        if size(cluster,1) != size(popsize,1)
-            error("`cluster` and `popsize` should be of same size")
-        end
-        data_groupedby_cluster = groupby(data, cluster)
-        for eachpopsize in popsize
-            if !(typeof(data[!,eachpopsize]) <: Vector{<:Real})
-                error(string("given popsize column ", eachpopsize , " is not of numeric type"))
-            end
-            for each_cluster in keys(data_groupedby_cluster)
-                if !all(w -> w == first(data_groupedby_cluster[each_cluster][!, eachpopsize]), data_groupedby_cluster[each_cluster][!, eachpopsize])
-                    error("popsize must be same for all observations within each cluster in ClusterSample")
-                end
-            end
-        end
-        # Calc sampsizes
-        sampsize_labels = []
-        previous_cluster = nothing
-        for (i,eachcluster) in enumerate(cluster)
-            if i == size(cluster,1) # assumes last cluster is Ultimate Cluster Unit
-                push!(sampsize_labels, Symbol(:sampsize,'_',string(i)))
-                data_groupedby_eachcluster = groupby(data, previous_cluster)
-                data[!, sampsize_labels[i]] = transform(data_groupedby_cluster, nrow => :counts).counts
-                break
-            end
-            push!(sampsize_labels, Symbol(:sampsize,'_',string(i)))
-            data_groupedby_eachcluster = groupby(data, eachcluster)
-            data[!, sampsize_labels[i]] = fill(size(data_groupedby_eachcluster, 1),(nrow(data),))
-            previous_cluster = eachcluster
-        end
-        # TODO:
-        # data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        # data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
-        # data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        # data[!, :strata] = ones(nrow(data))
-        new(data, cluster, popsize, sampsize_labels, false, false)
+        pps = false
+        has_strata = false
+        new(data, cluster, popsize, sampsize_labels, pps, has_strata)
     end
 end
 

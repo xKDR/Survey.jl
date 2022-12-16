@@ -23,8 +23,8 @@ include("boxplot.jl")
 include("show.jl")
 
 export load_data
-export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample, ClusterSample
-export SurveyDesign
+export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
+export OneStageClusterSample
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
