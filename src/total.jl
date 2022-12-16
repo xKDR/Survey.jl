@@ -3,6 +3,8 @@
 
 Estimate the population total for the variable specified by `x`.
 
+For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
+
 ```jldoctest
 julia> using Survey;
 
@@ -84,6 +86,17 @@ function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
     df = reduce(vcat, [total(i, design) for i in x])
     insertcols!(df, 1, :names => String.(x))
     return df
+end
+
+function total(x::Symbol, design::OneStageClusterSample)
+    gdf = groupby(design.data, design.cluster)
+    ŷₜ = combine(gdf, x => sum => :sum).sum
+    Nₜ = first(design.data[!,design.popsize])
+    Ȳ = Nₜ * mean(ŷₜ)
+    nₜ = first(design.data[!,design.sampsize])
+    s²ₜ = var(ŷₜ)
+    VȲ = Nₜ^2 * (1 - nₜ/Nₜ) * s²ₜ / nₜ
+    return DataFrame(mean = Ȳ, SE = sqrt(VȲ))
 end
 
 """
