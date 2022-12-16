@@ -367,7 +367,8 @@ struct ClusterSample <: AbstractSurveyDesign
         new(data, cluster, popsize, sampsize_labels, false, false)
     end
     # Multi-stage cluster sample with popsize and fpc known, like apiclus2
-    function ClusterSample(data::AbstractDataFrame, cluster::Vector{Symbol}, popsize::Vector{Symbol}; kwargs...)
+    # Implicitly assuming nesting is true and no strata in below constructor
+    function ClusterSample(data::AbstractDataFrame, cluster::Vector{Symbol}, popsize::Vector{Symbol}; nest::Bool=true, kwargs...)
         if size(cluster,1) != size(popsize,1)
             error("`cluster` and `popsize` should be of same size")
         end
