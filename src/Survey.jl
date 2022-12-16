@@ -15,6 +15,7 @@ using Random
 include("SurveyDesign.jl")
 include("mean.jl")
 include("quantile.jl")
+include("jackknife.jl")
 include("total.jl")
 include("load_data.jl")
 include("hist.jl")
@@ -33,5 +34,6 @@ export plot
 export hist, sturges, freedman_diaconis
 export boxplot
 export bootstrap
+export jkknife
 
 end
