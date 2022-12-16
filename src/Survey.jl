@@ -14,6 +14,7 @@ using CategoricalArrays
 include("SurveyDesign.jl")
 include("mean.jl")
 include("quantile.jl")
+include("jackknife.jl")
 include("total.jl")
 include("load_data.jl")
 include("hist.jl")
@@ -30,5 +31,6 @@ export mean, total, quantile
 export plot
 export hist, sturges, freedman_diaconis
 export boxplot
+export jkknife
 
 end
