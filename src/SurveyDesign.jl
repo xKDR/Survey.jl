@@ -366,5 +366,26 @@ struct OneStageClusterSample <: AbstractSurveyDesign
         has_strata = false
         new(data, cluster, popsize, sampsize_labels, pps, has_strata)
     end
+    # Single stage cluster sample, like apiclus1
+    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol, weights::Symbol; kwargs...) # Right now kwargs does nothing, for expansion
+        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
+        if !(typeof(data[!, popsize]) <: Vector{<:Real})
+            error(string("given popsize column ", popsize , " is not of numeric type"))
+        end
+        if !all(w -> w == first(data[!, popsize]), data[!, popsize])
+            error("popsize must be same for all observations within the cluster in ClusterSample")
+        end
+        # For one-stage sample only one sampsize vector
+        sampsize_labels = :sampsize
+        data_groupedby_cluster = groupby(data, cluster)
+        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
+        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
+        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
+        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        data[!, :strata] = ones(nrow(data))
+        pps = false
+        has_strata = false
+        new(data, cluster, popsize, sampsize_labels, pps, has_strata)
+    end
 end
 
