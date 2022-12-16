@@ -1,5 +1,6 @@
 using Survey
 using Documenter
+using Random
 
 DocMeta.setdocmeta!(Survey, :DocTestSetup, :(using Survey); recursive=true)
 
