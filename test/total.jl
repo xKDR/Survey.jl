@@ -92,3 +92,15 @@ end
     # TODO: add functionality in `src/total.jl`
     # TODO: add tests
 end
+
+@testset "total_OneStageClusterSample" begin
+    # Load API datasets
+    apiclus1_original = load_data("apiclus1")
+    apiclus1_original[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
+    ##############################
+    # one-stage cluster sample
+    apiclus1 = copy(apiclus1_original)
+    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+    @test total(:api00,dclus1).mean[1] ≈ 5949162 atol = 1
+    @test total(:api00,dclus1).SE[1] ≈ 1339481 atol = 1
+end

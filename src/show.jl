@@ -47,3 +47,18 @@ function Base.show(io::IO, ::MIME"text/plain", design::StratifiedSample)
     printinfo(io, "sampfraction", makeshort(design.data.sampfraction))
     printinfo(io, "ignorefpc", string(design.ignorefpc); newline=false)
 end
+
+"Print information about a survey design."
+function Base.show(io::IO, ::MIME"text/plain", design::OneStageClusterSample)
+    type = typeof(design)
+    printstyled(io, "$type:\n"; bold=true)
+    printstyled(io, "data: "; bold=true)
+    println(io, size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printinfo(io, "cluster", string(design.cluster); newline=true)
+    printinfo(io, "popsize", string(design.popsize); newline=true)
+    printinfo(io, "sampsize", string(design.sampsize); newline=true)
+    printinfo(io, "strata", makeshort(design.data.strata))
+    printinfo(io, "weights", makeshort(design.data.weights))
+    printinfo(io, "probs", makeshort(design.data.probs))
+    printinfo(io, "allprobs", makeshort(design.data.allprobs))
+end

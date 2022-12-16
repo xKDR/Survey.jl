@@ -6,6 +6,8 @@ Estimate the population mean of a variable of a simple random sample, and the co
 The calculations were done according to the book [Sampling Techniques](https://www.academia.edu/29684662/Cochran_1977_Sampling_Techniques_Third_Edition)
 by William Cochran.
 
+For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
+
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
@@ -88,6 +90,22 @@ function mean(x::Symbol, design::StratifiedSample)
     V̂Ȳ̂ = sum((Wₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
     SE = sqrt(V̂Ȳ̂)
     return DataFrame(mean=Ȳ̂, SE=SE)
+end
+
+function mean(x::Symbol, design::OneStageClusterSample)
+    ## Based on logical translation of corresponding in total.jl
+    ## Not quite same from R as it rounds of `total`, so division results in difference
+    # > svymean(~api00,dclus1)
+    #     mean     SE
+    # api00 644.17 23.542
+    gdf = groupby(design.data, design.cluster)
+    ȳₜ = combine(gdf, x => mean => :mean).mean
+    Nₜ = first(design.data[!,design.popsize])
+    nₜ = first(design.data[!,design.sampsize])
+    Ȳ = mean(ȳₜ)
+    s²ₜ = var(ȳₜ)
+    VȲ = (1 - nₜ/Nₜ) * s²ₜ / nₜ
+    return DataFrame(mean = Ȳ, SE = sqrt(VȲ))
 end
 
 """

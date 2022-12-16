@@ -24,14 +24,11 @@ include("show.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
-export SurveyDesign
-export by
-export ht_calc
+export OneStageClusterSample
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
 export hist, sturges, freedman_diaconis
 export boxplot
-export ht_total, ht_mean
 
 end
