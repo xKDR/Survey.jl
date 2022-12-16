@@ -39,15 +39,40 @@
 end
 
 @testset "mean_Stratified" begin
-    ## Add tests
+    apistrat_original = load_data("apistrat")
+    apistrat = copy(apistrat_original)
+    strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
+    mean_strat = mean(:api00, strat)
+    @test mean_strat.mean[1] ≈ 662.287 atol = 1e-2
+    @test mean_strat.SE[1] ≈ 9.40894 atol = 1e-2
 end
 
 @testset "mean_svyby_SimpleRandomSample" begin
     ## Add tests
+    apisrs_original = load_data("apisrs")
+    apisrs = copy(apisrs_original)
+    srs = SimpleRandomSample(apisrs, popsize = :fpc)
+    mean_symb_srs = mean(:api00, :stype, srs)
+    @test mean_symb_srs.mean[1] ≈ 605.36 atol = 1e-2
+    @test mean_symb_srs.mean[2] ≈ 666.141 atol = 1e-2
+    @test mean_symb_srs.mean[3] ≈ 654.273 atol = 1e-2
+    @test mean_symb_srs.SE[1] ≈ 21.9266 atol = 1e-2
+    @test mean_symb_srs.SE[2] ≈ 11.1935 atol = 1e-2
+    @test mean_symb_srs.SE[3] ≈ 21.8261 atol = 1e-2
 end
 
 @testset "mean_svyby_Stratified" begin
     ## Add tests
+    apistrat_original = load_data("apistrat")
+    apistrat = copy(apistrat_original)
+    strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
+    mean_strat_symb = mean(:api00,:stype, strat)
+    @test mean_strat_symb.mean[1] ≈ 674.43 atol = 1e-2
+    @test mean_strat_symb.mean[2] ≈ 636.6 atol = 1e-2
+    @test mean_strat_symb.mean[3] ≈ 625.82 atol = 1e-2
+    @test mean_strat_symb.SE[1] ≈ 12.3825 atol = 1e-2
+    @test mean_strat_symb.SE[2] ≈ 16.2147 atol = 1e-2
+    @test mean_strat_symb.SE[3] ≈ 14.9371 atol = 1e-2
 end
 
 
