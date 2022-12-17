@@ -48,7 +48,6 @@ end
 end
 
 @testset "mean_svyby_SimpleRandomSample" begin
-    ## Add tests
     apisrs_original = load_data("apisrs")
     apisrs = copy(apisrs_original)
     srs = SimpleRandomSample(apisrs, popsize = :fpc)
