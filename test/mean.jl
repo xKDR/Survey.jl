@@ -61,7 +61,6 @@ end
 end
 
 @testset "mean_svyby_Stratified" begin
-    ## Add tests
     apistrat_original = load_data("apistrat")
     apistrat = copy(apistrat_original)
     strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
