@@ -337,12 +337,53 @@ Assumes each individual in one and only one cluster; disjoint and nested cluster
 `popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size. For 
 
 `weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
+
+```jldoctest
+julia> apiclus1 = load_data("apiclus1");
+
+julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
+
+julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+OneStageClusterSample:
+data: 183x45 DataFrame
+cluster: dnum
+design.data[!,design.cluster]: 637, 637, 637, ..., 448
+popsize: fpc
+design.data[!,design.popsize]: 757, 757, 757, ..., 757
+sampsize: sampsize
+design.data[!,design.sampsize]: 15, 15, 15, ..., 15
+weights: weights
+design.data[!,design.weights]: 50.5, 50.5, 50.5, ..., 50.5
+design.data[!,:strata]: 1.0, 1.0, 1.0, ..., 1.0
+design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+
+julia> apiclus1 = load_data("apiclus1");
+
+julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
+
+julia> dclus1 = OneStageClusterSample(apiclus1, :dnum; weights=:pw)
+OneStageClusterSample:
+data: 183x45 DataFrame
+cluster: dnum
+design.data[!,design.cluster]: 637, 637, 637, ..., 448
+popsize: popsize
+design.data[!,design.popsize]: 757.0, 757.0, 757.0, ..., 757.0
+sampsize: sampsize
+design.data[!,design.sampsize]: 15, 15, 15, ..., 15
+weights: pw
+design.data[!,design.weights]: 50.5, 50.5, 50.5, ..., 50.5
+design.data[!,:strata]: 1.0, 1.0, 1.0, ..., 1.0
+design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+```
 """
 struct OneStageClusterSample <: AbstractSurveyDesign
     data::AbstractDataFrame
     cluster::Symbol
     popsize::Symbol
     sampsize::Symbol
+    weights::Symbol
     pps::Bool
     has_strata::Bool
     # Single stage cluster sample, like apiclus1
@@ -358,34 +399,36 @@ struct OneStageClusterSample <: AbstractSurveyDesign
         sampsize_labels = :sampsize
         data_groupedby_cluster = groupby(data, cluster)
         data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
+        weights = :weights
+        data[!, weights] = data[!, popsize] ./ data[!, sampsize_labels]
+        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
         data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         data[!, :strata] = ones(nrow(data))
         pps = false
         has_strata = false
-        new(data, cluster, popsize, sampsize_labels, pps, has_strata)
+        new(data, cluster, popsize, sampsize_labels, weights ,pps, has_strata)
     end
     # Single stage cluster sample, like apiclus1
-    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol, weights::Symbol; kwargs...) # Right now kwargs does nothing, for expansion
+    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol; weights::Symbol=nothing, kwargs...) # Right now kwargs does nothing, for expansion
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if !(typeof(data[!, popsize]) <: Vector{<:Real})
-            error(string("given popsize column ", popsize , " is not of numeric type"))
+        if !(typeof(data[!, weights]) <: Vector{<:Real})
+            error(string("given weights column ", weights , " is not of numeric type"))
         end
-        if !all(w -> w == first(data[!, popsize]), data[!, popsize])
-            error("popsize must be same for all observations within the cluster in ClusterSample")
+        if !all(w -> w == first(data[!, weights]), data[!, weights])
+            error("weights must be same for all observations for OneStageClusterSample")
         end
         # For one-stage sample only one sampsize vector
         sampsize_labels = :sampsize
         data_groupedby_cluster = groupby(data, cluster)
         data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
+        popsize = :popsize
+        data[!, popsize] = data[!, weights] .* data[!, sampsize_labels]
+        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
         data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         data[!, :strata] = ones(nrow(data))
         pps = false
         has_strata = false
-        new(data, cluster, popsize, sampsize_labels, pps, has_strata)
+        new(data, cluster, popsize, sampsize_labels, weights, pps, has_strata)
     end
 end
 
