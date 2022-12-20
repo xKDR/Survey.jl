@@ -62,3 +62,23 @@ function Base.show(io::IO, ::MIME"text/plain", design::OneStageClusterSample)
     printinfo(io, "probs", makeshort(design.data.probs))
     printinfo(io, "allprobs", makeshort(design.data.allprobs))
 end
+
+"Print information about a survey design."
+function Base.show(io::IO, ::MIME"text/plain", design::SingleStageSurveyDesign)
+    type = typeof(design)
+    printstyled(io, "$type:\n"; bold=true)
+    printstyled(io, "data: "; bold=true)
+    println(io, size(design.data, 1), "x", size(design.data, 2), " DataFrame")
+    printinfo(io, "cluster", string(design.cluster); newline=true)
+    printinfo(io, "design.data[!,design.cluster]", makeshort(design.data[!,design.cluster]))
+    printinfo(io, "strata", string(design.strata); newline=true)
+    printinfo(io, "design.data[!,design.strata]", makeshort(design.data[!,design.strata]))
+    printinfo(io, "popsize", string(design.popsize); newline=true)
+    printinfo(io, "design.data[!,design.popsize]", makeshort(design.data[!,design.popsize]))
+    printinfo(io, "sampsize", string(design.sampsize); newline=true)
+    printinfo(io, "design.data[!,design.sampsize]", makeshort(design.data[!,design.sampsize]))
+    printinfo(io, "weights", string(design.weights); newline=true)
+    printinfo(io, "design.data[!,design.weights]", makeshort(design.data[!,design.weights]))
+    printinfo(io, "design.data[!,:probs]", makeshort(design.data.probs))
+    printinfo(io, "design.data[!,:allprobs]", makeshort(design.data.allprobs))
+end

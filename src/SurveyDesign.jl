@@ -368,3 +368,66 @@ struct OneStageClusterSample <: AbstractSurveyDesign
     end
 end
 
+"""
+    TwoStage <: AbstractSurveyDesign
+
+Survey design sampled by two stage sampling, firstly with clusters then stratified.
+Clusters chosen by SRS followed by stratified sampling of selected clusters.
+Assumes each individual in one and only one cluster; disjoint and nested clusters.
+`cluster` must be specified as a Symbol name of a column in `data`.
+# Arguments:
+`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+`cluster::Symbol`: the stratification variable - must be given as a column in `data`.
+`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size. For 
+`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
+
+"""
+struct SingleStageSurveyDesign <: AbstractSurveyDesign
+    data::AbstractDataFrame
+    cluster::Symbol
+    strata::Symbol
+    popsize::Symbol
+    sampsize::Symbol
+    weights::Symbol
+    pps::Bool
+    has_strata::Bool
+    # Two stage stratified random sample, like apiclus2
+    function SingleStageSurveyDesign(data::AbstractDataFrame; cluster::Symbol, strata::Symbol=nothing, weights::Symbol=nothing) # Right now kwargs does nothing, for expansion
+        # Return error if any keyword empty
+        if isnothing(cluster) || isnothing(strata) || isnothing(weights)
+            error("must specify cluster, strata and popsize")        
+        end
+        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
+        if !(typeof(data[!, weights]) <: Vector{<:Real})
+            error(string("given weights column ", weights , " is not of numeric type"))
+        end
+        # For one-stage sample only one sampsize vector
+        sampsize_labels = :sampsize
+        data_groupedby_cluster = groupby(data, [cluster,strata])
+        ################
+        # TODO: This is not the same as sampsize in R
+        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
+        ###############
+        popsize = :popsize
+        data[!, popsize] = data[!, weights] .* data[!, sampsize_labels]
+        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
+        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        pps = false
+        if !isnothing(strata)
+            has_strata = true
+        else
+            has_strata = false
+        end
+        new(data, cluster, strata, popsize, sampsize_labels, weights, pps, has_strata)
+    end
+    # Constructor for probs, just calls weights constructor where weight=1/probs 
+    function SingleStageSurveyDesign(data::AbstractDataFrame, cluster::Symbol; strata::Symbol=nothing, probs::Symbol=nothing)
+        # Return error if any keyword empty
+        if isnothing(cluster) || isnothing(strata) || isnothing(popsize)
+            error("must specify cluster, strata and popsize")        
+        end
+        weights_label = :weights
+        data[!,weights_label] = 1 ./ data[!,probs]
+        SingleStageSurveyDesign(data; cluster, strata, weights=weights_label)
+    end
+end
