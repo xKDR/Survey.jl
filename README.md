@@ -11,6 +11,9 @@ This package is used to study complex survey data. It aims to be a fast alternat
 
 This package currently supports simple random sample and stratified sample. In future releases, it will support multistage sampling as well. 
 
+## Documentation
+See [Documentation](https://xkdr.github.io/Survey.jl/dev/) to learn how to use the package 
+
 ## How to install
 ```julia
 ]  add "https://github.com/xKDR/Survey.jl.git"
