@@ -1,3 +1,11 @@
+struct Bootstrap 
+    replicates
+    rng
+    function Bootstrap(; replicates = 100, rng = MersenneTwister(111))
+        new(replicates, rng)
+    end
+end
+
 """
 ```jldoctest
 julia> using Survey, Random, StatsBase; 

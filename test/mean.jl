@@ -73,4 +73,15 @@ end
     @test mean_strat_symb.SE[3] ≈ 14.9371 atol = 1e-2
 end
 
+@testset "mean_OneStageCluster" begin
 
+    apiclus1_original = load_data("apiclus1")
+    apiclus1_original[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
+    ##############################
+    # one-stage cluster sample
+    apiclus1 = copy(apiclus1_original)
+    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+
+    @test mean(:api00,dclus1, Bootstrap()).mean[1] ≈ 644.17 atol = 1
+    @test mean(:api00,dclus1, Bootstrap(replicates = 10000)).SE[1] ≈ 23.779 atol = 0.5 # without fpc as it hasn't been figured out for bootstrap. 
+end

@@ -13,6 +13,7 @@ using CategoricalArrays
 using Random
 
 include("SurveyDesign.jl")
+include("bootstrap.jl")
 include("mean.jl")
 include("quantile.jl")
 include("jackknife.jl")
@@ -23,7 +24,6 @@ include("plot.jl")
 include("dimnames.jl")
 include("boxplot.jl")
 include("show.jl")
-include("bootstrap.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
@@ -33,7 +33,7 @@ export mean, total, quantile
 export plot
 export hist, sturges, freedman_diaconis
 export boxplot
-export bootstrap
+export Bootstrap
 export jkknife
 
 end
