@@ -145,9 +145,9 @@ julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc);
 
 julia> total(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(111)))
 1×2 DataFrame
- Row │ total     SE      
-     │ Float64  Float64 
-─────┼──────────────────
+ Row │ total      SE        
+     │ Float64    Float64   
+─────┼──────────────────────
    1 │ 5.94916e6  1.36593e6
 ```
 """
