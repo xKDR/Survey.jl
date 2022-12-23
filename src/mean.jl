@@ -108,6 +108,26 @@ function mean(x::Symbol, design::OneStageClusterSample)
     return DataFrame(mean = Ȳ, SE = sqrt(VȲ))
 end
 
+function mean(x::Symbol, design::OneStageClusterSample, method ::Bool)
+    if method == true
+        statistic = mean(design.data[!,x])
+        nh = length(unique(design.data[!,design.cluster]))
+        newv = []
+        newv = []
+        gdf = groupby(design.data, design.cluster)
+        replicates = [filter(n -> n != i, 1:nh) for i in 1:nh] 
+        for i in replicates
+            push!(newv,mean(DataFrame(gdf[i])[!,x]))
+        end
+        c = 0
+        for i in 1:nh
+            c = c+(newv[i]-statistic)^2
+        end
+        var = c*(nh-1)/nh
+        return DataFrame(Statistic = statistic, SE = sqrt(var))
+    end
+end
+
 """
     mean(x, by, design)
 

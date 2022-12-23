@@ -1,3 +1,7 @@
+""" Structure for jackknife"""
+struct Jackknife end
+
+"""Function that calculates jackknife"""
 function jkknife(variable:: Symbol, design::OneStageClusterSample ,func:: Function;  params =[])
     statistic = func(design.data[!,variable],params...)
     nh = length(unique(design.data[!,design.cluster]))
