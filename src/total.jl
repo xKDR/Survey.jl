@@ -96,7 +96,7 @@ function total(x::Symbol, design::OneStageClusterSample)
     nₜ = first(design.data[!,design.sampsize])
     s²ₜ = var(ŷₜ)
     VȲ = Nₜ^2 * (1 - nₜ/Nₜ) * s²ₜ / nₜ
-    return DataFrame(mean = Ȳ, SE = sqrt(VȲ))
+    return DataFrame(total = Ȳ, SE = sqrt(VȲ))
 end
 
 """
@@ -133,4 +133,25 @@ function total(x::Symbol, by::Symbol, design::SimpleRandomSample)
     end
     gdf = groupby(design.data, by)
     combine(gdf, [x, :weights] => ((a, b) -> domain_total(a, design, b)) => AsTable)
+end
+
+"""
+```jldoctest
+julia> using Survey, Random, StatsBase; 
+
+julia> apiclus1 = load_data("apiclus1"); 
+
+julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+
+julia> total(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(111)))
+1×2 DataFrame
+ Row │ total      SE        
+     │ Float64    Float64   
+─────┼──────────────────────
+   1 │ 5.94916e6  1.36593e6
+```
+"""
+function total(x::Symbol, design::OneStageClusterSample, method::Bootstrap)
+    df = bootstrap(x, design, wsum; method.replicates, method.rng)
+    df = rename(df, :statistic => :total)
 end
