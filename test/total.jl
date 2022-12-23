@@ -101,6 +101,10 @@ end
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
     dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
-    @test total(:api00,dclus1).mean[1] ≈ 5949162 atol = 1
+    @test total(:api00,dclus1).total[1] ≈ 5949162 atol = 1
     @test total(:api00,dclus1).SE[1] ≈ 1339481 atol = 1
+
+    @test total(:api00,dclus1, Bootstrap()).total[1] ≈ 5949162 atol = 1
+    @test total(:api00,dclus1, Bootstrap(replicates = 10000)).SE[1] ≈ 1352953 atol = 50000 # without fpc as it hasn't been figured out for bootstrap. 
+    
 end

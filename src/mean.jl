@@ -203,3 +203,25 @@ function mean(x::Symbol, by::Symbol, design::StratifiedSample)
     gdf_domain = groupby(design.data, by)
     combine(gdf_domain, [x, :popsize,:sampsize,:sampfraction, design.strata] => domain_mean => AsTable)
 end
+
+"""
+```jldoctest
+julia> using Survey, Random, StatsBase; 
+
+julia> apiclus1 = load_data("apiclus1"); 
+
+julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+
+julia> mean(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(111)))
+1×2 DataFrame
+ Row │ mean     SE      
+     │ Float64  Float64 
+─────┼──────────────────
+   1 │ 644.169  23.0897
+```
+"""
+function mean(x::Symbol, design::OneStageClusterSample, method::Bootstrap)
+    weighted_mean(x, w) = mean(x, weights(w))
+    df = bootstrap(x, design, weighted_mean; method.replicates, method.rng)
+    df = rename(df, :statistic => :mean)
+end

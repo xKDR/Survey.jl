@@ -1,3 +1,11 @@
+struct Bootstrap 
+    replicates
+    rng
+    function Bootstrap(; replicates = 100, rng = MersenneTwister(111))
+        new(replicates, rng)
+    end
+end
+
 """
 ```jldoctest
 julia> using Survey, Random, StatsBase; 
@@ -10,7 +18,7 @@ julia> rng = MersenneTwister(111);
 
 julia> func = wsum; 
 
-julia> bootstrap(:api00, dclus1, func; replicates=1000, rng) 
+julia> Survey.bootstrap(:api00, dclus1, func; replicates=1000, rng) 
 1×2 DataFrame
  Row │ statistic  SE        
      │ Float64    Float64   
