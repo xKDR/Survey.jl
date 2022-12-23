@@ -24,6 +24,7 @@ include("plot.jl")
 include("dimnames.jl")
 include("boxplot.jl")
 include("show.jl")
+include("ratio.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
@@ -35,5 +36,6 @@ export hist, sturges, freedman_diaconis
 export boxplot
 export Bootstrap
 export jkknife
+export ratio
 
 end
