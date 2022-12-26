@@ -5,17 +5,18 @@ Estimate the ratio of the columns specified in numerator and denominator
 ```jldoctest
 julia> using Survey;
 
-julia> apiclus1_original = load_data("apiclus1");
-julia> apiclus1_original[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
+julia> apiclus1 = load_data("apiclus1");
+
+julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
+
 julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc);
 
 julia> ratio(:api00, :enroll, dclus1)
-
 1×2 DataFrame
-Row │ Statistic  SE       
-    │ Float64    Float64  
+ Row │ Statistic  SE       
+     │ Float64    Float64  
 ─────┼─────────────────────
-  1 │   1.17182  0.151242 
+   1 │   1.17182  0.151242
 ```
 """
 function ratio(variable_num:: Symbol, variable_den:: Symbol, design::OneStageClusterSample)

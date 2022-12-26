@@ -27,6 +27,7 @@ mean(x::Symbol, by::Symbol, design::SimpleRandomSample)
 total(x::Symbol, by::Symbol, design::SimpleRandomSample) 
 ```
 ```@docs
+ratio(variable_num:: Symbol, variable_den:: Symbol, design::OneStageClusterSample)
 plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 boxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 hist(design::AbstractSurveyDesign, var::Symbol,
