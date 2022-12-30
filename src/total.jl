@@ -88,6 +88,22 @@ function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
     return df
 end
 
+"""
+```jldoctest
+julia> using Survey
+
+julia> apiclus1 = load_data("apiclus1"); 
+
+julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+
+julia> total(:api00, dclus1)
+1×2 DataFrame
+ Row │ total      SE        
+     │ Float64    Float64   
+─────┼──────────────────────
+   1 │ 5.94916e6  1.33948e6
+```
+"""
 function total(x::Symbol, design::OneStageClusterSample)
     gdf = groupby(design.data, design.cluster)
     ŷₜ = combine(gdf, x => sum => :sum).sum
