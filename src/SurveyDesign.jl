@@ -323,17 +323,17 @@ struct StratifiedSample <: AbstractSurveyDesign
 end
 
 """
-    OneStageClusterSample <: AbstractSurveyDesign
+    SurveyDesign <: AbstractSurveyDesign
 
-Survey design sampled by one stage cluster sampling.
+Survey design sampled by one stage clusters sampling.
 Clusters chosen by SRS followed by complete sampling of selected clusters.
-Assumes each individual in one and only one cluster; disjoint and nested clusters.
+Assumes each individual in one and only one clusters; disjoint and nested clusters.
 
-`cluster` must be specified as a Symbol name of a column in `data`.
+`clusters` must be specified as a Symbol name of a column in `data`.
 
 # Arguments:
 `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
-`cluster::Symbol`: the stratification variable - must be given as a column in `data`.
+`clusters::Symbol`: the stratification variable - must be given as a column in `data`.
 `popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size. For 
 
 `weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
@@ -343,11 +343,11 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
 
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
-OneStageClusterSample:
+julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc)
+SurveyDesign:
 data: 183x45 DataFrame
-cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
+clusters: dnum
+design.data[!,design.clusters]: 637, 637, 637, ..., 448
 popsize: fpc
 design.data[!,design.popsize]: 757, 757, 757, ..., 757
 sampsize: sampsize
@@ -362,11 +362,11 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
 
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum; weights=:pw)
-OneStageClusterSample:
+julia> dclus1 = SurveyDesign(apiclus1, :dnum; weights=:pw)
+SurveyDesign:
 data: 183x46 DataFrame
-cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
+clusters: dnum
+design.data[!,design.clusters]: 637, 637, 637, ..., 448
 popsize: popsize
 design.data[!,design.popsize]: 757.0, 757.0, 757.0, ..., 757.0
 sampsize: sampsize
@@ -378,53 +378,48 @@ design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
 design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
 ```
 """
-struct OneStageClusterSample <: AbstractSurveyDesign
+struct SurveyDesign <: AbstractSurveyDesign
     data::AbstractDataFrame
     cluster::Symbol
     popsize::Symbol
     sampsize::Symbol
-    weights::Symbol
+    strata::Symbol
     pps::Bool
-    has_strata::Bool
-    # Single stage cluster sample, like apiclus1
-    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol, popsize::Symbol; kwargs...) # Right now kwargs does nothing, for expansion
+    # Single stage clusters sample, like apiclus1
+    function SurveyDesign(data::AbstractDataFrame; strata::Union{Nothing,Symbol} = nothing, weights::Union{Nothing,Symbol}= nothing, clusters::Union{Nothing, Symbol, Vector{Symbol}} = nothing, popsize::Union{Nothing, Int,Symbol}=nothing) 
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if !(typeof(data[!, popsize]) <: Vector{<:Real})
-            error(string("given popsize column ", popsize , " is not of numeric type"))
+        if typeof(strata) <:Nothing
+            data.false_strata = repeat(["FALSE_STRATA"], nrow(data))
+            strata = :false_strata
         end
-        if !all(w -> w == first(data[!, popsize]), data[!, popsize])
-            error("popsize must be same for all observations within the cluster in ClusterSample")
+        if typeof(clusters) <: Nothing
+            data.false_cluster = 1:nrow(data)
+            cluster = :false_cluster
+        end
+        ## Single stage approximation
+        if typeof(clusters) <: Vector{Symbol}
+            cluster = first(clusters)
+        end
+        if typeof(clusters) <: Symbol
+            cluster = clusters
         end
         # For one-stage sample only one sampsize vector
         sampsize_labels = :sampsize
-        data_groupedby_cluster = groupby(data, cluster)
-        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        weights = :weights
-        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        data[!, :strata] = ones(nrow(data))
-        pps = false
-        has_strata = false
-        new(data, cluster, popsize, sampsize_labels, weights ,pps, has_strata)
-    end
-    # Single stage cluster sample, like apiclus1
-    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol; weights::Symbol=nothing, kwargs...) # Right now kwargs does nothing, for expansion
-        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if !(typeof(data[!, weights]) <: Vector{<:Real})
-            error(string("given weights column ", weights , " is not of numeric type"))
+        data[!, sampsize_labels] = fill(length(unique(data[!, cluster])),(nrow(data),))
+        if !(typeof(popsize) <: Nothing)
+            data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
+        elseif !(typeof(weights) <: Nothing)
+            data.weights = data[!, weights]
+        else
+            data.weights = repeat([1], nrow(data))
         end
-        sampsize_labels = :sampsize
-        data_groupedby_cluster = groupby(data, cluster)
-        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        popsize = :popsize
-        data[!, popsize] = data[!, weights] .* data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :weights] = data[!, weights]
+        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
         data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        data[!, :strata] = ones(nrow(data))
         pps = false
-        has_strata = false
-        new(data, cluster, popsize, sampsize_labels, weights, pps, has_strata)
+        if !(typeof(popsize) <: Symbol)
+            data.popsize = repeat([sum(data.weights)], nrow(data))
+            popsize = :popsize
+        end
+        new(data, cluster, popsize, sampsize_labels, strata, pps)
     end
 end

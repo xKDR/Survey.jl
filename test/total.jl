@@ -100,7 +100,7 @@ end
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+    dclus1 = SurveyDesign(apiclus1, :dnum, :fpc)
     @test total(:api00,dclus1).total[1] ≈ 5949162 atol = 1
     @test total(:api00,dclus1).SE[1] ≈ 1339481 atol = 1
 

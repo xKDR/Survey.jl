@@ -28,11 +28,11 @@ include("ratio.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
-export OneStageClusterSample
+export SurveyDesign
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
-export hist, sturges, freedman_diaconis
+export hist
 export boxplot
 export Bootstrap
 export jkknife

@@ -1,6 +1,6 @@
 using Random, StatsBase
 apiclus1 = load_data("apiclus1")
-dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+dclus1 = SurveyDesign(apiclus1, :dnum, :fpc); 
 rng = MersenneTwister(111); 
 func = wsum; 
 est = Survey.bootstrap(:api00, dclus1, func; replicates=1000, rng)

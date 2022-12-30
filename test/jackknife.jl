@@ -4,7 +4,7 @@
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+    dclus1 = SurveyDesign(apiclus1, :dnum, :fpc)
     @test jkknife(:api00,dclus1, mean).SE[1] ≈ 26.5997 atol = 1e-4
     @test jkknife(:api00, dclus1, mean).Statistic[1] ≈ 644.1693 atol = 1e-4
 end

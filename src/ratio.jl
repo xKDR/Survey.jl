@@ -9,7 +9,7 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
 
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc);
+julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc);
 
 julia> ratio(:api00, :enroll, dclus1)
 1×2 DataFrame
@@ -19,7 +19,7 @@ julia> ratio(:api00, :enroll, dclus1)
    1 │   1.17182  0.151242
 ```
 """
-function ratio(variable_num:: Symbol, variable_den:: Symbol, design::OneStageClusterSample)
+function ratio(variable_num:: Symbol, variable_den:: Symbol, design::SurveyDesign)
     statistic = wsum(design.data[!,variable_num],design.data.weights)/wsum(design.data[!,variable_den],design.data.weights)
     nh = length(unique(design.data[!,design.cluster]))
     newv = []

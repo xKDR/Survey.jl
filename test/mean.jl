@@ -80,7 +80,7 @@ end
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
+    dclus1 = SurveyDesign(apiclus1, :dnum, :fpc)
 
     @test mean(:api00,dclus1, Bootstrap()).mean[1] ≈ 644.17 atol = 1
     @test mean(:api00,dclus1, Bootstrap(replicates = 10000)).SE[1] ≈ 23.779 atol = 0.5 # without fpc as it hasn't been figured out for bootstrap. 

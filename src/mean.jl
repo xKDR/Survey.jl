@@ -6,7 +6,7 @@ Estimate the population mean of a variable of a simple random sample, and the co
 The calculations were done according to the book [Sampling Techniques](https://www.academia.edu/29684662/Cochran_1977_Sampling_Techniques_Third_Edition)
 by William Cochran.
 
-For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
+For SurveyDesign, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
 
 ```jldoctest
 julia> apisrs = load_data("apisrs");
@@ -92,7 +92,7 @@ function mean(x::Symbol, design::StratifiedSample)
     return DataFrame(mean=Ȳ̂, SE=SE)
 end
 
-function mean(x::Symbol, design::OneStageClusterSample)
+function mean(x::Symbol, design::SurveyDesign)
     ## Based on logical translation of corresponding in total.jl
     ## Not quite same from R as it rounds of `total`, so division results in difference
     # > svymean(~api00,dclus1)
@@ -190,7 +190,7 @@ julia> using Survey, Random, StatsBase;
 
 julia> apiclus1 = load_data("apiclus1"); 
 
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc); 
 
 julia> mean(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(111)))
 1×2 DataFrame
@@ -200,8 +200,16 @@ julia> mean(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(1
    1 │ 644.169  23.0897
 ```
 """
-function mean(x::Symbol, design::OneStageClusterSample, method::Bootstrap)
+function mean(x::Symbol, design::SurveyDesign, method::Bootstrap)
     weighted_mean(x, w) = mean(x, weights(w))
     df = bootstrap(x, design, weighted_mean; method.replicates, method.rng)
     df = rename(df, :statistic => :mean)
+end
+
+function mean(x::Symbol, by::Symbol, design::SurveyDesign, method::Bootstrap)
+    gdf = groupby(design.data, by)
+    subdesigns = [SurveyDesign(gdf[i]; strata = design.strata, weights = :weights, clusters = design.cluster) for i in 1:length(gdf)]    
+    df = vcat([mean(x, subdesign, method) for subdesign in subdesigns]...)
+    df[!, by] = [first(gdf[i][!, by]) for i in 1:length(gdf)]
+    return df
 end

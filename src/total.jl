@@ -3,7 +3,7 @@
 
 Estimate the population total for the variable specified by `x`.
 
-For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
+For SurveyDesign, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
 
 ```jldoctest
 julia> using Survey;
@@ -94,7 +94,7 @@ julia> using Survey
 
 julia> apiclus1 = load_data("apiclus1"); 
 
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc); 
 
 julia> total(:api00, dclus1)
 1×2 DataFrame
@@ -104,7 +104,7 @@ julia> total(:api00, dclus1)
    1 │ 5.94916e6  1.33948e6
 ```
 """
-function total(x::Symbol, design::OneStageClusterSample)
+function total(x::Symbol, design::SurveyDesign)
     gdf = groupby(design.data, design.cluster)
     ŷₜ = combine(gdf, x => sum => :sum).sum
     Nₜ = first(design.data[!,design.popsize])
@@ -157,7 +157,7 @@ julia> using Survey, Random, StatsBase;
 
 julia> apiclus1 = load_data("apiclus1"); 
 
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
+julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc); 
 
 julia> total(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(111)))
 1×2 DataFrame
@@ -167,7 +167,7 @@ julia> total(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(
    1 │ 5.94916e6  1.36593e6
 ```
 """
-function total(x::Symbol, design::OneStageClusterSample, method::Bootstrap)
+function total(x::Symbol, design::SurveyDesign, method::Bootstrap)
     df = bootstrap(x, design, wsum; method.replicates, method.rng)
     df = rename(df, :statistic => :total)
 end

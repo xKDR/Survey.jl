@@ -49,7 +49,7 @@ function Base.show(io::IO, ::MIME"text/plain", design::StratifiedSample)
 end
 
 "Print information about a survey design."
-function Base.show(io::IO, ::MIME"text/plain", design::OneStageClusterSample)
+function Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign)
     type = typeof(design)
     printstyled(io, "$type:\n"; bold=true)
     printstyled(io, "data: "; bold=true)
@@ -60,9 +60,9 @@ function Base.show(io::IO, ::MIME"text/plain", design::OneStageClusterSample)
     printinfo(io, "design.data[!,design.popsize]", makeshort(design.data[!,design.popsize]))
     printinfo(io, "sampsize", string(design.sampsize); newline=true)
     printinfo(io, "design.data[!,design.sampsize]", makeshort(design.data[!,design.sampsize]))
-    printinfo(io, "weights", string(design.weights); newline=true)
-    printinfo(io, "design.data[!,design.weights]", makeshort(design.data[!,design.weights]))
-    printinfo(io, "design.data[!,:strata]", makeshort(design.data[!,:strata]))
+    # printinfo(io, "weights", string(design.weights); newline=true)
+    # printinfo(io, "design.data[!,design.weights]", makeshort(design.data[!,design.weights]))
+    # printinfo(io, "design.data[!,:strata]", makeshort(design.data[!,:strata]))
     printinfo(io, "design.data[!,:probs]", makeshort(design.data.probs))
     printinfo(io, "design.data[!,:allprobs]", makeshort(design.data.allprobs))
 end
