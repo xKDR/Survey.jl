@@ -423,3 +423,13 @@ struct SurveyDesign <: AbstractSurveyDesign
         new(data, cluster, popsize, sampsize_labels, strata, pps)
     end
 end
+
+struct ReplicateDesign <: AbstractSurveyDesign
+    data::AbstractDataFrame
+    cluster::Symbol
+    popsize::Symbol
+    sampsize::Symbol
+    strata::Symbol
+    pps::Bool
+    replicates::UInt
+end

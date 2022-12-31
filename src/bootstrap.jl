@@ -56,3 +56,31 @@ function bootstrap(x::Symbol, design::SurveyDesign, func = wsum; replicates = 10
         variance = sum((Xt .- X).^2) / replicates
     return DataFrame(statistic = X, SE = sqrt(variance))
 end
+
+function bootweights(design::SurveyDesign; replicates = 100, rng = MersenneTwister(1234))
+    H = length(unique(design.data[!, design.strata]))
+    stratified = groupby(design.data, design.strata)
+    function replicate(stratified, H)
+        for j in 1:H
+            substrata = DataFrame(stratified[j])
+            psus = unique(substrata[!, design.cluster])
+            if length(psus) == 1
+                return DataFrame(statistic = X, SE = 0)
+            end
+            nh = length(psus)
+            rh = [(count(==(i), rand(1:(nh-1), nh))) for i in 1:nh] # main bootstrap algo. 
+            gdf = groupby(substrata, design.cluster)
+            for i in 1:nh
+                gdf[i].rh = repeat([rh[i]], nrow(gdf[i]))
+            end
+            stratified[j].rh = DataFrame(gdf).rh
+        end
+        return DataFrame(stratified)
+    end
+    df = replicate(stratified, H)
+    rename!(df,:rh => :replicate_1)
+    for i in 2:(replicates)
+        df[!, "replicate_"*string(i)] = Float64.(replicate(stratified, H).rh)
+    end 
+    return ReplicateDesign(df, design.cluster, design.popsize, design.sampsize, design.strata, design.pps, replicates) 
+end

@@ -36,3 +36,7 @@ function ratio(variable_num:: Symbol, variable_den:: Symbol, design::SurveyDesig
     var = c*(nh-1)/nh
     return DataFrame(Statistic = statistic, SE = sqrt(var))
 end
+
+# function ratio(x::Symbol, design::ReplicateDesign)
+#     design.data[!, "ones"] = ones(nrow(design.data))
+# end

@@ -206,10 +206,35 @@ function mean(x::Symbol, design::SurveyDesign, method::Bootstrap)
     df = rename(df, :statistic => :mean)
 end
 
-function mean(x::Symbol, by::Symbol, design::SurveyDesign, method::Bootstrap)
-    gdf = groupby(design.data, by)
-    subdesigns = [SurveyDesign(gdf[i]; strata = design.strata, weights = :weights, clusters = design.cluster) for i in 1:length(gdf)]    
-    df = vcat([mean(x, subdesign, method) for subdesign in subdesigns]...)
-    df[!, by] = [first(gdf[i][!, by]) for i in 1:length(gdf)]
-    return df
+# function mean(x::Symbol, by::Symbol, design::SurveyDesign, method::Bootstrap)
+#     gdf = groupby(design.data, by)
+#     subdesigns = [SurveyDesign(gdf[i]; strata = design.strata, weights = :weights, clusters = design.cluster) for i in 1:length(gdf)]    
+#     df = vcat([mean(x, subdesign, method) for subdesign in subdesigns]...)
+#     df[!, by] = [first(gdf[i][!, by]) for i in 1:length(gdf)]
+#     return df
+# end
+
+function mean(x::Symbol, design::ReplicateDesign)
+    X = mean(design.data[!, x], weights(design.data.weights))
+    Xt = [mean(design.data[!, x], weights(design.data.weights .* design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
+    variance = sum((Xt .- X).^2) / design.replicates
+    DataFrame(mean = X, SE = sqrt(variance))
+end
+
+
+function mean(x::Symbol, domain::Symbol, design::ReplicateDesign)
+    gdf = groupby(design.data, domain)
+    X = combine(gdf, [x, :weights] => ((a, b) -> mean(a, weights(b))) => :mean)
+    Xt_mat = Array{Float64, 2}(undef, (length(unique(design.data[!, domain])), design.replicates))
+    for i in 1:design.replicates
+        Xt = combine(gdf, [x, :weights, Symbol("replicate_"*string(i))] => ((a, b, c) -> mean(a, weights(b .* c))) => :mean).mean
+        for i in 1:length(Xt)
+            if isnan(Xt[i]) 
+                Xt[i] = X.mean[i] # replace lonely psu with point estimate. This needs to be corrected. 
+            end
+        end
+        Xt_mat[:, i] = Xt
+    end
+    X.SE = sqrt.(sum((Xt_mat .- X.mean).^2 / design.replicates, dims = 2))[:,1]
+    return X
 end
