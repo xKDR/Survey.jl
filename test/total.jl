@@ -1,14 +1,14 @@
-@testset "total_SimpleRandomSample" begin
+@testset "Simple random sample" begin
     apisrs_original = load_data("apisrs")
 
     # base functionality
     apisrs = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs; popsize = :fpc)
+    srs = SurveyDesign(apisrs; weights = :pw) |> bootweights
     tot = total(:api00, srs)
     @test tot.total[1] ≈ 4.06688749e6 atol = 1e-4
-    @test tot.SE[1] ≈ 57292.7783113177 atol = 1e-4
+    @test tot.SE[1] ≈ 292392.42247601174 atol = 1e-1
     # without fpc
-    srs_ignorefpc = SimpleRandomSample(apisrs; popsize = :fpc, ignorefpc = true)
+    srs_ignorefpc = SurveyDesign(apisrs; popsize = :fpc, ignorefpc = true)
     tot = total(:api00, srs_ignorefpc)
     # TODO: uncomment after correcting `total` function
     # @test tot.total[1] ≈ 131317 atol = 1
@@ -17,7 +17,7 @@
     # CategoricalArray
     apisrs = copy(apisrs_original)
     apisrs[!, :cname] = CategoricalArrays.categorical(apisrs.cname)
-    srs = SimpleRandomSample(apisrs; popsize = :fpc)
+    srs = SurveyDesign(apisrs; popsize = :fpc)
     tot = total(:cname, srs)
     @test size(tot)[1] == apisrs.cname |> unique |> length
     @test filter(:cname => ==("Alameda"), tot).total[1] ≈ 340.67 atol = 1e-2
@@ -27,7 +27,7 @@
 
     # Vector{Symbol}
     apisrs = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs; popsize = :fpc)
+    srs = SurveyDesign(apisrs; popsize = :fpc)
     tot = total([:api00, :enroll], srs)
     ## :api00
     @test tot.total[1] ≈ 4066888 atol = 1
@@ -38,7 +38,7 @@
 
     # subpopulation
     apisrs = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs; popsize = :fpc)
+    srs = SurveyDesign(apisrs; popsize = :fpc)
     tot = total(:api00, :cname, srs)
     @test size(tot)[1] == apisrs.cname |> unique |> length
     @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 917238.49 atol = 1e-2

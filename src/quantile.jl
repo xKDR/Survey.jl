@@ -13,7 +13,7 @@ The Julia, R and Python-numpy use the same defaults
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SurveyDesign(apisrs; weights=:pw);
 
 julia> quantile(:api00,srs,0.5)
 1×2 DataFrame
@@ -34,7 +34,7 @@ julia> quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
    5 │        0.95    1473.1
 ```
 """
-function quantile(var::Symbol, design::SimpleRandomSample, p::Union{<:Real,Vector{<:Real}}; 
+function quantile(var::Symbol, design::SurveyDesign, p::Union{<:Real,Vector{<:Real}}; 
     alpha::Float64=0.05, ci::Bool=false, se::Bool=false, qrule="hf7",kwargs...)
     v = design.data[!, var]
     probs = design.data[!, :probs]
@@ -43,7 +43,7 @@ function quantile(var::Symbol, design::SimpleRandomSample, p::Union{<:Real,Vecto
     return df
 end
 
-function quantile(var::Symbol, design::StratifiedSample, p::Union{<:Real,Vector{<:Real}}; 
+function quantile(var::Symbol, design::SurveyDesign, p::Union{<:Real,Vector{<:Real}}; 
     alpha::Float64=0.05, ci::Bool=false, se::Bool=false, qrule="hf7",kwargs...)
     v = design.data[!, var]
     probs = design.data[!, :probs]

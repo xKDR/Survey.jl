@@ -4,7 +4,7 @@
 
     # SimpleRandomSample
     apisrs = load_data("apisrs")
-    srs = SimpleRandomSample(apisrs,popsize=:fpc)
+    srs = srs = SurveyDesign(apisrs; weights=:pw);
 
     h = hist(srs, :enroll)
     @test h.grid[1].entries[1].positional[2] |> length == 21

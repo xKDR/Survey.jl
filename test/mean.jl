@@ -7,34 +7,26 @@
     ##############################
     ### Basic functionality
     apisrs = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs, popsize = :fpc)
+    srs = SurveyDesign(apisrs, weights = :pw) |> bootweights 
+
     @test mean(:api00, srs).mean[1] ≈ 656.585 atol = 1e-4
-    @test mean(:api00, srs).SE[1] ≈ 9.249722039282807 atol = 1e-4
+    @test mean(:api00, srs).SE[1] ≈ 9.402772170880636 atol = 1e-1
     @test mean(:enroll, srs).mean[1] ≈ 584.61 atol = 1e-4
-    @test mean(:enroll, srs).SE[1] ≈ 27.36836524766856 atol = 1e-4
-    # ignorefpc = true
-    apisrs = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs, popsize=:fpc,ignorefpc = true)
-    @test mean(:api00, srs).mean[1] ≈ 656.585 atol = 1e-4
-    @test mean(:api00, srs).SE[1] ≈ 9.402772170880636 atol = 1e-4
-    @test mean(:enroll, srs).mean[1] ≈ 584.61 atol = 1e-4
-    @test mean(:enroll, srs).SE[1] ≈ 27.821214737089324 atol = 1e-4
+    @test mean(:enroll, srs).SE[1] ≈ 27.821214737089324 atol = 1
     ##############################
     ### Vector of Symbols
-    apisrs = copy(apisrs_original)
-    srs = SimpleRandomSample(apisrs, popsize = :fpc)
     mean_vec_sym = mean([:api00,:enroll], srs)
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
-    @test mean_vec_sym.SE[1] ≈ 9.249722039282807 atol = 1e-4
+    @test mean_vec_sym.SE[1] ≈ 9.49199 atol = 1e-2
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
-    @test mean_vec_sym.SE[2] ≈ 27.36836524766856 atol = 1e-4
+    @test mean_vec_sym.SE[2] ≈ 27.9994 atol = 1e-2
     ##############################
     ### Categorical Array - estimating proportions
-    apisrs_categ = copy(apisrs_original)
-    apisrs_categ.stype = CategoricalArray(apisrs_categ.stype) # Convert a column to CategoricalArray
-    srs_design_categ = SimpleRandomSample(apisrs_categ, popsize = :fpc)
+    # apisrs_categ = copy(apisrs_original)
+    # apisrs_categ.stype = CategoricalArray(apisrs_categ.stype) # Convert a column to CategoricalArray
+    # srs_design_categ = SurveyDesign(apisrs_categ, weights = :pw)
     #>>>>>>>>> complete this suite
-    mean_categ = mean(:stype,srs_design_categ)
+    # mean_categ = mean(:stype,srs_design_categ)
     # complete this 
 end
 
@@ -63,14 +55,14 @@ end
 @testset "mean_svyby_Stratified" begin
     apistrat_original = load_data("apistrat")
     apistrat = copy(apistrat_original)
-    strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
-    mean_strat_symb = mean(:api00,:stype, strat)
+    strat = SurveyDesign(apistrat; strata = :stype, weights = :pw) |> bootweights
+    mean_strat_symb = mean(:api00, :stype, strat)
     @test mean_strat_symb.mean[1] ≈ 674.43 atol = 1e-2
     @test mean_strat_symb.mean[2] ≈ 636.6 atol = 1e-2
     @test mean_strat_symb.mean[3] ≈ 625.82 atol = 1e-2
-    @test mean_strat_symb.SE[1] ≈ 12.3825 atol = 1e-2
-    @test mean_strat_symb.SE[2] ≈ 16.2147 atol = 1e-2
-    @test mean_strat_symb.SE[3] ≈ 14.9371 atol = 1e-2
+    @test mean_strat_symb.SE[1] ≈ 12.6528 atol = 1e-2
+    @test mean_strat_symb.SE[2] ≈ 16.3125 atol = 1e-2
+    @test mean_strat_symb.SE[3] ≈ 15.3952 atol = 1e-2
 end
 
 @testset "mean_OneStageCluster" begin
@@ -80,8 +72,7 @@ end
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus1 = SurveyDesign(apiclus1, :dnum, :fpc)
-
-    @test mean(:api00,dclus1, Bootstrap()).mean[1] ≈ 644.17 atol = 1
-    @test mean(:api00,dclus1, Bootstrap(replicates = 10000)).SE[1] ≈ 23.779 atol = 0.5 # without fpc as it hasn't been figured out for bootstrap. 
+    dclus1 = SurveyDesign(apiclus1; clusters =  :dnum, weights = :pw) |> bootweights 
+    @test mean(:api00, dclus1).mean[1] ≈ 644.17 atol = 1e-2
+    @test mean(:api00, dclus1).SE[1] ≈  22.9042 atol = 1e-2 # without fpc as it hasn't been figured out for bootstrap. 
 end

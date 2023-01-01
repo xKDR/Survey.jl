@@ -21,10 +21,10 @@ include("total.jl")
 include("load_data.jl")
 include("hist.jl")
 include("plot.jl")
-include("dimnames.jl")
 include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
+include("by.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
@@ -34,7 +34,7 @@ export mean, total, quantile
 export plot
 export hist
 export boxplot
-export Bootstrap
+export bootweights
 export jkknife
 export ratio
 

@@ -9,7 +9,7 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
 
-julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc);
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
 
 julia> ratio(:api00, :enroll, dclus1)
 1×2 DataFrame
@@ -36,7 +36,3 @@ function ratio(variable_num:: Symbol, variable_den:: Symbol, design::SurveyDesig
     var = c*(nh-1)/nh
     return DataFrame(Statistic = statistic, SE = sqrt(var))
 end
-
-# function ratio(x::Symbol, design::ReplicateDesign)
-#     design.data[!, "ones"] = ones(nrow(design.data))
-# end
