@@ -68,7 +68,7 @@ function bootweights(design::SurveyDesign; replicates = 100, rng = MersenneTwist
                 return DataFrame(statistic = X, SE = 0)
             end
             nh = length(psus)
-            rh = [(count(==(i), rand(1:(nh-1), nh))) for i in 1:nh] # main bootstrap algo. 
+            rh = [(count(==(i), rand(rng, 1:(nh-1), nh))) for i in 1:nh] # main bootstrap algo. 
             gdf = groupby(substrata, design.cluster)
             for i in 1:nh
                 gdf[i].rh = repeat([rh[i]], nrow(gdf[i]))
