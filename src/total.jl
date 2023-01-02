@@ -4,16 +4,18 @@ julia> using Survey;
 
 julia> apiclus1 = load_data("apiclus1"); 
 
+julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
+
 julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); 
 
 julia> bclus1 = bootweights(dclus1; replicates = 1000); 
 
 julia> total(:api00, bclus1)
 1×2 DataFrame
- Row │ mean       SE        
+ Row │ total      SE        
      │ Float64    Float64   
 ─────┼──────────────────────
-   1 │ 5.94916e6  2.01705e6
+   1 │ 5.94916e6  1.31977e6
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
@@ -51,5 +53,12 @@ julia> total(:api00, :cname, bclus1) |> print
 ```
 """
 function total(x::Symbol, domain::Symbol, design::ReplicateDesign)
-    bydomain(x, domain, design, wsum)
+    df = bydomain(x, domain, design, wsum)
+    rename!(df, :statistic => :total)
+end
+
+function total(x::Vector{Symbol}, design::ReplicateDesign)
+    df = reduce(vcat, [total(i, design) for i in x])
+    insertcols!(df, 1, :names => String.(x))
+    return df
 end

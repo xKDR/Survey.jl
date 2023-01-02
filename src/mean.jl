@@ -79,7 +79,9 @@ julia> mean(:api00, :cname, bclus1) |> print
 """
 function mean(x::Symbol, domain::Symbol, design::ReplicateDesign)
     weighted_mean(x, w) = mean(x, StatsBase.weights(w))
-    bydomain(x, domain, design, weighted_mean)
+    df = bydomain(x, domain, design, weighted_mean)
+    rename!(df, :statistic => :mean)
+    return df
 end
 
 function mean(x::Vector{Symbol}, design::ReplicateDesign)

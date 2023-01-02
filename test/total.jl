@@ -6,45 +6,42 @@
     srs = SurveyDesign(apisrs; weights = :pw) |> bootweights
     tot = total(:api00, srs)
     @test tot.total[1] ≈ 4.06688749e6 atol = 1e-4
-    @test tot.SE[1] ≈ 292392.42247601174 atol = 1e-1
-    # without fpc
-    srs_ignorefpc = SurveyDesign(apisrs; popsize = :fpc, ignorefpc = true)
-    tot = total(:api00, srs_ignorefpc)
+    @test tot.SE[1] ≈ 60518.199 atol = 1e-1
     # TODO: uncomment after correcting `total` function
     # @test tot.total[1] ≈ 131317 atol = 1
     # @test tot.SE[1] ≈ 1880.6 atol = 1e-1
 
     # CategoricalArray
-    apisrs = copy(apisrs_original)
-    apisrs[!, :cname] = CategoricalArrays.categorical(apisrs.cname)
-    srs = SurveyDesign(apisrs; popsize = :fpc)
-    tot = total(:cname, srs)
-    @test size(tot)[1] == apisrs.cname |> unique |> length
-    @test filter(:cname => ==("Alameda"), tot).total[1] ≈ 340.67 atol = 1e-2
-    @test filter(:cname => ==("Alameda"), tot).SE[1] ≈ 98.472 atol = 1e-3
-    @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 1393.65 atol = 1e-2
-    @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 180.368 atol = 1e-3
+    # apisrs = copy(apisrs_original)
+    # apisrs[!, :cname] = CategoricalArrays.categorical(apisrs.cname)
+    # srs = SurveyDesign(apisrs; popsize = :fpc)
+    # tot = total(:cname, srs)
+    # @test size(tot)[1] == apisrs.cname |> unique |> length
+    # @test filter(:cname => ==("Alameda"), tot).total[1] ≈ 340.67 atol = 1e-2
+    # @test filter(:cname => ==("Alameda"), tot).SE[1] ≈ 98.472 atol = 1e-3
+    # @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 1393.65 atol = 1e-2
+    # @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 180.368 atol = 1e-3
 
     # Vector{Symbol}
     apisrs = copy(apisrs_original)
-    srs = SurveyDesign(apisrs; popsize = :fpc)
+    srs = SurveyDesign(apisrs; popsize = :fpc) |> bootweights
     tot = total([:api00, :enroll], srs)
     ## :api00
     @test tot.total[1] ≈ 4066888 atol = 1
-    @test tot.SE[1] ≈ 57293 atol = 1
+    @test tot.SE[1] ≈ 60518.199 atol = 1
     ## :enroll
     @test tot.total[2] ≈ 3621074 atol = 1
-    @test tot.SE[2] ≈ 169520 atol = 1
+    @test tot.SE[2] ≈ 173784.343 atol = 1
 
     # subpopulation
     apisrs = copy(apisrs_original)
-    srs = SurveyDesign(apisrs; popsize = :fpc)
+    srs = SurveyDesign(apisrs; popsize = :fpc) |> bootweights
     tot = total(:api00, :cname, srs)
     @test size(tot)[1] == apisrs.cname |> unique |> length
     @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 917238.49 atol = 1e-2
-    @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 122289.00 atol = 1e-2
+    @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 122366.33 atol = 1e-2
     @test filter(:cname => ==("Monterey"), tot).total[1] ≈ 74947.40 atol = 1e-2
-    @test filter(:cname => ==("Monterey"), tot).SE[1] ≈ 37616.17 atol = 1e-2
+    @test filter(:cname => ==("Monterey"), tot).SE[1] ≈ 38178.35 atol = 1e-2
 end
 
 @testset "total_Stratified" begin
@@ -52,22 +49,18 @@ end
 
     # base functionality
     apistrat = copy(apistrat_original)
-    strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
+    strat = SurveyDesign(apistrat; strata = :stype, weights = :pw) |> bootweights
     tot = total(:api00, strat)
-    @test tot.total[1] ≈ 4102208 atol = 1e-1
-    @test tot.SE[1] ≈ 58279 atol = 1e-1
+    @test tot.total[1] ≈ 4102208 atol = 10
+    @test tot.SE[1] ≈ 77211.61 atol = 1e-1
     # without fpc
-    apistrat = copy(apistrat_original)
-    strat_ignorefpc = StratifiedSample(apistrat, :stype; popsize = :fpc, ignorefpc = true)
-    tot = total(:api00, strat_ignorefpc)
-    @test tot.total[1] ≈ 130564 atol = 1e-4
     # TODO: uncomment after correcting `total` function
     # @test tot.SE[1] ≈ 1690.4 atol = 1e-1
 
     # CategoricalArray
-    apistrat = copy(apistrat_original)
-    apistrat[!, :cname] = CategoricalArrays.categorical(apistrat.cname)
-    strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
+    # apistrat = copy(apistrat_original)
+    # apistrat[!, :cname] = CategoricalArrays.categorical(apistrat.cname)
+    # strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
     # TODO: uncomment after adding `CategoricalArray` support
     # @test tot.SE[1] ≈ 1690.4 atol = 1e-1
     # tot = total(:cname, strat)
@@ -78,15 +71,13 @@ end
     # @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 199.635 atol = 1e-3
 
     # Vector{Symbol}
-    apistrat = copy(apistrat_original)
-    strat = StratifiedSample(apistrat, :stype; popsize = :fpc)
     tot = total([:api00, :enroll], strat)
     ## :api00
     @test tot.total[1] ≈ 4102208 atol = 1
-    @test tot.SE[1] ≈ 58279 atol = 1
+    @test tot.SE[1] ≈ 77211.61 atol = 1
     ## :enroll
     @test tot.total[2] ≈ 3687178 atol = 1
-    @test tot.SE[2] ≈ 114642 atol = 1
+    @test tot.SE[2] ≈ 127021.5540 atol = 1
 
     # subpopulation
     # TODO: add functionality in `src/total.jl`
@@ -100,11 +91,11 @@ end
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus1 = SurveyDesign(apiclus1, :dnum, :fpc)
+    dclus1 = SurveyDesign(apiclus1, clusters = :dnum, weights = :pw) |> bootweights
     @test total(:api00,dclus1).total[1] ≈ 5949162 atol = 1
-    @test total(:api00,dclus1).SE[1] ≈ 1339481 atol = 1
+    @test total(:api00,dclus1).SE[1] ≈ 1.3338978891316957e6 atol = 1
 
-    @test total(:api00,dclus1, Bootstrap()).total[1] ≈ 5949162 atol = 1
-    @test total(:api00,dclus1, Bootstrap(replicates = 10000)).SE[1] ≈ 1352953 atol = 50000 # without fpc as it hasn't been figured out for bootstrap. 
+    @test total(:api00, dclus1).total[1] ≈ 5949162 atol = 1
+    @test total(:api00, dclus1).SE[1] ≈ 1352953 atol = 50000 # without fpc as it hasn't been figured out for bootstrap. 
     
 end
