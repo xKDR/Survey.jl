@@ -1,3 +1,6 @@
+# Analytic Solution branch
+This branch has survey designs that calculate statistics and variances using analytical solutions where possible.
+
 # Survey
 
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://xKDR.github.io/Survey.jl/dev)
