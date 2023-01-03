@@ -21,20 +21,20 @@ include("total.jl")
 include("load_data.jl")
 include("hist.jl")
 include("plot.jl")
-include("dimnames.jl")
 include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
+include("by.jl")
 
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
-export OneStageClusterSample
+export SurveyDesign
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
-export hist, sturges, freedman_diaconis
+export hist
 export boxplot
-export Bootstrap
+export bootweights
 export jkknife
 export ratio
 

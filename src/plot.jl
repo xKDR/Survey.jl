@@ -8,7 +8,7 @@ in the design.
 
 ```@example plot
 apisrs = load_data("apisrs");
-srs = SimpleRandomSample(apisrs; weights = :pw);
+srs = SurveyDesign(apisrs; weights=:pw);
 s = plot(srs, :api99, :api00)
 save("scatter.png", s); nothing # hide
 ```

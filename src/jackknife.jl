@@ -1,4 +1,4 @@
-function jkknife(variable:: Symbol, design::OneStageClusterSample ,func:: Function;  params =[])
+function jkknife(variable:: Symbol, design::SurveyDesign ,func:: Function;  params =[])
     statistic = func(design.data[!,variable],params...)
     nh = length(unique(design.data[!,design.cluster]))
     newv = []

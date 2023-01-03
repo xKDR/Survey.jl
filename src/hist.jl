@@ -11,7 +11,7 @@ Calculate the number of bins to use in a histogram using the Sturges rule.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SurveyDesign(apisrs; weights=:pw);
 
 julia> sturges(srs, :enroll)
 9
@@ -31,7 +31,7 @@ Calculate the number of bins to use in a histogram using the Freedman-Diaconis r
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SurveyDesign(apisrs; weights=:pw);
 
 julia> freedman_diaconis(srs, :enroll)
 18
