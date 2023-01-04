@@ -11,6 +11,7 @@ using CairoMakie
 using AlgebraOfGraphics
 using CategoricalArrays
 using Random
+using Missings
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")

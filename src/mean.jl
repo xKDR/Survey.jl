@@ -4,21 +4,21 @@ julia> using Survey, Random, StatsBase;
 
 julia> apiclus1 = load_data("apiclus1"); 
 
-julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc); 
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); 
 
-julia> bclus1 = bootweights(apiclus1; replicates = 1000)
+julia> bclus1 = bootweights(dclus1; replicates = 1000)
 
 julia> mean(:api00, bclus1)
 1×2 DataFrame
  Row │ mean     SE      
      │ Float64  Float64 
 ─────┼──────────────────
-   1 │ 644.169  23.0897
+   1 │ 644.169  23.7208
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
     X = mean(design.data[!, x], weights(design.data.weights))
-    Xt = [mean(design.data[!, x], weights(design.data.weights .* design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
+    Xt = [mean(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
     variance = sum((Xt .- X).^2) / design.replicates
     DataFrame(mean = X, SE = sqrt(variance))
 end
@@ -28,9 +28,9 @@ julia> using Survey, Random, StatsBase;
 
 julia> apiclus1 = load_data("apiclus1"); 
 
-julia> dclus1 = SurveyDesign(apiclus1, :dnum, :fpc); 
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); 
 
-julia> bclus1 = bootweights(apiclus1; replicates = 1000)
+julia> bclus1 = bootweights(dclus1; replicates = 1000)
 
 julia> mean(:api00, :cname, bclus1) |> print
 38×3 DataFrame

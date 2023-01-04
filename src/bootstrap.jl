@@ -26,27 +26,48 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
     H = length(unique(design.data[!, design.strata]))
     stratified = groupby(design.data, design.strata)
     function replicate(stratified, H)
-        for j in 1:H
-            substrata = DataFrame(stratified[j])
+        for h in 1:H
+            substrata = DataFrame(stratified[h])
             psus = unique(substrata[!, design.cluster])
-            if length(psus) == 1
-                return DataFrame(statistic = X, SE = 0)
+            # @show psus
+            if length(psus) <= 1
+                return DataFrame(statistic = X, SE = 0) # bug! 
             end
             nh = length(psus)
             randinds = rand(rng, 1:(nh), (nh-1)) # Main bootstrap algo. Draw nh-1 out of nh, with replacement.  
             rh = [(count(==(i), randinds)) for i in 1:nh] # main bootstrap algo. 
             gdf = groupby(substrata, design.cluster)
+            # @show keys(gdf)
             for i in 1:nh
-                gdf[i].rh = repeat([rh[i]], nrow(gdf[i]))
-            end
-            stratified[j].rh = DataFrame(gdf).rh
+                gdf[i].whij = repeat([rh[i]], nrow(gdf[i])) .* gdf[i].weights .* (nh / (nh - 1))
+            end            
+            stratified[h].whij = transform(gdf).whij
+            
         end
-        return DataFrame(stratified)
+        return transform(stratified, :whij)
     end
     df = replicate(stratified, H)
-    rename!(df,:rh => :replicate_1)
+    rename!(df,:whij => :replicate_1)
+    df.replicate_1 = disallowmissing(df.replicate_1)
     for i in 2:(replicates)
-        df[!, "replicate_"*string(i)] = Float64.(replicate(stratified, H).rh)
+        df[!, "replicate_"*string(i)] = disallowmissing(replicate(stratified, H).whij)
     end 
     return ReplicateDesign(df, design.cluster, design.popsize, design.sampsize, design.strata, design.pps, replicates) 
+end
+
+function bootstrap(x::Symbol, design::SurveyDesign, func = wsum; replicates = 100, rng = MersenneTwister(1234))
+    gdf = groupby(design.data, design.cluster)
+    psus = unique(design.data[!, design.cluster])
+    nh = length(psus)
+    X = func(design.data[:, x], design.data.weights)
+    Xt = Array{Float64, 1}(undef, replicates)
+    for i in 1:replicates
+        selected_psus = psus[rand(rng, 1:nh, (nh-1))] # simple random sample of PSUs, with replacement. Select (nh-1) out of nh
+        xhij = (reduce(vcat, [gdf[(i,)][!, x] for i in selected_psus]))
+        whij = (reduce(vcat, [gdf[(i,)].weights * (nh / (nh - 1)) for i in selected_psus]))
+        Xt[i] = func(xhij, whij)
+    end 
+    @show Xt
+    variance = sum((Xt .- X).^2) / replicates
+    return DataFrame(statistic = X, SE = sqrt(variance))
 end
