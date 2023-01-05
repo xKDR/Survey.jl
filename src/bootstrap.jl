@@ -30,7 +30,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
             substrata = DataFrame(stratified[h])
             psus = unique(substrata[!, design.cluster])
             if length(psus) <= 1
-                return DataFrame(statistic = X, SE = 0) # bug! 
+                stratified[h].whij .= 0 # hasn't been tested yet. 
             end
             nh = length(psus)
             randinds = rand(rng, 1:(nh), (nh-1)) # Main bootstrap algo. Draw nh-1 out of nh, with replacement.  
