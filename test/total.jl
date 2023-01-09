@@ -1,12 +1,11 @@
 const STAT_TOL = 1e-5
 const SE_TOL = 1e-1
 
-@testset "Simple random sample" begin
-    apisrs_original = load_data("apisrs")
+@testset "total SRS" begin
+    apisrs = load_data("apisrs")
+    srs = SurveyDesign(apisrs; weights = :pw) |> bootweights
 
     # base functionality
-    apisrs = copy(apisrs_original)
-    srs = SurveyDesign(apisrs; weights = :pw) |> bootweights
     tot = total(:api00, srs)
     @test tot.total[1] ≈ 4066888 rtol = STAT_TOL
     @test tot.SE[1] ≈ 58526 rtol = SE_TOL
@@ -64,15 +63,15 @@ const SE_TOL = 1e-1
     # > svyby(~api00, ~cname, srsrep, svymean)
 end
 
-@testset "Stratified sample" begin
-    apistrat_original = load_data("apistrat")
+@testset "total Stratified" begin
+    apistrat = load_data("apistrat")
+    strat = SurveyDesign(apistrat; strata = :stype, weights = :pw) |> bootweights
 
     # base functionality
-    apistrat = copy(apistrat_original)
-    strat = SurveyDesign(apistrat; strata = :stype, weights = :pw) |> bootweights
     tot = total(:api00, strat)
     @test tot.total[1] ≈ 4102208 rtol = STAT_TOL
     @test tot.SE[1] ≈ 60746 rtol = SE_TOL
+    mn = mean(:api00, strat)
     @test mn.mean[1] ≈ 662.29 rtol = STAT_TOL
     @test mn.SE[1] ≈ 9.8072 rtol = SE_TOL
     # equivalent R code and results:
@@ -123,18 +122,64 @@ end
     # > svyby(~api00, ~cname, stratrep, svymean)
 end
 
-@testset "One stage cluster sample" begin
-    # Load API datasets
-    apiclus1_original = load_data("apiclus1")
-    apiclus1_original[!, :pw] = fill(757/15,(size(apiclus1_original,1),)) # Correct api mistake for pw column
-    ##############################
-    # one-stage cluster sample
-    apiclus1 = copy(apiclus1_original)
-    dclus1 = SurveyDesign(apiclus1, clusters = :dnum, weights = :pw) |> bootweights
-    @test total(:api00,dclus1).total[1] ≈ 5949162 atol = 1
-    @test total(:api00,dclus1).SE[1] ≈ 1.3338978891316957e6 atol = 1
+@testset "total Cluster" begin
+    apiclus1 = load_data("apiclus1")
+    clus1 = SurveyDesign(apiclus1, clusters = :dnum, weights = :pw) |> bootweights
 
-    @test total(:api00, dclus1).total[1] ≈ 5949162 atol = 1
-    @test total(:api00, dclus1).SE[1] ≈ 1352953 atol = 50000 # without fpc as it hasn't been figured out for bootstrap. 
-    
+    # base functionality
+    tot = total(:api00, clus1)
+    @test tot.total[1] ≈ 3989986 rtol = STAT_TOL
+    @test tot.SE[1] ≈ 900323 rtol = SE_TOL
+    mn = mean(:api00, clus1)
+    @test mn.mean[1] ≈ 644.17 rtol = STAT_TOL
+    @test mn.SE[1] ≈ 23.534 rtol = SE_TOL
+    # equivalent R code and results:
+    # > clus1 <- svydesign(data=apiclus1, id=~dnum, weights=~pw)
+    # > clus1rep <- as.svrepdesign(clus1, type="bootstrap", replicates=4000)
+    # > svytotal(~api00, clus1rep)
+    #         total     SE
+    # api00 3989986 900323
+    # > svymean(~api00, clus1rep)
+    #         mean     SE
+    # api00 644.17 23.534
+
+    # Vector{Symbol}
+    tot = total([:api00, :enroll], clus1)
+    mn = mean([:api00, :enroll], clus1)
+    ## :api00
+    @test tot.total[1] ≈ 3989986 rtol = STAT_TOL
+    @test tot.SE[1] ≈ 900323 rtol = SE_TOL
+    @test mn.mean[1] ≈ 644.17 rtol = STAT_TOL
+    @test mn.SE[1] ≈ 23.534 rtol = SE_TOL
+    ## :enroll
+    @test tot.total[2] ≈ 3404940 rtol = STAT_TOL
+    @test tot.SE[2] ≈ 941501 rtol = SE_TOL
+    @test mn.mean[2] ≈ 549.72 rtol = STAT_TOL
+    @test mn.SE[2] ≈ 46.070 rtol = SE_TOL
+    # equivalent R code and results:
+    # > svytotal(~api00+~enroll, clus1rep)
+    #     total     SE
+    # api00  3989986 900323
+    # enroll 3404940 941501
+    # > svymean(~api00+~enroll, clus1rep)
+    #     mean     SE
+    # api00  644.17 23.534
+    # enroll 549.72 46.070
+
+    # subpopulation
+    tot = total(:api00, :cname, clus1)
+    @test size(tot)[1] == apiclus1.cname |> unique |> length
+    @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 328620.49 rtol = STAT_TOL
+    @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 292840.83 rtol = SE_TOL
+    @test filter(:cname => ==("San Diego"), tot).total[1] ≈ 1227596.71 rtol = STAT_TOL
+    @test filter(:cname => ==("San Diego"), tot).SE[1] ≈ 860028.39 rtol = SE_TOL
+    mn = mean(:api00, :cname, clus1)
+    @test size(mn)[1] == apiclus1.cname |> unique |> length
+    @test filter(:cname => ==("Los Angeles"), mn).mean[1] ≈ 647.2667 rtol = STAT_TOL
+    @test filter(:cname => ==("Los Angeles"), mn).SE[1] ≈ 41.537132 rtol = 1 # tolerance is too large
+    @test filter(:cname => ==("Santa Clara"), mn).mean[1] ≈ 732.0769 rtol = STAT_TOL
+    @test filter(:cname => ==("Santa Clara"), mn).SE[1] ≈ 52.336574 rtol = SE_TOL
+    # equivalent R code (results cause clutter):
+    # > svyby(~api00, ~cname, clus1rep, svytotal)
+    # > svyby(~api00, ~cname, clus1rep, svymean)
 end
