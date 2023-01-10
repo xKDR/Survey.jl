@@ -83,7 +83,6 @@ struct SurveyDesign <: AbstractSurveyDesign
             data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         elseif typeof(weights) <: Symbol
             if !(typeof(data[!, weights]) <: Vector{<:Real})
-                @show typeof(data[!, weights])
                 error("weights column has to be numeric")
             end
             weights_labels = weights
@@ -95,8 +94,8 @@ struct SurveyDesign <: AbstractSurveyDesign
         data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         pps = false # for now no explicit pps support
         if !(typeof(popsize) <: Symbol)
-            data.popsize = repeat([sum(data[!, weights_labels])], nrow(data))
             popsize = :popsize
+            data[!,popsize] = repeat([sum(data[!, weights_labels])], nrow(data))
         end
         new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
     end
