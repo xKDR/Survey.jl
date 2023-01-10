@@ -23,8 +23,8 @@ ratio(variable_num::Symbol, variable_den::Symbol, design::SurveyDesign)
 plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 boxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
 hist(design::AbstractSurveyDesign, var::Symbol,
-				 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
-				 normalization = :density,
-				 kwargs...
-    			)
+                 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
+                 normalization = :density,
+                 kwargs...
+                )
 ```
