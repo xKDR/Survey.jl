@@ -11,10 +11,16 @@
     srs_weights = SurveyDesign(apisrs, weights=:pw)
     @test srs_weights.data[!,srs_weights.weights][1] ≈ 30.97 atol = 1e-4
     @test srs_weights.data[!,srs_weights.weights] == 1 ./ srs_weights.data[!,srs_weights.allprobs]
+    ### popsize as Symbol
+    apisrs = copy(apisrs_original)
+    srs_pop = SurveyDesign(apisrs, popsize=:fpc)
+    @test srs_pop.data[!,srs_pop.weights][1] ≈ 30.97 atol = 1e-4
+    @test srs_pop.data[!,srs_pop.weights] == 1 ./ srs_pop.data[!,srs_pop.allprobs]
     ##############################
     ### Weights as non-numeric error
     apisrs = copy(apisrs_original)
     @test_throws ErrorException SurveyDesign(apisrs, weights=:stype)
+
 end
 
 @testset "SurveyDesign_strat" begin

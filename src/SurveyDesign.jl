@@ -54,12 +54,13 @@ struct SurveyDesign <: AbstractSurveyDesign
     pps::Bool # TODO functionality
     # Single stage clusters sample, like apiclus1
     function SurveyDesign(data::AbstractDataFrame;
-        strata::Union{Nothing,Symbol} = nothing,
-        weights::Union{Nothing,Symbol}= nothing,
-        clusters::Union{Nothing, Symbol, Vector{Symbol}} = nothing,
-        popsize::Union{Nothing, Int,Symbol}=nothing) 
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Int,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing
+    )
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if typeof(strata) <:Nothing
+        if typeof(strata) <: Nothing
             data.false_strata = repeat(["FALSE_STRATA"], nrow(data))
             strata = :false_strata
         end
@@ -76,25 +77,25 @@ struct SurveyDesign <: AbstractSurveyDesign
         end
         # For one-stage sample only one sampsize vector
         sampsize_labels = :sampsize
-        data[!, sampsize_labels] = fill(length(unique(data[!, cluster])),(nrow(data),))
+        data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
         if !(typeof(popsize) <: Nothing)
             weights_labels = :weights
             data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         elseif typeof(weights) <: Symbol
-            if !(typeof(data[!,weights]) <:Vector{<:Real})
-                @show typeof(data[!,weights])
+            if !(typeof(data[!, weights]) <: Vector{<:Real})
+                @show typeof(data[!, weights])
                 error("weights column has to be numeric")
             end
             weights_labels = weights
         else
             weights_labels = :weights
-            data[!,weights_labels] = repeat([1], nrow(data))
+            data[!, weights_labels] = repeat([1], nrow(data))
         end
         allprobs_labels = :allprobs
         data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         pps = false # for now no explicit pps support
         if !(typeof(popsize) <: Symbol)
-            data.popsize = repeat([sum(data[!,weights_labels])], nrow(data))
+            data.popsize = repeat([sum(data[!, weights_labels])], nrow(data))
             popsize = :popsize
         end
         new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
