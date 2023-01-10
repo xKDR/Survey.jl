@@ -11,6 +11,7 @@ using CairoMakie
 using AlgebraOfGraphics
 using CategoricalArrays
 using Random
+using Missings
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
@@ -27,12 +28,11 @@ include("ratio.jl")
 include("by.jl")
 
 export load_data
-export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
-export SurveyDesign
+export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
-export hist
+export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
 export jkknife
