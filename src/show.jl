@@ -46,8 +46,8 @@ function Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign)
     printinfo(io, "design.data[!,design.popsize]", makeshort(design.data[!,design.popsize]))
     printinfo(io, "sampsize", string(design.sampsize); newline=true)
     printinfo(io, "design.data[!,design.sampsize]", makeshort(design.data[!,design.sampsize]))
-    printinfo(io, "design.data[!,:probs]", makeshort(design.data.probs))
-    printinfo(io, "design.data[!,:allprobs]", makeshort(design.data.allprobs))
+    # printinfo(io, "design.data[!,:probs]", makeshort(design.data.probs))
+    printinfo(io, "design.data[!,design.allprobs]", makeshort(design.data.allprobs))
 end
 
 "Print information about a repliocate design."
@@ -62,8 +62,8 @@ function Base.show(io::IO, ::MIME"text/plain", design::ReplicateDesign)
     printinfo(io, "design.data[!,design.popsize]", makeshort(design.data[!,design.popsize]))
     printinfo(io, "sampsize", string(design.sampsize); newline=true)
     printinfo(io, "design.data[!,design.sampsize]", makeshort(design.data[!,design.sampsize]))
-    printinfo(io, "design.data[!,:probs]", makeshort(design.data.probs))
-    printinfo(io, "design.data[!,:allprobs]", makeshort(design.data.allprobs))
+    # printinfo(io, "design.data[!,:probs]", makeshort(design.data.probs))
+    printinfo(io, "design.data[!,design.allprobs]", makeshort(design.data.allprobs))
     printstyled(io, "replicates: "; bold=true)
     println(io, design.replicates)
 end
