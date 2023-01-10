@@ -18,12 +18,14 @@ General survey design encompassing a simple random, stratified, cluster or multi
 In the case of cluster sample, the clusters are chosen by simple random sampling. All
 individuals in one cluster are sampled. The clusters are considered disjoint and nested.
 
+`strata` and `clusters` must be given as columns in `data`.
+
 # Arguments:
-`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
-`strata::Union{Nothing, Symbol}=nothing`: the stratification variable - must be given as a column in `data`.
-`clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing`: the clustering variable - must be given as column(s) in `data`.
-`weights::Union{Nothing, Symbol}=nothing`: the sampling weights.
-`popsize::Union{Nothing, Int, Symbol}=nothing`: the (expected) survey population size.
+- `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+- `strata::Union{Nothing, Symbol}=nothing`: the stratification variable.
+- `clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing`: the clustering variable.
+- `weights::Union{Nothing, Symbol}=nothing`: the sampling weights.
+- `popsize::Union{Nothing, Int, Symbol}=nothing`: the (expected) survey population size.
 
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
