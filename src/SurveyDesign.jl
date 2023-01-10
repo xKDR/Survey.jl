@@ -13,35 +13,34 @@ abstract type AbstractSurveyDesign end
 """
     SurveyDesign <: AbstractSurveyDesign
 
-Survey design sampled by one stage clusters sampling.
-Clusters chosen by SRS followed by complete sampling of selected clusters.
-Assumes each individual in one and only one clusters; disjoint and nested clusters.
+General survey design encompassing a simple random, stratified, cluster or multi-stage design.
 
-`clusters` must be specified as a Symbol name of a column in `data`.
+In the case of cluster sample, the clusters are chosen by simple random sampling. All
+individuals in one cluster are sampled. The clusters are considered disjoint and nested.
+
+`strata` and `clusters` must be given as columns in `data`.
 
 # Arguments:
-`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
-`clusters::Symbol`: the stratification variable - must be given as a column in `data`.
-`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size. For 
-
-`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
+- `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+- `strata::Union{Nothing, Symbol}=nothing`: the stratification variable.
+- `clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing`: the clustering variable.
+- `weights::Union{Nothing, Symbol}=nothing`: the sampling weights.
+- `popsize::Union{Nothing, Int, Symbol}=nothing`: the (expected) survey population size.
 
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
-
-julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
 data: 183x46 DataFrame
 cluster: dnum
 design.data[!,design.cluster]: 637, 637, 637, ..., 448
 popsize: popsize
-design.data[!,design.popsize]: 9240.0, 9240.0, 9240.0, ..., 9240.0
+design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
 sampsize: sampsize
 design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
-design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+design.data[!,:probs]: 0.0295, 0.0295, 0.0295, ..., 0.0295
+design.data[!,:allprobs]: 0.0295, 0.0295, 0.0295, ..., 0.0295
 ```
 """
 struct SurveyDesign <: AbstractSurveyDesign
@@ -52,9 +51,15 @@ struct SurveyDesign <: AbstractSurveyDesign
     strata::Symbol
     pps::Bool
     # Single stage clusters sample, like apiclus1
-    function SurveyDesign(data::AbstractDataFrame; strata::Union{Nothing,Symbol} = nothing, weights::Union{Nothing,Symbol}= nothing, clusters::Union{Nothing, Symbol, Vector{Symbol}} = nothing, popsize::Union{Nothing, Int,Symbol}=nothing) 
+    function SurveyDesign(
+		data::AbstractDataFrame;
+        strata::Union{Nothing, Symbol}=nothing,
+        clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing,
+        weights::Union{Nothing, Symbol}=nothing,
+        popsize::Union{Nothing, Int, Symbol}=nothing
+    )
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if typeof(strata) <:Nothing
+        if typeof(strata) <: Nothing
             data.false_strata = repeat(["FALSE_STRATA"], nrow(data))
             strata = :false_strata
         end
@@ -71,7 +76,7 @@ struct SurveyDesign <: AbstractSurveyDesign
         end
         # For one-stage sample only one sampsize vector
         sampsize_labels = :sampsize
-        data[!, sampsize_labels] = fill(length(unique(data[!, cluster])),(nrow(data),))
+        data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
         if !(typeof(popsize) <: Nothing)
             data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
         elseif !(typeof(weights) <: Nothing)
@@ -91,24 +96,26 @@ struct SurveyDesign <: AbstractSurveyDesign
 end
 
 """
+    ReplicateDesign <: AbstractSurveyDesign
+
+Survey design obtained by replicating an original design using [`bootweights`](@ref).
+
 ```jldoctest
-julia> apiclus1 = load_data("apiclus1");
+julia> apistrat = load_data("apistrat");
 
-julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
+julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); 
-
-julia> bclus1 = Survey.bootweights(dclus1; replicates = 1000)
-Survey.ReplicateDesign:
-data: 183x1046 DataFrame
-cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
+julia> bootstrat = bootweights(strat; replicates=1000)
+ReplicateDesign:
+data: 200x1046 DataFrame
+cluster: false_cluster
+design.data[!,design.cluster]: 1, 2, 3, ..., 200
 popsize: popsize
-design.data[!,design.popsize]: 9240.0, 9240.0, 9240.0, ..., 9240.0
+design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
 sampsize: sampsize
-design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
-design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+design.data[!,design.sampsize]: 200, 200, 200, ..., 200
+design.data[!,:probs]: 0.0226, 0.0226, 0.0226, ..., 0.0662
+design.data[!,:allprobs]: 0.0226, 0.0226, 0.0226, ..., 0.0662
 replicates: 1000
 ```
 """
