@@ -1,15 +1,15 @@
 """
 ```jldoctest
-julia> using Survey, Random;
+julia> using Random
 
-julia> apiclus1 = load_data("apiclus1"); 
+julia> apiclus1 = load_data("apiclus1");
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum); 
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum);
 
-julia> rng = MersenneTwister(111); 
+julia> rng = MersenneTwister(111);
 
-julia> Survey.bootweights(dclus1; replicates=1000, rng) 
-Survey.ReplicateDesign:
+julia> bootweights(dclus1; replicates=1000, rng)
+ReplicateDesign:
 data: 183x1046 DataFrame
 cluster: dnum
 design.data[!,design.cluster]: 637, 637, 637, ..., 448
@@ -22,7 +22,7 @@ design.data[!,:allprobs]: 1.0, 1.0, 1.0, ..., 1.0
 replicates: 1000
 ```
 """
-function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
+function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(1234))
     H = length(unique(design.data[!, design.strata]))
     stratified = groupby(design.data, design.strata)
     function replicate(stratified, H)
@@ -45,10 +45,10 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         return transform(stratified, :whij)
     end
     df = replicate(stratified, H)
-    rename!(df,:whij => :replicate_1)
+    rename!(df, :whij => :replicate_1)
     df.replicate_1 = disallowmissing(df.replicate_1)
     for i in 2:(replicates)
-        df[!, "replicate_"*string(i)] = disallowmissing(replicate(stratified, H).whij)
+        df[!, "replicate_" * string(i)] = disallowmissing(replicate(stratified, H).whij)
     end 
     return ReplicateDesign(df, design.cluster, design.popsize, design.sampsize, design.strata, design.pps, replicates) 
 end
