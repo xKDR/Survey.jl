@@ -247,6 +247,9 @@ julia> mean(:api00, :cname, bootclus_two_stage)
                               18 rows omitted
 ```
 
+For a more complete guide, see the [Tutorial](https://xkdr.github.io/Survey.jl/dev/#Basic-demo)
+section in the documentation.
+
 ## Future goals
 
 We want to implement all the features provided by the
