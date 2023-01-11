@@ -10,8 +10,8 @@ This package is used to study complex survey data. It aims to be a fast alternat
 to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
 
-This package currently supports simple random sample, stratified sample, one- and
-two-stage cluster sample, the latter using single stage approximation. For more
+This package currently supports simple random sample, stratified sample, single and
+multistage cluster sample, the latter using single stage approximation. For more
 details see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of the
 documentation.
 
@@ -183,8 +183,9 @@ julia> mean(:api00, :cname, bootstrat)
 
 ### Cluster sample
 
-For now, the package supports one- and two-stage cluster sampling. These are
-created by passing the `clusters` keyword argument to `SurveyDesign`.
+For now, single and multistage cluster sampling is supported by using single stage
+approximation. Cluster sample designs are created by passing the `clusters` keyword
+argument to `SurveyDesign`.
 
 ```julia
 julia> apiclus1 = load_data("apiclus1");
