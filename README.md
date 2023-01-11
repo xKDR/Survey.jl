@@ -11,7 +11,9 @@ to the [Survey package in R](https://cran.r-project.org/web/packages/survey/inde
 developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
 
 This package currently supports simple random sample, stratified sample, one- and
-two-stage cluster sample. In future releases, it will support multistage sampling as well.
+two-stage cluster sample, the latter using single stage approximation. For more
+details see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of the
+documentation.
 
 ## Installation
 ```julia
