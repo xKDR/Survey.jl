@@ -55,7 +55,7 @@ struct SurveyDesign <: AbstractSurveyDesign
     function SurveyDesign(data::AbstractDataFrame;
         clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
         strata::Union{Nothing,Symbol}=nothing,
-        popsize::Union{Nothing,Int,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
         weights::Union{Nothing,Symbol}=nothing
     )
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
@@ -82,7 +82,7 @@ struct SurveyDesign <: AbstractSurveyDesign
             data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         elseif typeof(weights) <: Symbol
             if !(typeof(data[!, weights]) <: Vector{<:Real})
-                error("weights column has to be numeric")
+                error(string("given weights column ", weights , " is not of numeric type"))
             end
             weights_labels = weights
         else

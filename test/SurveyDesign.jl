@@ -61,3 +61,16 @@ end
     nhanes_design = SurveyDesign(nhanes; clusters = :SDMVPSU, strata = :SDMVSTRA, weights = :WTMEC2YR)
 end
 
+@testset "SurveyDesign_realSurveys" begin
+    # Load API datasets
+    yrbs_original = load_data("yrbs")
+    nhanes_original = load_data("nhanes")
+    ##############################
+    # NHANES
+    nhanes = copy(nhanes_original)
+    dnhanes = SingleStageSurveyDesign(nhanes; cluster = :SDMVPSU, strata=:SDMVSTRA, weights=:WTMEC2YR)
+    ##############################
+    # YRBS
+    yrbs = copy(yrbs_original)
+    dyrbs = SingleStageSurveyDesign(yrbs; cluster = :psu, strata=:stratum, weights=:weight)
+end
