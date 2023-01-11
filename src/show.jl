@@ -26,15 +26,15 @@ end
 
 "Print information about a survey design."
 Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign) =
-    surveyshow(surveyio(io), design)
+    surveyshow(io, design)
 
 Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign) = 
-    surveyshow(surveyio(io), design)
+    surveyshow(io, design)
 
 function Base.show(io::IO, ::MIME"text/plain", design::ReplicateDesign)
     # new_io = IOContext(io, :compact=>true, :limit=>true, :displaysize=>(50, 50))
-    surveyshow(surveyio(io), design)
-    printinfo(surveyio(io), "\nreplicates", design.replicates; newline=false)
+    surveyshow(io, design)
+    printinfo(io, "\nreplicates", design.replicates; newline=false)
 end
 
 function surveyshow(io::IO, design::AbstractSurveyDesign)
