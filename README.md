@@ -86,7 +86,7 @@ julia> total(:enroll, bootsrs)
 
 Now we know the mean academic performance index from the year 2000 and the total
 number of students enrolled in the sampled Californian schools. We can also
-calculate the statistic of two variables in one go...
+calculate the statistic of multiple variables in one go...
 
 ```julia
 julia> mean([:api99, :api00], bootsrs)
