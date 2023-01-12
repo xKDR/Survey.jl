@@ -61,7 +61,7 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 
 ```@example histogram
 apisrs = load_data("apisrs");
-srs = SimpleRandomSample(apisrs;popsize=:fpc);
+srs = SurveyDesign(apisrs; weights=:pw);
 h = hist(srs, :enroll)
 save("hist.png", h); nothing # hide
 ```

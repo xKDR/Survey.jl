@@ -4,21 +4,18 @@ julia> using Random
 
 julia> apiclus1 = load_data("apiclus1");
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum);
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum);
 
-julia> rng = MersenneTwister(111);
-
-julia> bootweights(dclus1; replicates=1000, rng)
+julia> bootweights(clus_one_stage; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
 ReplicateDesign:
-data: 183x1046 DataFrame
+data: 183×1046 DataFrame
+strata: none
 cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
-popsize: popsize
-design.data[!,design.popsize]: 183, 183, 183, ..., 183
-sampsize: sampsize
-design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-design.data[!,:probs]: 1.0, 1.0, 1.0, ..., 1.0
-design.data[!,:allprobs]: 1.0, 1.0, 1.0, ..., 1.0
+    [637, 637, 637  …  448]
+popsize: [183, 183, 183  …  183]
+sampsize: [15, 15, 15  …  15]
+weights: [1, 1, 1  …  1]
+probs: [1.0, 1.0, 1.0  …  1.0]
 replicates: 1000
 ```
 """
