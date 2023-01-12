@@ -11,7 +11,6 @@ function makeshort(x)
     if length(x) > 1
         return "[" * (length(x) < 3 ? join(x, ", ") : join(x[1:3], ", ") * "  …  " * string(last(x))) * "]"
     end
-
     return x
 end
 
@@ -54,9 +53,9 @@ function surveyshow(io::IO, design::AbstractSurveyDesign)
                       (string(design.cluster), "\n    ", makeshort(design.data[!, design.cluster]))
     printinfo(io, "cluster", cluster_content...)
     # popsize and sampsize info
-    printinfo(io, "popsize", "\n    ", makeshort(design.data[!, design.popsize]))
-    printinfo(io, "sampsize", "\n    ", makeshort(design.data[!, design.sampsize]))
+    printinfo(io, "popsize", makeshort(design.data[!, design.popsize]))
+    printinfo(io, "sampsize", makeshort(design.data[!, design.sampsize]))
     # weights and probs info
-    printinfo(io, "weights", "\n    ", makeshort(design.data[!, :weights]))
-    printinfo(io, "probs", "\n    ", makeshort(design.data[!, :probs]); newline=false)
+    printinfo(io, "weights", makeshort(design.data[!, :weights]))
+    printinfo(io, "probs", makeshort(design.data[!, :probs]); newline=false)
 end
