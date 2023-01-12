@@ -10,10 +10,11 @@ This package is used to study complex survey data. It aims to be a fast alternat
 to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
 
-This package currently supports simple random sample, stratified sample, single and
-multistage cluster sample, the latter using single stage approximation. For more
-details see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of the
-documentation.
+All types of survey design are supported by this package.
+
+> **_NOTE:_**  For multistage sampling a single stage approximation is used. For
+more information see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of
+the documentation.
 
 ## Installation
 ```julia
