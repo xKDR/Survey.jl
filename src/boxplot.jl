@@ -10,7 +10,7 @@ The keyword arguments are all the arguments that can be passed to `mapping` in
 
 ```@example boxplot
 apisrs = load_data("apisrs");
-srs = srs = SurveyDesign(apisrs; weights=:pw);
+srs = SurveyDesign(apisrs; weights=:pw);
 bp = boxplot(srs, :stype, :enroll; weights = :pw)
 save("boxplot.png", bp); nothing # hide
 ```

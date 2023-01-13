@@ -1,17 +1,14 @@
 """
     ratio(numerator, denominator, design)
+
 Estimate the ratio of the columns specified in numerator and denominator
 
 ```jldoctest
-julia> using Survey;
-
 julia> apiclus1 = load_data("apiclus1");
 
-julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
-
-julia> ratio(:api00, :enroll, dclus1)
+julia> ratio(:api00, :enroll, clus_one_stage)
 1×2 DataFrame
  Row │ Statistic  SE       
      │ Float64    Float64  

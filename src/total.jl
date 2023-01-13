@@ -6,16 +6,16 @@ Compute the estimated population total for one or more variables within a survey
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
 
-julia> total(:api00, clus1)
+julia> total(:api00, clus_one_stage)
 1×2 DataFrame
  Row │ total      SE
      │ Float64    Float64
 ─────┼──────────────────────
    1 │ 3.98999e6  9.22175e5
 
-julia> total([:api00, :enroll], clus1)
+julia> total([:api00, :enroll], clus_one_stage)
 2×3 DataFrame
  Row │ names   total      SE
      │ String  Float64    Float64
@@ -45,9 +45,9 @@ Compute the estimated population total within a domain.
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
 
-julia> total(:api00, :cname, clus1)
+julia> total(:api00, :cname, clus_one_stage)
 11×3 DataFrame
  Row │ cname        total           SE
      │ String15     Float64         Any
