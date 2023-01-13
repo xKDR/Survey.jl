@@ -21,7 +21,7 @@
     ##############################
     ### Weights as non-numeric error
     apisrs = copy(apisrs_original)
-    @test_throws ErrorException SurveyDesign(apisrs, weights=:stype)
+    @test_throws ArgumentError SurveyDesign(apisrs, weights=:stype)
 end
 
 @testset "SurveyDesign_strat" begin
@@ -34,13 +34,25 @@ end
     ### weights as Symbol
     apistrat = copy(apistrat_original)
     strat_wt = SurveyDesign(apistrat, strata=:stype, weights=:pw)
+    @test strat_wt.data[!,strat_wt.weights][1] ≈ 44.2100 atol = 1e-4
+    @test strat_wt.data[!,strat_wt.weights][200] ≈ 15.1000 atol = 1e-4
     @test strat_wt.data[!,strat_wt.weights] == 1 ./ strat_wt.data[!,strat_wt.allprobs]
-    ### popsize as Symbol
+    ### popsize as Symbol (should be same as above)
     apistrat = copy(apistrat_original)
     strat_pop = SurveyDesign(apistrat, strata=:stype, popsize=:fpc)
+    @test strat_pop.data[!,strat_pop.weights][1] ≈ 44.2100 atol = 1e-4
+    @test strat_pop.data[!,strat_pop.weights][200] ≈ 15.1000 atol = 1e-4
     @test strat_pop.data[!,strat_pop.weights] == 1 ./ strat_pop.data[!,strat_pop.allprobs]
+    ### popsize and weights as Symbol (should be same as above two)
+    apistrat = copy(apistrat_original)
+    dstrat = SurveyDesign(apistrat, strata=:stype, weights=:pw, popsize=:fpc)
+    @test dstrat.data[!,dstrat.weights][1] ≈ 44.2100 atol = 1e-4
+    @test dstrat.data[!,dstrat.weights][200] ≈ 15.1000 atol = 1e-4
+    @test dstrat.data[!,dstrat.weights] == 1 ./ dstrat.data[!,dstrat.allprobs]
     ##############################
-    # @test strat_pop.data[!,strat_pop.weights] == strat_wt.data[!,strat_wt.weights]
+    # Check all three ways get equivalent weights
+    @test strat_pop.data[!,strat_pop.weights] ≈ strat_wt.data[!,strat_wt.weights] rtol = 1e-4
+    @test strat_wt.data[!,strat_wt.weights] ≈ strat_wt.data[!,strat_wt.weights] rtol = 1e-4
 end
 
 @testset "SurveyDesign_multistage" begin
@@ -51,10 +63,8 @@ end
     # one-stage cluster sample with popsize
     apiclus1 = copy(apiclus1_original)
     dclus1 = SurveyDesign(apiclus1; clusters = :dnum, popsize =:fpc)
-    @test dclus1.data[!, :weights] ≈ fill(50.4667,size(apiclus1,1)) atol = 1e-3
-    @test dclus1.data[!,dclus1.sampsize] ≈ fill(15,size(apiclus1,1))
-    @test dclus1.data[!,:allprobs] ≈ dclus1.data[!,:probs] atol = 1e-4
-    
+    @test dclus1.data[!, dclus1.weights] ≈ fill(50.4667,size(apiclus1,1)) atol = 1e-3
+    @test dclus1.data[!, dclus1.sampsize] ≈ fill(15,size(apiclus1,1))
     ##############################
     # Load API datasets
     nhanes = load_data("nhanes")
@@ -68,9 +78,9 @@ end
     ##############################
     # NHANES
     nhanes = copy(nhanes_original)
-    dnhanes = SingleStageSurveyDesign(nhanes; cluster = :SDMVPSU, strata=:SDMVSTRA, weights=:WTMEC2YR)
+    dnhanes = SurveyDesign(nhanes; clusters = :SDMVPSU, strata=:SDMVSTRA, weights=:WTMEC2YR)
     ##############################
     # YRBS
     yrbs = copy(yrbs_original)
-    dyrbs = SingleStageSurveyDesign(yrbs; cluster = :psu, strata=:stratum, weights=:weight)
+    dyrbs = SurveyDesign(yrbs; clusters = :psu, strata=:stratum, weights=:weight)
 end
