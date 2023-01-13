@@ -16,6 +16,8 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "Getting Started" => "getting_started.md",
+        "Manual" => "manual.md",
         "Moving from R" => "R_comparison.md",
         "API reference" => "api.md"
     ],
@@ -24,6 +26,6 @@ makedocs(;
 
 deploydocs(;
     repo="github.com/xKDR/Survey.jl",
-    target = "build",
-    devbranch="main"
+    target="build",
+    devbranch="main",
 )
