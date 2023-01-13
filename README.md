@@ -161,7 +161,7 @@ All functionalities are supported by each design type. For a more complete guide
 see the [Tutorial](https://xkdr.github.io/Survey.jl/dev/#Basic-demo) section in
 the documentation.
 
-## Future goals
+## Goals
 
 We want to implement all the features provided by the
 [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
