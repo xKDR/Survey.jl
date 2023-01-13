@@ -28,18 +28,18 @@ individuals in one cluster are sampled. The clusters are considered disjoint and
 - `popsize::Union{Nothing, Int, Symbol}=nothing`: the (expected) survey population size.
 
 ```jldoctest
-julia> apiclus1 = load_data("apiclus1");
+julia> apistrat = load_data("apistrat");
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
+julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
 SurveyDesign:
-data: 183x44 DataFrame
-cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
-popsize: popsize
-design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-design.data[!,design.allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
+data: 200×46 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [44.2, 44.2, 44.2  …  15.1]
+probs: [0.0226, 0.0226, 0.0226  …  0.0662]
 ```
 """
 struct SurveyDesign <: AbstractSurveyDesign
@@ -112,15 +112,14 @@ julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
 julia> bootstrat = bootweights(strat; replicates=1000)
 ReplicateDesign:
-data: 200x1046 DataFrame
-cluster: false_cluster
-design.data[!,design.cluster]: 1, 2, 3, ..., 200
-popsize: popsize
-design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 200, 200, 200, ..., 200
-design.data[!,:probs]: 0.0226, 0.0226, 0.0226, ..., 0.0662
-design.data[!,:allprobs]: 0.0226, 0.0226, 0.0226, ..., 0.0662
+data: 200×1046 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [44.2, 44.2, 44.2  …  15.1]
+probs: [0.0226, 0.0226, 0.0226  …  0.0662]
 replicates: 1000
 ```
 """
