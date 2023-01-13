@@ -6,111 +6,171 @@
 [![codecov](https://codecov.io/gh/xKDR/Survey.jl/branch/main/graph/badge.svg?token=4PFSF47BT2)](https://codecov.io/gh/xKDR/Survey.jl)
 [![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
 
+This package is used to study complex survey data. It aims to be a fast alternative
+to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
+developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
 
-This package is used to study complex survey data. It aims to be a fast alternative to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html) developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
+All types of survey design are supported by this package.
 
-This package currently supports simple random sample and stratified sample. In future releases, it will support multistage sampling as well. 
+> **_NOTE:_**  For multistage sampling a single stage approximation is used. For
+more information see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of
+the documentation.
 
-## Documentation
-See [Documentation](https://xkdr.github.io/Survey.jl/dev/) to learn how to use the package 
-
-## How to install
+## Installation
 ```julia
 ]  add "https://github.com/xKDR/Survey.jl.git"
 ```
+
 ## Basic usage
 
-### Simple Random Sample
+The `SurveyDesign` constructor can take data corresponding to any type of design.
+Depending on the keyword arguments passed, the data is processed in order to obtain
+correct results for the given design.
 
-In the following example, we will load a simple random sample of the Academic Performance Index dataset for Californian schools and do basic analysis. 
+The following examples show how to create and manipulate different survey designs
+using the [Academic Performance Index dataset for Californian schools](https://r-survey.r-forge.r-project.org/survey/html/api.html).
+
+### Constructing a survey design
+
+A survey design can be created by calling the constructor with some keywords,
+depending on the survey type. Let's create a simple random sample, a stratified
+sample, a single-stage and a two-stage cluster sample.
+
 ```julia
-using Survey
+julia> apisrs = load_data("apisrs");
 
-srs = load_data("apisrs")
+julia> srs = SurveyDesign(apisrs; weights=:pw)
+SurveyDesign:
+data: 200×47 DataFrame
+strata: none
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [31.0, 31.0, 31.0  …  31.0]
+probs: [0.0323, 0.0323, 0.0323  …  0.0323]
 
-dsrs = SimpleRandomSample(srs; weights = :pw)
+julia> apistrat = load_data("apistrat");
 
-mean(:api00, dsrs)
+julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
+SurveyDesign:
+data: 200×46 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [44.2, 44.2, 44.2  …  15.1]
+probs: [0.0226, 0.0226, 0.0226  …  0.0662]
+
+julia> apiclus1 = load_data("apiclus1");
+
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
+SurveyDesign:
+data: 183×46 DataFrame
+strata: none
+cluster: dnum
+    [637, 637, 637  …  448]
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [15, 15, 15  …  15]
+weights: [33.8, 33.8, 33.8  …  33.8]
+probs: [0.0295, 0.0295, 0.0295  …  0.0295]
+
+julia> apiclus2 = load_data("apiclus2");
+
+julia> clus_two_stage = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
+SurveyDesign:
+data: 126×47 DataFrame
+strata: none
+cluster: dnum
+    [15, 63, 83  …  795]
+popsize: [5130.0, 5130.0, 5130.0  …  5130.0]
+sampsize: [40, 40, 40  …  40]
+weights: [18.9, 18.9, 18.9  …  18.9]
+probs: [0.0528, 0.0528, 0.0528  …  0.0528]
+```
+
+Using these designs we can compute estimates of statistics such as mean and
+population total. The designs must first be resampled using
+[bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) in order
+to compute the standard errors.
+
+```julia
+julia> bootsrs = bootweights(srs; replicates=1000)
+ReplicateDesign:
+data: 200×1047 DataFrame
+strata: none
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [31.0, 31.0, 31.0  …  31.0]
+probs: [0.0323, 0.0323, 0.0323  …  0.0323]
+replicates: 1000
+
+julia> mean(:api00, bootsrs)
 1×2 DataFrame
- Row │ mean     SE      
-     │ Float64  Float64 
+ Row │ mean     SE
+     │ Float64  Float64
 ─────┼──────────────────
-   1 │ 656.585  9.24972
+   1 │ 656.585   9.5409
 
-total(:enroll, dsrs)
+julia> total(:enroll, bootsrs)
 1×2 DataFrame
- Row │ total      SE       
-     │ Float64    Float64  
-─────┼─────────────────────
-   1 │ 3.62107e6  1.6952e5  
+ Row │ total      SE
+     │ Float64    Float64
+─────┼──────────────────────
+   1 │ 3.62107e6  1.72846e5
+```
 
-mean(:api00, :cname, dsrs)
+Now we know the mean academic performance index from the year 2000 and the total
+number of students enrolled in the sampled Californian schools. We can also
+calculate the statistic of multiple variables in one go...
+
+```julia
+julia> mean([:api99, :api00], bootsrs)
+2×3 DataFrame
+ Row │ names   mean     SE
+     │ String  Float64  Float64
+─────┼──────────────────────────
+   1 │ api99   624.685  9.84669
+   2 │ api00   656.585  9.5409
+```
+
+... or we can calculate domain estimates:
+
+```julia
+julia> total(:enroll, :cname, bootsrs)
 38×3 DataFrame
- Row │ cname            mean     SE       
-     │ String15         Float64  Float64  
-─────┼────────────────────────────────────
-   1 │ Kern             573.6     42.8026
-   2 │ Los Angeles      658.156   21.0728
-   3 │ Orange           749.333   27.0613
-  ⋮  │        ⋮            ⋮        ⋮
-  36 │ Napa             727.0     46.722
-  37 │ Lake             804.0    NaN
-  38 │ Merced           595.0    NaN
-
-quantile(:enroll,dsrs,[0.1,0.2,0.5,0.75,0.95])
-5×2 DataFrame
- Row │ probability  quantile 
-     │ Float64      Float64  
-─────┼───────────────────────
-   1 │        0.1      245.5
-   2 │        0.2      317.6
-   3 │        0.5      453.0
-   4 │        0.75     668.5
-   5 │        0.95    1473.1
+ Row │ cname            total           SE
+     │ String15         Float64         Any
+─────┼────────────────────────────────────────────
+   1 │ Kern                  1.95823e5  74731.2
+   2 │ Los Angeles      867129.0        1.36622e5
+   3 │ Orange                1.68786e5  63858.0
+   4 │ San Luis Obispo    6720.49       6790.49
+  ⋮  │        ⋮               ⋮             ⋮
+  35 │ Calaveras         12976.4        13241.6
+  36 │ Napa              39239.0        30181.9
+  37 │ Lake               6410.79       6986.29
+  38 │ Merced            15392.1        15202.2
+                                   30 rows omitted
 ```
 
-### Stratified Sample
+This gives us the total number of enrolled students in each county.
 
-In the following example, we will load a stratified sample of the Academic Performance Index dataset for Californian schools and do basic analysis. 
+All functionalities are supported by each design type. For a more complete guide,
+see the [Tutorial](https://xkdr.github.io/Survey.jl/dev/#Basic-demo) section in
+the documentation.
 
-```julia
-using Survey
+## Goals
 
-strat = load_data("apistrat")
+We want to implement all the features provided by the
+[Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
+in a Julia-native way. The main goal is to have a complete package that provides
+a large range of functionality and takes efficiency into consideration, such that
+large surveys can be analysed fast.
 
-dstrat = StratifiedSample(strat, :stype; weights = :pw, popsize = :fpc)
-
-mean(:api00, dstrat)
-1×2 DataFrame
- Row │ mean     SE      
-     │ Float64  Float64 
-─────┼──────────────────
-   1 │ 662.287  9.40894
-
-total(:api00, dstrat)
-1×2 DataFrame
- Row │ total      SE      
-     │ Float64    Float64 
-─────┼────────────────────
-   1 │ 4.10221e6  58279.0
-
-mean(:api00, :cname, dstrat)
-40×3 DataFrame
- Row │ cname           mean     SE           
-     │ String15        Float64  Float64      
-─────┼───────────────────────────────────────
-   1 │ Los Angeles     633.511  21.3912
-   2 │ Ventura         707.172  31.6856
-   3 │ Kern            678.235  53.1337
-  ⋮  │       ⋮            ⋮          ⋮
-  39 │ Mendocino       632.018   1.04942
-  40 │ Butte           627.0     0.0
-```
-
-## Strategic goals
-We want to implement all the features provided by the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
-
-The [milestones](https://github.com/xKDR/Survey.jl/milestones) sections of the repository contains a list of features that contributors can implement in the short-term.
+The [milestones](https://github.com/xKDR/Survey.jl/milestones) section of the repository
+contains a list of features that contributors can implement in the short-term.
 
 ## Support
 
