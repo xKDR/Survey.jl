@@ -41,57 +41,52 @@ julia> apisrs = load_data("apisrs");
 
 julia> srs = SurveyDesign(apisrs; weights=:pw)
 SurveyDesign:
-data: 200x47 DataFrame
-cluster: false_cluster
-design.data[!,design.cluster]: 1, 2, 3, ..., 200
-popsize: popsize
-design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 200, 200, 200, ..., 200
-design.data[!,:probs]: 0.0323, 0.0323, 0.0323, ..., 0.0323
-design.data[!,:allprobs]: 0.0323, 0.0323, 0.0323, ..., 0.0323
+data: 200×47 DataFrame
+strata: none
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [31.0, 31.0, 31.0  …  31.0]
+probs: [0.0323, 0.0323, 0.0323  …  0.0323]
 
 julia> apistrat = load_data("apistrat");
 
 julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
 SurveyDesign:
-data: 200x46 DataFrame
-cluster: false_cluster
-design.data[!,design.cluster]: 1, 2, 3, ..., 200
-popsize: popsize
-design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 200, 200, 200, ..., 200
-design.data[!,:probs]: 0.0226, 0.0226, 0.0226, ..., 0.0662
-design.data[!,:allprobs]: 0.0226, 0.0226, 0.0226, ..., 0.0662
+data: 200×46 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [44.2, 44.2, 44.2  …  15.1]
+probs: [0.0226, 0.0226, 0.0226  …  0.0662]
 
 julia> apiclus1 = load_data("apiclus1");
 
 julia> clus_one_stage = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
-data: 183x46 DataFrame
+data: 183×46 DataFrame
+strata: none
 cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
-popsize: popsize
-design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-design.data[!,:probs]: 0.0295, 0.0295, 0.0295, ..., 0.0295
-design.data[!,:allprobs]: 0.0295, 0.0295, 0.0295, ..., 0.0295
+    [637, 637, 637  …  448]
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [15, 15, 15  …  15]
+weights: [33.8, 33.8, 33.8  …  33.8]
+probs: [0.0295, 0.0295, 0.0295  …  0.0295]
 
 julia> apiclus2 = load_data("apiclus2");
 
 julia> clus_two_stage = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
 SurveyDesign:
-data: 126x47 DataFrame
+data: 126×47 DataFrame
+strata: none
 cluster: dnum
-design.data[!,design.cluster]: 15, 63, 83, ..., 795
-popsize: popsize
-design.data[!,design.popsize]: 5130.0, 5130.0, 5130.0, ..., 5130.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 40, 40, 40, ..., 40
-design.data[!,:probs]: 0.0528, 0.0528, 0.0528, ..., 0.0528
-design.data[!,:allprobs]: 0.0528, 0.0528, 0.0528, ..., 0.0528
+    [15, 63, 83  …  795]
+popsize: [5130.0, 5130.0, 5130.0  …  5130.0]
+sampsize: [40, 40, 40  …  40]
+weights: [18.9, 18.9, 18.9  …  18.9]
+probs: [0.0528, 0.0528, 0.0528  …  0.0528]
 ```
 
 Using these designs we can compute estimates of statistics such as mean and
@@ -102,15 +97,13 @@ to compute the standard errors.
 ```julia
 julia> bootsrs = bootweights(srs; replicates=1000)
 ReplicateDesign:
-data: 200x1047 DataFrame
-cluster: false_cluster
-design.data[!,design.cluster]: 1, 2, 3, ..., 200
-popsize: popsize
-design.data[!,design.popsize]: 6190.0, 6190.0, 6190.0, ..., 6190.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 200, 200, 200, ..., 200
-design.data[!,:probs]: 0.0323, 0.0323, 0.0323, ..., 0.0323
-design.data[!,:allprobs]: 0.0323, 0.0323, 0.0323, ..., 0.0323
+data: 200×1047 DataFrame
+strata: none
+cluster: none
+popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
+sampsize: [200, 200, 200  …  200]
+weights: [31.0, 31.0, 31.0  …  31.0]
+probs: [0.0323, 0.0323, 0.0323  …  0.0323]
 replicates: 1000
 
 julia> mean(:api00, bootsrs)
