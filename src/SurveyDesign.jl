@@ -89,8 +89,8 @@ struct SurveyDesign <: AbstractSurveyDesign
             if !(typeof(data[!, weights]) <: Vector{<:Real})
                 throw(ArgumentError(string("given weights column ", weights , " is not of numeric type")))
             else
-                weights_labels = weights
                 # derive popsize from given `weights`
+                weights_labels = weights
                 popsize = :popsize
                 data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
             end
