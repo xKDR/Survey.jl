@@ -10,8 +10,8 @@ julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) 
 
 julia> mean(:api00, clus_one_stage)
 1×2 DataFrame
- Row │ mean     SE
-     │ Float64  Float64
+ Row │ mean     SE      
+     │ Float64  Float64 
 ─────┼──────────────────
    1 │ 644.169  23.2919
 
@@ -25,7 +25,7 @@ julia> mean([:api00, :enroll], clus_one_stage)
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
-    X = mean(design.data[!, x], weights(design.data.weights))
+    X = mean(design.data[!, x], weights(design.data[!,design.weights]))
     Xt = [mean(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
     variance = sum((Xt .- X).^2) / design.replicates
     DataFrame(mean = X, SE = sqrt(variance))

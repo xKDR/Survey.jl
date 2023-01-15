@@ -74,7 +74,7 @@ function hist(design::AbstractSurveyDesign, var::Symbol,
 				 kwargs...
     			)
 	hist = histogram(bins = bins, normalization = normalization, kwargs...)
-	data(design.data) * mapping(var, weights = :weights) * hist |> draw
+	data(design.data) * mapping(var, weights = design.weights) * hist |> draw
 end
 
 function hist(design::AbstractSurveyDesign, var::Symbol,
