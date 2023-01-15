@@ -119,9 +119,9 @@ end
     @test dclus2.data[!,dclus2.weights][121] ≈ 1 / calculated_probs_R[121] atol = 1e-4
     @test dclus2.data[!,dclus2.weights][125] ≈ 1 / calculated_probs_R[125] atol = 1e-4
 
-    # TODO: sampsize and popsize testing
+    # TODO: sampsize and popsize testing once #178 resolved
     ## NOT THE SAME AS R object right now
-    
+
     #########################
     ## Complete multistage sampling (when implemented) should look like
     ## weights should theoretically be optional if both clusters and popsize given

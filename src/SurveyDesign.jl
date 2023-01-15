@@ -118,14 +118,14 @@ julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
 julia> bootstrat = bootweights(strat; replicates=1000)
 ReplicateDesign:
-data: 200×1046 DataFrame
+data: 200×1044 DataFrame
 strata: stype
     [E, E, E  …  H]
 cluster: none
-popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
-sampsize: [200, 200, 200  …  200]
-weights: [44.2, 44.2, 44.2  …  15.1]
-probs: [0.0226, 0.0226, 0.0226  …  0.0662]
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 replicates: 1000
 ```
 """
@@ -135,6 +135,8 @@ struct ReplicateDesign <: AbstractSurveyDesign
     popsize::Symbol
     sampsize::Symbol
     strata::Symbol
+    weights::Symbol # Effective weights in case of singlestage approx supported
+    allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool
     replicates::UInt
 end
