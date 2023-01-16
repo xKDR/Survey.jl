@@ -76,14 +76,14 @@ struct SurveyDesign <: AbstractSurveyDesign
             cluster = clusters
         end
         # For single-stage approximation only one "effective" sampsize vector
-        sampsize_labels = :sampsize
-        if isa(strata,Symbol) && isnothing(clusters) # If stratified sample then sampsize is inside strata
+        sampsize_labels = :_sampsize
+        if isa(strata,Symbol) && isnothing(clusters) # If stratified only then sampsize is inside strata
             data[!, sampsize_labels] = transform(groupby(data, strata), nrow => :counts).counts
         else
             data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
         end
         if isa(popsize, Symbol)
-            weights_labels = :weights
+            weights_labels = :_weights
             data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         elseif isa(weights, Symbol)
             if !(typeof(data[!, weights]) <: Vector{<:Real})
@@ -91,12 +91,12 @@ struct SurveyDesign <: AbstractSurveyDesign
             else
                 # derive popsize from given `weights`
                 weights_labels = weights
-                popsize = :popsize
+                popsize = :_popsize
                 data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
             end
         else
             # neither popsize nor weights given
-            weights_labels = :weights
+            weights_labels = :_weights
             data[!, weights_labels] = repeat([1], nrow(data))
         end
         allprobs_labels = :allprobs
