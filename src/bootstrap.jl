@@ -4,18 +4,18 @@ julia> using Random
 
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum);
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
 
 julia> bootweights(clus_one_stage; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
 ReplicateDesign:
-data: 183×1046 DataFrame
+data: 183×1044 DataFrame
 strata: none
 cluster: dnum
     [637, 637, 637  …  448]
-popsize: [183, 183, 183  …  183]
+popsize: [757, 757, 757  …  757]
 sampsize: [15, 15, 15  …  15]
-weights: [1, 1, 1  …  1]
-probs: [1.0, 1.0, 1.0  …  1.0]
+weights: [50.4667, 50.4667, 50.4667  …  50.4667]
+allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
 replicates: 1000
 ```
 """
@@ -34,7 +34,7 @@ function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(
             rh = [(count(==(i), randinds)) for i in 1:nh] # main bootstrap algo. 
             gdf = groupby(substrata, design.cluster)
             for i in 1:nh
-                gdf[i].whij = repeat([rh[i]], nrow(gdf[i])) .* gdf[i].weights .* (nh / (nh - 1))
+                gdf[i].whij = repeat([rh[i]], nrow(gdf[i])) .* gdf[i][!,design.weights] .* (nh / (nh - 1))
             end            
             stratified[h].whij = transform(gdf).whij
             
@@ -47,5 +47,5 @@ function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(
     for i in 2:(replicates)
         df[!, "replicate_" * string(i)] = disallowmissing(replicate(stratified, H).whij)
     end 
-    return ReplicateDesign(df, design.cluster, design.popsize, design.sampsize, design.strata, design.pps, replicates) 
+    return ReplicateDesign(df, design.cluster, design.popsize, design.sampsize, design.strata, design.weights, design.allprobs, design.pps, replicates) 
 end

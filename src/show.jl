@@ -5,7 +5,7 @@ Helper function that transforms a given `Number` or `Vector` into a short-form s
 """
 function makeshort(x)
     if isa(x[1], Float64)
-        x = round.(x, sigdigits=3)
+        x = round.(x, digits=4) # Rounded to 4 digits after the decimal place
     end
     # print short vectors or single values as they are, compress otherwise
     if length(x) > 1
@@ -56,6 +56,6 @@ function surveyshow(io::IO, design::AbstractSurveyDesign)
     printinfo(io, "popsize", makeshort(design.data[!, design.popsize]))
     printinfo(io, "sampsize", makeshort(design.data[!, design.sampsize]))
     # weights and probs info
-    printinfo(io, "weights", makeshort(design.data[!, :weights]))
-    printinfo(io, "probs", makeshort(design.data[!, :probs]); newline=false)
+    printinfo(io, "weights", makeshort(design.data[!, design.weights]))
+    printinfo(io, "allprobs", makeshort(design.data[!, design.allprobs]); newline=false)
 end

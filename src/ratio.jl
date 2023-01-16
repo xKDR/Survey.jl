@@ -17,14 +17,14 @@ julia> ratio(:api00, :enroll, clus_one_stage)
 ```
 """
 function ratio(variable_num:: Symbol, variable_den:: Symbol, design::SurveyDesign)
-    statistic = wsum(design.data[!,variable_num],design.data.weights)/wsum(design.data[!,variable_den],design.data.weights)
+    statistic = wsum(design.data[!,variable_num],design.data[!,design.weights])/wsum(design.data[!,variable_den],design.data[!,design.weights])
     nh = length(unique(design.data[!,design.cluster]))
     newv = []
     gdf = groupby(design.data, design.cluster)
     replicates = [filter(n -> n != i, 1:nh) for i in 1:nh] 
     for i in replicates
         df = DataFrame(gdf[i])
-        push!(newv, wsum(df[!,variable_num],df[!,:weights])/wsum(df[!,variable_den],df[!,:weights]))
+        push!(newv, wsum(df[!,variable_num],df[!,design.weights])/wsum(df[!,variable_den],df[!,design.weights]))
     end
     c = 0
     for i in 1:nh

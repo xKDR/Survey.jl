@@ -25,7 +25,7 @@ julia> total([:api00, :enroll], clus_one_stage)
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
-    X = wsum(design.data[!, x], weights(design.data.weights))
+    X = wsum(design.data[!, x], weights(design.data[!,design.weights]))
     Xt = [wsum(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
     variance = sum((Xt .- X).^2) / design.replicates
     DataFrame(total = X, SE = sqrt(variance))

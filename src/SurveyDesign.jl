@@ -25,21 +25,22 @@ individuals in one cluster are sampled. The clusters are considered disjoint and
 - `strata::Union{Nothing, Symbol}=nothing`: the stratification variable.
 - `clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing`: the clustering variable.
 - `weights::Union{Nothing, Symbol}=nothing`: the sampling weights.
-- `popsize::Union{Nothing, Int, Symbol}=nothing`: the (expected) survey population size.
+- `popsize::Union{Nothing, Symbol}=nothing`: the (expected) survey population size.
 
 ```jldoctest
-julia> apistrat = load_data("apistrat");
+julia> apiclus1 = load_data("apiclus1");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, strata=:stype, weights=:pw)
 SurveyDesign:
-data: 200×46 DataFrame
+data: 183×43 DataFrame
 strata: stype
-    [E, E, E  …  H]
-cluster: none
-popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
-sampsize: [200, 200, 200  …  200]
-weights: [44.2, 44.2, 44.2  …  15.1]
-probs: [0.0226, 0.0226, 0.0226  …  0.0662]
+    [H, E, E  …  E]
+cluster: dnum
+    [637, 637, 637  …  448]
+popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
+sampsize: [15, 15, 15  …  15]
+weights: [33.847, 33.847, 33.847  …  33.847]
+allprobs: [0.0295, 0.0295, 0.0295  …  0.0295]
 ```
 """
 struct SurveyDesign <: AbstractSurveyDesign
@@ -48,14 +49,15 @@ struct SurveyDesign <: AbstractSurveyDesign
     popsize::Symbol
     sampsize::Symbol
     strata::Symbol
-    pps::Bool
+    weights::Symbol # Effective weights in case of singlestage approx supported
+    allprobs::Symbol # Right now only singlestage approx supported
+    pps::Bool # TODO functionality
     # Single stage clusters sample, like apiclus1
-    function SurveyDesign(
-		data::AbstractDataFrame;
-        strata::Union{Nothing, Symbol}=nothing,
-        clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing,
-        weights::Union{Nothing, Symbol}=nothing,
-        popsize::Union{Nothing, Int, Symbol}=nothing
+    function SurveyDesign(data::AbstractDataFrame;
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing
     )
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
         if typeof(strata) <: Nothing
@@ -73,24 +75,34 @@ struct SurveyDesign <: AbstractSurveyDesign
         if typeof(clusters) <: Symbol
             cluster = clusters
         end
-        # For one-stage sample only one sampsize vector
-        sampsize_labels = :sampsize
-        data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
-        if !(typeof(popsize) <: Nothing)
-            data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        elseif !(typeof(weights) <: Nothing)
-            data.weights = data[!, weights]
+        # For single-stage approximation only one "effective" sampsize vector
+        sampsize_labels = :_sampsize
+        if isa(strata,Symbol) && isnothing(clusters) # If stratified only then sampsize is inside strata
+            data[!, sampsize_labels] = transform(groupby(data, strata), nrow => :counts).counts
         else
-            data.weights = repeat([1], nrow(data))
+            data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
         end
-        data[!, :probs] = 1 ./ data[!, :weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        pps = false
-        if !(typeof(popsize) <: Symbol)
-            data.popsize = repeat([sum(data.weights)], nrow(data))
-            popsize = :popsize
+        if isa(popsize, Symbol)
+            weights_labels = :_weights
+            data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
+        elseif isa(weights, Symbol)
+            if !(typeof(data[!, weights]) <: Vector{<:Real})
+                throw(ArgumentError(string("given weights column ", weights , " is not of numeric type")))
+            else
+                # derive popsize from given `weights`
+                weights_labels = weights
+                popsize = :_popsize
+                data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
+            end
+        else
+            # neither popsize nor weights given
+            weights_labels = :_weights
+            data[!, weights_labels] = repeat([1], nrow(data))
         end
-        new(data, cluster, popsize, sampsize_labels, strata, pps)
+        allprobs_labels = :allprobs
+        data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        pps = false # for now no explicit pps supported faster functions, but they can be added
+        new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
     end
 end
 
@@ -106,14 +118,14 @@ julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
 julia> bootstrat = bootweights(strat; replicates=1000)
 ReplicateDesign:
-data: 200×1046 DataFrame
+data: 200×1044 DataFrame
 strata: stype
     [E, E, E  …  H]
 cluster: none
-popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
-sampsize: [200, 200, 200  …  200]
-weights: [44.2, 44.2, 44.2  …  15.1]
-probs: [0.0226, 0.0226, 0.0226  …  0.0662]
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 replicates: 1000
 ```
 """
@@ -123,6 +135,8 @@ struct ReplicateDesign <: AbstractSurveyDesign
     popsize::Symbol
     sampsize::Symbol
     strata::Symbol
+    weights::Symbol # Effective weights in case of singlestage approx supported
+    allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool
     replicates::UInt
 end
