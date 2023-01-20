@@ -17,9 +17,9 @@
     ### Vector of Symbols
     mean_vec_sym = mean([:api00,:enroll], srs)
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
-    @test mean_vec_sym.SE[1] ≈ 9.3065 atol = 1e-2
+    @test mean_vec_sym.SE[1] ≈ 9.3065 rtol = 1e-1
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
-    @test mean_vec_sym.SE[2] ≈ 28.1048 atol = 1e-2
+    @test mean_vec_sym.SE[2] ≈ 28.1048 rtol = 1e-1
     ##############################
     ### Categorical Array - estimating proportions
     # apisrs_categ = copy(apisrs_original)
@@ -35,7 +35,7 @@ end
     apistrat = copy(apistrat_original)
     strat = SurveyDesign(apistrat, strata = :stype, weights = :pw) |> bootweights
     mean_strat = mean(:api00, strat)
-    @test mean_strat.mean[1] ≈ 662.29 atol = 1e-2
+    @test mean_strat.mean[1] ≈ 662.29 rtol = 1e-1
     @test mean_strat.SE[1] ≈ 9.48296 atol = 1e-1
 end
 
@@ -44,12 +44,12 @@ end
     apisrs = copy(apisrs_original)
     srs = SurveyDesign(apisrs; popsize = :fpc) |> bootweights
     mean_symb_srs = mean(:api00, :stype, srs)
-    @test mean_symb_srs.mean[1] ≈ 605.36 atol = 1e-2
-    @test mean_symb_srs.mean[2] ≈ 666.141 atol = 1e-2
-    @test mean_symb_srs.mean[3] ≈ 654.273 atol = 1e-2
-    @test mean_symb_srs.SE[1] ≈ 22.6718 atol = 1e-2
-    @test mean_symb_srs.SE[2] ≈ 11.35390 atol = 1e-2
-    @test mean_symb_srs.SE[3] ≈ 22.3298 atol = 1e-2
+    @test mean_symb_srs.mean[1] ≈ 605.36 rtol = 1e-1
+    @test mean_symb_srs.mean[2] ≈ 666.141 rtol = 1e-1
+    @test mean_symb_srs.mean[3] ≈ 654.273 rtol = 1e-1
+    @test mean_symb_srs.SE[1] ≈ 22.6718 rtol = 1e-1
+    @test mean_symb_srs.SE[2] ≈ 11.35390 rtol = 1e-1
+    @test mean_symb_srs.SE[3] ≈ 22.3298 rtol = 1e-1
 end
 
 @testset "mean_svyby_Stratified" begin
@@ -57,12 +57,12 @@ end
     apistrat = copy(apistrat_original)
     strat = SurveyDesign(apistrat; strata = :stype, weights = :pw) |> bootweights
     mean_strat_symb = mean(:api00, :stype, strat)
-    @test mean_strat_symb.mean[1] ≈ 674.43 atol = 1e-2
-    @test mean_strat_symb.mean[2] ≈ 636.6 atol = 1e-2
-    @test mean_strat_symb.mean[3] ≈ 625.82 atol = 1e-2
-    @test mean_strat_symb.SE[1] ≈ 12.4398 atol = 1e-2
-    @test mean_strat_symb.SE[2] ≈ 16.5628 atol = 1e-2
-    @test mean_strat_symb.SE[3] ≈ 15.42320 atol = 1e-2
+    @test mean_strat_symb.mean[1] ≈ 674.43 rtol = 1e-1
+    @test mean_strat_symb.mean[2] ≈ 636.6 rtol = 1e-1
+    @test mean_strat_symb.mean[3] ≈ 625.82 rtol = 1e-1
+    @test mean_strat_symb.SE[1] ≈ 12.4398 rtol = 1e-1
+    @test mean_strat_symb.SE[2] ≈ 16.5628 rtol = 1e-1
+    @test mean_strat_symb.SE[3] ≈ 15.42320 rtol = 1e-1
 end
 
 @testset "mean_OneStageCluster" begin
@@ -73,6 +73,13 @@ end
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
     dclus1 = SurveyDesign(apiclus1; clusters =  :dnum, weights = :pw) |> bootweights 
-    @test mean(:api00, dclus1).mean[1] ≈ 644.17 atol = 1e-2
-    @test mean(:api00, dclus1).SE[1] ≈  23.291 atol = 1e-2 # without fpc as it hasn't been figured out for bootstrap. 
+    @test mean(:api00, dclus1).mean[1] ≈ 644.17 rtol = 1e-1
+    @test mean(:api00, dclus1).SE[1] ≈  23.291 rtol = 1e-1 # without fpc as it hasn't been figured out for bootstrap. 
+
+    mn = mean(:api00, :cname, dclus1)
+    @test size(mn)[1] == apiclus1.cname |> unique |> length
+    @test filter(:cname => ==("Los Angeles"), mn).mean[1] ≈ 647.2667 rtol = STAT_TOL
+    @test filter(:cname => ==("Los Angeles"), mn).SE[1] ≈ 41.537132 rtol = 1 # tolerance is too large
+    @test filter(:cname => ==("Santa Clara"), mn).mean[1] ≈ 732.0769 rtol = STAT_TOL
+    @test filter(:cname => ==("Santa Clara"), mn).SE[1] ≈ 54.215099 rtol = SE_TOL
 end

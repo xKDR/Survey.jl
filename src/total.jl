@@ -13,15 +13,15 @@ julia> total(:api00, clus_one_stage)
  Row │ total      SE
      │ Float64    Float64
 ─────┼──────────────────────
-   1 │ 3.98999e6  9.22175e5
+   1 │ 3.98999e6  9.10443e5
 
 julia> total([:api00, :enroll], clus_one_stage)
 2×3 DataFrame
  Row │ names   total      SE
      │ String  Float64    Float64
 ─────┼──────────────────────────────
-   1 │ api00   3.98999e6  9.22175e5
-   2 │ enroll  3.40494e6  9.51557e5
+   1 │ api00   3.98999e6  9.10443e5
+   2 │ enroll  3.40494e6  9.47987e5
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
@@ -52,17 +52,17 @@ julia> total(:api00, :cname, clus_one_stage)
  Row │ cname        total           SE
      │ String15     Float64         Any
 ─────┼────────────────────────────────────────
-   1 │ Alameda      249080.0        2.48842e5
-   2 │ Fresno        63903.1        64452.2
-   3 │ Kern          30631.5        31083.0
-   4 │ Los Angeles       3.2862e5   2.93649e5
-   5 │ Mendocino     84380.6        83154.4
-   6 │ Merced        70300.2        69272.5
-   7 │ Orange            3.84807e5  3.90097e5
-   8 │ Plumas            2.16147e5  2.17811e5
-   9 │ San Diego         1.2276e6   8.78559e5
-  10 │ San Joaquin       6.90276e5  6.90685e5
-  11 │ Santa Clara       6.44244e5  4.09943e5
+   1 │ Santa Clara       6.44244e5  4.29558e5
+   2 │ San Diego         1.2276e6   8.60246e5
+   3 │ Merced        70300.2        70757.4
+   4 │ Los Angeles       3.2862e5   2.95688e5
+   5 │ Orange            3.84807e5  3.77128e5
+   6 │ Fresno        63903.1        64455.2
+   7 │ Plumas            2.16147e5  2.12279e5
+   8 │ Alameda      249080.0        2.5221e5
+   9 │ San Joaquin       6.90276e5  6.92353e5
+  10 │ Kern          30631.5        30333.5
+  11 │ Mendocino     84380.6        80774.4
 ```
 """
 function total(x::Symbol, domain::Symbol, design::ReplicateDesign)

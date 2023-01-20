@@ -4,14 +4,16 @@ julia> using Random
 
 julia> apiclus1 = load_data("apiclus1");
 
+
 julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
+
 
 julia> bootweights(clus_one_stage; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
 ReplicateDesign:
 data: 183×1044 DataFrame
 strata: none
 cluster: dnum
-    [637, 637, 637  …  448]
+    [61, 61, 61  …  815]
 popsize: [757, 757, 757  …  757]
 sampsize: [15, 15, 15  …  15]
 weights: [50.4667, 50.4667, 50.4667  …  50.4667]
@@ -20,32 +22,25 @@ replicates: 1000
 ```
 """
 function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(1234))
-    H = length(unique(design.data[!, design.strata]))
     stratified = groupby(design.data, design.strata)
-    function replicate(stratified, H)
-        for h in 1:H
-            substrata = DataFrame(stratified[h])
-            psus = unique(substrata[!, design.cluster])
-            if length(psus) <= 1
-                stratified[h].whij .= 0 # hasn't been tested yet. 
+    H = length(keys(stratified))
+    substrata_dfs = []
+    for h in 1:H
+        substrata = DataFrame(stratified[h])
+        cluster_sorted = sort(substrata, design.cluster)
+        psus = unique(cluster_sorted[!, design.cluster])
+        npsus = [(count(==(i), cluster_sorted[!, design.cluster])) for i in psus]
+        nh = length(psus)
+        randinds = rand(rng, 1:(nh), replicates, (nh-1))
+        for replicate in 1:replicates
+            rh = zeros(Int, nh)
+            for i in randinds[replicate, :]
+                rh[i] += 1
             end
-            nh = length(psus)
-            randinds = rand(rng, 1:(nh), (nh-1)) # Main bootstrap algo. Draw nh-1 out of nh, with replacement.  
-            rh = [(count(==(i), randinds)) for i in 1:nh] # main bootstrap algo. 
-            gdf = groupby(substrata, design.cluster)
-            for i in 1:nh
-                gdf[i].whij = repeat([rh[i]], nrow(gdf[i])) .* gdf[i][!,design.weights] .* (nh / (nh - 1))
-            end            
-            stratified[h].whij = transform(gdf).whij
-            
-        end
-        return transform(stratified, :whij)
+            cluster_sorted[!, "replicate_" * string(replicate)] = vcat([repeat([rh[i] * (nh / (nh-1))], npsus[i]) for i in 1:length(rh)]...) .* cluster_sorted[!, design.weights] 
+        end   
+        push!(substrata_dfs, cluster_sorted)
     end
-    df = replicate(stratified, H)
-    rename!(df, :whij => :replicate_1)
-    df.replicate_1 = disallowmissing(df.replicate_1)
-    for i in 2:(replicates)
-        df[!, "replicate_" * string(i)] = disallowmissing(replicate(stratified, H).whij)
-    end 
+    df = vcat(substrata_dfs...)
     return ReplicateDesign(df, design.cluster, design.popsize, design.sampsize, design.strata, design.weights, design.allprobs, design.pps, replicates) 
 end
