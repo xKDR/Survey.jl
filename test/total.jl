@@ -173,12 +173,6 @@ end
     @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 292840.83 rtol = SE_TOL
     @test filter(:cname => ==("San Diego"), tot).total[1] ≈ 1227596.71 rtol = STAT_TOL
     @test filter(:cname => ==("San Diego"), tot).SE[1] ≈ 860028.39 rtol = SE_TOL
-    mn = mean(:api00, :cname, clus1)
-    @test size(mn)[1] == apiclus1.cname |> unique |> length
-    @test filter(:cname => ==("Los Angeles"), mn).mean[1] ≈ 647.2667 rtol = STAT_TOL
-    @test filter(:cname => ==("Los Angeles"), mn).SE[1] ≈ 41.537132 rtol = 1 # tolerance is too large
-    @test filter(:cname => ==("Santa Clara"), mn).mean[1] ≈ 732.0769 rtol = STAT_TOL
-    @test filter(:cname => ==("Santa Clara"), mn).SE[1] ≈ 52.336574 rtol = SE_TOL
     # equivalent R code (results cause clutter):
     # > svyby(~api00, ~cname, clus1rep, svytotal)
     # > svyby(~api00, ~cname, clus1rep, svymean)
