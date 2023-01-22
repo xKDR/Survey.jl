@@ -31,13 +31,10 @@ function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(
         psus = unique(cluster_sorted[!, design.cluster])
         npsus = [(count(==(i), cluster_sorted[!, design.cluster])) for i in psus]
         nh = length(psus)
-        randinds = rand(rng, 1:(nh), replicates, (nh-1))
+        cluster_weights = cluster_sorted[!, design.weights] 
         for replicate in 1:replicates
-            rh = zeros(Int, nh)
-            for i in randinds[replicate, :]
-                rh[i] += 1
-            end            
-            cluster_sorted[!, "replicate_" * string(replicate)] = vcat([fill(rh[i] * (nh / (nh-1)), npsus[i]) for i in 1:length(rh)]...) .* cluster_sorted[!, design.weights] 
+            randinds = rand(rng, 1:(nh), (nh-1))          
+            cluster_sorted[!, "replicate_" * string(replicate)] = vcat([fill((count(==(i), randinds)) * (nh / (nh-1)), npsus[i]) for i in 1:nh]...) .* cluster_weights
         end   
         push!(substrata_dfs, cluster_sorted)
     end

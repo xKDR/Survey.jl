@@ -8,12 +8,13 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
 
-ratio(:api00, :enroll, clus_one_stage)
+julia> ratio(:api00, :enroll, clus_one_stage)
 1×2 DataFrame
  Row │ ratio    SE
      │ Float64  Float64
 ─────┼───────────────────
-   1 │ 1.17182  0.133361
+   1 │ 1.17182  0.131518
+
 ```
 """
 function ratio(variable_num::Symbol, variable_den::Symbol, design::ReplicateDesign)
