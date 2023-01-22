@@ -70,6 +70,7 @@ struct SurveyDesign <: AbstractSurveyDesign
         end
         ## Single stage approximation
         if typeof(clusters) <: Vector{Symbol}
+            @warn "As part of single-stage approximation, only the first stage cluster ID is retained." 
             cluster = first(clusters)
         end
         if typeof(clusters) <: Symbol
