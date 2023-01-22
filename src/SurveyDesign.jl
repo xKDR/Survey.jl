@@ -364,7 +364,7 @@ julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistak
 
 julia> dclus1 = OneStageClusterSample(apiclus1, :dnum; weights=:pw)
 OneStageClusterSample:
-data: 183x45 DataFrame
+data: 183x46 DataFrame
 cluster: dnum
 design.data[!,design.cluster]: 637, 637, 637, ..., 448
 popsize: popsize
@@ -400,7 +400,7 @@ struct OneStageClusterSample <: AbstractSurveyDesign
         data_groupedby_cluster = groupby(data, cluster)
         data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
         weights = :weights
-        data[!, weights] = data[!, popsize] ./ data[!, sampsize_labels]
+        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
         data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
         data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         data[!, :strata] = ones(nrow(data))
@@ -414,16 +414,13 @@ struct OneStageClusterSample <: AbstractSurveyDesign
         if !(typeof(data[!, weights]) <: Vector{<:Real})
             error(string("given weights column ", weights , " is not of numeric type"))
         end
-        if !all(w -> w == first(data[!, weights]), data[!, weights])
-            error("weights must be same for all observations for OneStageClusterSample")
-        end
-        # For one-stage sample only one sampsize vector
         sampsize_labels = :sampsize
         data_groupedby_cluster = groupby(data, cluster)
         data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
         popsize = :popsize
         data[!, popsize] = data[!, weights] .* data[!, sampsize_labels]
         data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
+        data[!, :weights] = data[!, weights]
         data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         data[!, :strata] = ones(nrow(data))
         pps = false
