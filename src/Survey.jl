@@ -5,6 +5,7 @@ using Statistics
 import Statistics: quantile
 using StatsBase
 import StatsBase: mean,quantile
+using Distributions
 using CSV
 using LinearAlgebra
 using CairoMakie
@@ -25,6 +26,7 @@ include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
 include("by.jl")
+include("ci.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign

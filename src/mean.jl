@@ -24,11 +24,17 @@ julia> mean([:api00, :enroll], clus_one_stage)
    2 │ enroll  549.716  46.2597
 ```
 """
-function mean(x::Symbol, design::ReplicateDesign)
+function mean(x::Symbol, design::ReplicateDesign; ci_type::Union{Nothing,String}=nothing, kwargs...)
     X = mean(design.data[!, x], weights(design.data[!,design.weights]))
     Xt = [mean(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
     variance = sum((Xt .- X).^2) / design.replicates
-    DataFrame(mean = X, SE = sqrt(variance))
+    SE = sqrt(variance)
+    if !isnothing(ci_type)
+        ci_lower, ci_upper = _ci(X, SE, ci_type; kwargs...)
+        return DataFrame(mean = X, SE = SE, ci_lower = ci_lower, ci_upper = ci_upper )
+    else
+        return DataFrame(mean = X, SE = SE)
+    end
 end
 
 function mean(x::Vector{Symbol}, design::ReplicateDesign)
