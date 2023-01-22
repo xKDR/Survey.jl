@@ -29,6 +29,7 @@ include("ratio.jl")
 export load_data
 export AbstractSurveyDesign, SimpleRandomSample, StratifiedSample
 export OneStageClusterSample
+export SingleStageSurveyDesign
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
