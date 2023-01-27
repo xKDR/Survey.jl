@@ -38,7 +38,7 @@ data.
 !!! note
 
     The API program has been discontinued at the end of 2018. Information is archived
-    at [https://www.cde.ca.gov/re/pr/api.asp](https://www.cde.ca.gov/re/pr/api.asp)
+    [here](https://www.cde.ca.gov/re/pr/api.asp).
 
 ```@repl tutorial
 apisrs = load_data("apisrs")
