@@ -1,6 +1,6 @@
 # Manual
 
-## `DataFrames` in `Survey`
+## DataFrames in Survey
 
 The internal structure of a survey design is build upon
 [`DataFrames`](https://dataframes.juliadata.org/stable/). In fact, the `data`
@@ -60,7 +60,7 @@ No column was added for frequency weights because the column passed through the
 new column. If `weights` is not specified, then a column called `_weights` is
 added.
 
-### Why `DataFrames`
+### Why DataFrames
 
 Survey data most of the time, if not always, is structured in a way that is very
 well suited for data frames. The [`DataFrames.jl`](https://dataframes.juliadata.org/stable/)
