@@ -19,7 +19,6 @@ makedocs(;
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
         "Manual" => "manual.md",
-        "Moving from R" => "R_comparison.md",
         "API reference" => "api.md"
     ],
     checkdocs=:exports,
