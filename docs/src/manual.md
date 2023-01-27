@@ -195,3 +195,5 @@ svyby(~api00, ~cname, bsrs, svymean)
 ```julia
 mean(:api00, :cname, bsrs)
 ```
+
+## Future plans
