@@ -18,8 +18,14 @@ makedocs(;
     pages=[
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
-        "Manual" => "manual.md",
-        "API reference" => "api.md"
+        "Manual" => [
+            "DataFrames in Survey" => "man/dataframes.md",
+            "ReplicateDesign" => "man/replicate.md",
+            "Plotting" => "man/plotting.md",
+            "Comparison with other languages" => "man/comparisons.md",
+            "Future plans" => "man/future.md",
+        ],
+        "API reference" => "api.md",
     ],
     checkdocs=:exports,
 )

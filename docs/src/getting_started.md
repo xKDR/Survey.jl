@@ -63,7 +63,7 @@ srs = SurveyDesign(apisrs; weights=:pw)
 This is a simple random sample design with weights given by the column `:pw` of
 `apisrs`. You can also create more complex designs such as stratified or cluster
 sample designs. You can find more information on the complete capabilities of
-the package in the [Manual](@ref). The purpose of this tutorial is to show the
+the package in the [Manual](@ref manual). The purpose of this tutorial is to show the
 basic usage of the package. For that, we will stick with a simple random sample.
 
 Now you can analyse your design according to your needs using the
