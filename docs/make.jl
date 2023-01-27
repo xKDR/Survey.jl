@@ -22,7 +22,7 @@ makedocs(;
             "DataFrames in Survey" => "man/dataframes.md",
             "ReplicateDesign" => "man/replicate.md",
             "Plotting" => "man/plotting.md",
-            "Comparison with other languages" => "man/comparisons.md",
+            "Comparison with other survey analysis tools" => "man/comparisons.md",
             "Future plans" => "man/future.md",
         ],
         "API reference" => "api.md",
