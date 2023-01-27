@@ -75,7 +75,7 @@ was introduced in `DataFrames.jl`, it becomes possible to use metadata in
 `Survey.jl` to reduce space complexity. For example, stratification and clustering
 information could be stored as metadata of the `DataFrame` passed through `data`.
 
-## Bootstrapping
+## ReplicateDesign
 
 ## Plotting
 
