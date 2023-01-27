@@ -4,9 +4,7 @@ julia> using Random
 
 julia> apiclus1 = load_data("apiclus1");
 
-
 julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
-
 
 julia> bootweights(clus_one_stage; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
 ReplicateDesign:
