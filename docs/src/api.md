@@ -14,17 +14,11 @@ SurveyDesign
 ReplicateDesign
 load_data
 bootweights
-mean(x::Symbol, design::ReplicateDesign)
-mean(x::Symbol, domain::Symbol, design::ReplicateDesign)
-total(x::Symbol, design::ReplicateDesign)
-total(x::Symbol, domain::Symbol, design::ReplicateDesign)
+mean
+total
 quantile
 ratio
-plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
-boxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
-hist(design::AbstractSurveyDesign, var::Symbol,
-                 bins::Union{Integer, AbstractVector} = freedman_diaconis(design, var);
-                 normalization = :density,
-                 kwargs...
-                )
+plot
+boxplot
+hist
 ```
