@@ -15,14 +15,14 @@ julia> apisrs = load_data("apisrs");
 
 julia> srs = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
 
-julia> quantile(:api00,srs,0.5)
+julia> quantile(:api00, srs, 0.5)
 1×2 DataFrame
  Row │ 0.5th percentile  SE      
      │ Float64           Float64 
 ─────┼───────────────────────────
    1 │            659.0  14.9764
 
-julia> quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
+julia> quantile(:enroll, srs, [0.1,0.2,0.5,0.75,0.95])
 5×3 DataFrame
  Row │ percentile  statistic  SE       
      │ String      Float64    Float64  
