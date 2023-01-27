@@ -100,7 +100,7 @@ struct SurveyDesign <: AbstractSurveyDesign
             weights_labels = :_weights
             data[!, weights_labels] = repeat([1], nrow(data))
         end
-        allprobs_labels = :allprobs
+        allprobs_labels = :_allprobs
         data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         pps = false # for now no explicit pps supported faster functions, but they can be added
         new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
