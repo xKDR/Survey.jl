@@ -68,16 +68,16 @@ basic usage of the package. For that, we will stick with a simple random sample.
 
 Now you can analyse your design according to your needs using the
 [functionality](@ref Index) provided by the package. For example, you can compute
-the estimated mean or population total for a given variable. Let's say we're
-interested in the mean Academic Performance Index from the year 1999. If we are
-only interested in the estimated mean, then we can directly pass our design to
-the [`mean`](@ref) function:
+the estimated mean or population total for a given variable. Let's say you want
+to find the mean Academic Performance Index from the year 1999. If you are only
+interested in the estimated mean, then you can directly pass your design to the
+[`mean`](@ref) function:
 
 ```@repl tutorial
 mean(:api99, srs)
 ```
 
-If we also want to know the standard error of the mean, we need to convert the
+If you also want to know the standard error of the mean, you need to convert the
 [`SurveyDesign`](@ref) to a [`ReplicateDesign`](@ref) using bootstrapping:
 
 ```@repl tutorial
@@ -85,8 +85,8 @@ bsrs = bootweights(srs; replicates = 1000)
 mean(:api99, bsrs)
 ```
 
-We can also find the mean of both the 1999 API and 2000 API for a clear
-comparison between students' performance from one year to another:
+You can find the mean of both the 1999 API and 2000 API for a clear comparison
+between students' performance from one year to another:
 
 ```@repl tutorial
 mean([:api99, :api00], bsrs)
@@ -99,8 +99,8 @@ the two APIs:
 ratio(:api00, :api99, bsrs)
 ```
 
-If we're interested in a certain statistic estimated by a specific domain, we
-can add the domain as the second parameter to our function. Let's say we want
+If you're interested in a certain statistic estimated by a specific domain, you
+can add the domain as the second parameter to your function. Let's say you want
 to find the estimated total number of students enrolled in schools from each
 county:
 
@@ -108,7 +108,7 @@ county:
 total(:enroll, :cname, bsrs)
 ```
 
-Another way to visualize data is through graphs. We can make a histogram to
+Another way to visualize data is through graphs. You can make a histogram to
 better see the distribution of enrolled students:
 
 ```@setup warning
