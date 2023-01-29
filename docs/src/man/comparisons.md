@@ -1,7 +1,8 @@
 # Comparison with other survey analysis tools
 
 There are multiple alternatives that offer survey analysis tools, most notably
-[SAS/STAT](https://support.sas.com/rnd/app/stat/procedures/SurveyAnalysis.html)
+[SAS](https://support.sas.com/rnd/app/stat/procedures/SurveyAnalysis.html),
+[Stata](https://www.stata.com/features/survey-methods/)
 and [R](https://CRAN.R-project.org/package=survey).
 
 ## R comparison
