@@ -13,41 +13,40 @@ The Julia, R and Python-numpy use the same defaults
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
 
-julia> quantile(:api00,srs,0.5)
+julia> quantile(:api00, srs, 0.5)
 1×2 DataFrame
- Row │ probability  quantile 
-     │ Float64      Float64  
-─────┼───────────────────────
-   1 │         0.5     659.0
+ Row │ 0.5th percentile  SE      
+     │ Float64           Float64 
+─────┼───────────────────────────
+   1 │            659.0  14.9764
 
-julia> quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
-5×2 DataFrame
- Row │ probability  quantile 
-     │ Float64      Float64  
-─────┼───────────────────────
-   1 │        0.1      245.5
-   2 │        0.2      317.6
-   3 │        0.5      453.0
-   4 │        0.75     668.5
-   5 │        0.95    1473.1
+julia> quantile(:enroll, srs, [0.1,0.2,0.5,0.75,0.95])
+5×3 DataFrame
+ Row │ percentile  statistic  SE       
+     │ String      Float64    Float64  
+─────┼─────────────────────────────────
+   1 │ 0.1             245.5   20.2964
+   2 │ 0.2             317.6   13.5435
+   3 │ 0.5             453.0   24.9719
+   4 │ 0.75            668.5   34.2487
+   5 │ 0.95           1473.1  142.568
 ```
 """
-function quantile(var::Symbol, design::SimpleRandomSample, p::Union{<:Real,Vector{<:Real}}; 
-    alpha::Float64=0.05, ci::Bool=false, se::Bool=false, qrule="hf7",kwargs...)
+function quantile(var::Symbol, design::ReplicateDesign, p::Real; kwargs...)
     v = design.data[!, var]
-    probs = design.data[!, :probs]
-    df = DataFrame(probability=p, quantile=Statistics.quantile(v, ProbabilityWeights(probs), p))
-    # TODO: Add CI and SE of the quantile
+    probs = design.data[!, design.allprobs]
+    X = Statistics.quantile(v, ProbabilityWeights(probs), p)
+    Xt = [Statistics.quantile(v, ProbabilityWeights(design.data[! , "replicate_"*string(i)]), p) for i in 1:design.replicates]
+    variance = sum((Xt .- X).^2) / design.replicates
+    df = DataFrame(percentile = X, SE = sqrt(variance))
+    rename!(df, :percentile => string(p) * "th percentile")
     return df
 end
 
-function quantile(var::Symbol, design::StratifiedSample, p::Union{<:Real,Vector{<:Real}}; 
-    alpha::Float64=0.05, ci::Bool=false, se::Bool=false, qrule="hf7",kwargs...)
-    v = design.data[!, var]
-    probs = design.data[!, :probs]
-    df = DataFrame(probability=p, quantile=Statistics.quantile(v, ProbabilityWeights(probs), p)) # Not sure which quantile defintion this returns
-    # TODO: Add CI and SE of the quantile
-    return df
+function quantile(var::Symbol, design::ReplicateDesign, probs::Vector{<:Real}; kwargs...)
+    df = vcat([rename!(quantile(var, design, prob; kwargs...),[:statistic, :SE]) for prob in probs]...)
+    df.percentile = string.(probs)
+    return df[!, [:percentile, :statistic, :SE]]
 end

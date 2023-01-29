@@ -1,173 +1,71 @@
 """
-    total(x, design)
+    total(var, design)
 
-Estimate the population total for the variable specified by `x`.
-
-For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling
+Compute the estimated population total for one or more variables within a survey design.
 
 ```jldoctest
-julia> using Survey;
+julia> apiclus1 = load_data("apiclus1");
 
-julia> apisrs = load_data("apisrs");
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
 
-julia> srs = SimpleRandomSample(apisrs; popsize=:fpc);
-
-julia> total(:enroll, srs)
+julia> total(:api00, clus_one_stage)
 1×2 DataFrame
- Row │ total      SE 
-     │ Float64    Float64  
-─────┼─────────────────────
-   1 │ 3.62107e6  1.6952e5
+ Row │ total      SE
+     │ Float64    Float64
+─────┼──────────────────────
+   1 │ 3.98999e6  9.01611e5
 
-julia> strat = load_data("apistrat");
-
-julia> dstrat = StratifiedSample(strat, :stype; popsize=:fpc);
-
-julia> total(:api00, dstrat)
-1×2 DataFrame
- Row │ total      SE      
-     │ Float64    Float64 
-─────┼────────────────────
-   1 │ 4.10221e6  58279.0
-
-julia> total([:api00, :enroll], dstrat)
+julia> total([:api00, :enroll], clus_one_stage)
 2×3 DataFrame
- Row │ names   total      SE            
-     │ String  Float64    Float64       
-─────┼──────────────────────────────────
-   1 │ api00   4.10221e6  58279.0
-   2 │ enroll  3.68718e6      1.14642e5
+ Row │ names   total      SE
+     │ String  Float64    Float64
+─────┼──────────────────────────────
+   1 │ api00   3.98999e6  9.01611e5
+   2 │ enroll  3.40494e6  9.33396e5
 ```
 """
-function total(x::Symbol, design::SimpleRandomSample)
-    function se(x::Symbol, design::SimpleRandomSample)
-        function variance(x::Symbol, design::SimpleRandomSample)
-            return design.popsize^2 * design.fpc * var(design.data[!, x]) / design.sampsize
-        end
-        return sqrt(variance(x, design))
-    end
-    if isa(design.data[!, x], CategoricalArray)
-        gdf = groupby(design.data, x)
-        p = combine(gdf, nrow => :count)
-        p.total = design.popsize .* p.count ./ sum(p.count)
-        p.proportion = p.total ./ design.popsize
-        p = select!(p, Not(:count)) # count column is not necessary for `total`
-        p.var = design.popsize^2 .* design.fpc .* p.proportion .*
-                (1 .- p.proportion) ./ (design.sampsize - 1) # N^2 .* variance of proportion
-        p.SE = sqrt.(p.var)
-        return select(p, Not([:proportion, :var]))
-    end
-    m = mean(x,design)
-    total = design.popsize * m.mean[1]
-    return DataFrame(total=total, SE=se(x, design))
+function total(x::Symbol, design::ReplicateDesign)
+    X = wsum(design.data[!, x], weights(design.data[!,design.weights]))
+    Xt = [wsum(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
+    variance = sum((Xt .- X).^2) / design.replicates
+    DataFrame(total = X, SE = sqrt(variance))
 end
 
-function total(x::Symbol, design::StratifiedSample)
-    # TODO: check if statement
-    if x == design.strata
-        gdf = groupby(design.data, x)
-        return combine(gdf, :weights => sum => :Nₕ)
-    end
-    gdf = groupby(design.data, design.strata)
-    grand_total = sum(combine(gdf, [x, :weights] => ((a, b) -> wsum(a, b)) => :total).total)
-    # variance estimation using closed-form formula
-    Nₕ = combine(gdf, :weights => sum => :Nₕ).Nₕ
-    nₕ = combine(gdf, nrow => :nₕ).nₕ
-    fₕ = nₕ ./ Nₕ
-
-    s²ₕ = combine(gdf, x => var => :s²h).s²h
-    # the only difference between total and mean variance is the Nₕ instead of Wₕ
-    V̂Ȳ̂ = sum((Nₕ .^ 2) .* (1 .- fₕ) .* s²ₕ ./ nₕ)
-    SE = sqrt(V̂Ȳ̂)
-    return DataFrame(total=grand_total, SE=SE)
-end
-
-function total(x::Vector{Symbol}, design::AbstractSurveyDesign)
+function total(x::Vector{Symbol}, design::ReplicateDesign)
     df = reduce(vcat, [total(i, design) for i in x])
     insertcols!(df, 1, :names => String.(x))
     return df
 end
 
 """
-```jldoctest
-julia> using Survey
+    total(var, domain, design)
 
-julia> apiclus1 = load_data("apiclus1"); 
-
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
-
-julia> total(:api00, dclus1)
-1×2 DataFrame
- Row │ total      SE        
-     │ Float64    Float64   
-─────┼──────────────────────
-   1 │ 5.94916e6  1.33948e6
-```
-"""
-function total(x::Symbol, design::OneStageClusterSample)
-    gdf = groupby(design.data, design.cluster)
-    ŷₜ = combine(gdf, x => sum => :sum).sum
-    Nₜ = first(design.data[!,design.popsize])
-    Ȳ = Nₜ * mean(ŷₜ)
-    nₜ = first(design.data[!,design.sampsize])
-    s²ₜ = var(ŷₜ)
-    VȲ = Nₜ^2 * (1 - nₜ/Nₜ) * s²ₜ / nₜ
-    return DataFrame(total = Ȳ, SE = sqrt(VȲ))
-end
-
-"""
-    total(x, by, design)
-
-Estimate the subpopulation total of a variable `x`.
+Compute the estimated population total within a domain.
 
 ```jldoctest
-julia> using  Survey;
+julia> apiclus1 = load_data("apiclus1");
 
-julia> apisrs = load_data("apisrs");
+julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |> bootweights;
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
-
-julia> total(:api00, :cname, srs) |> first
-DataFrameRow
- Row │ cname     total      SE     
-     │ String15  Float64    Float64 
-─────┼──────────────────────────────
-   1 │ Kern      1.77644e5  55600.8
-
+julia> total(:api00, :cname, clus_one_stage)
+11×3 DataFrame
+ Row │ cname        total           SE
+     │ String15     Float64         Any
+─────┼────────────────────────────────────────
+   1 │ Santa Clara       6.44244e5  4.2273e5
+   2 │ San Diego         1.2276e6   8.62727e5
+   3 │ Merced        70300.2        71336.3
+   4 │ Los Angeles       3.2862e5   2.93936e5
+   5 │ Orange            3.84807e5  3.88014e5
+   6 │ Fresno        63903.1        64781.7
+   7 │ Plumas            2.16147e5  2.12089e5
+   8 │ Alameda      249080.0        2.49228e5
+   9 │ San Joaquin       6.90276e5  6.81604e5
+  10 │ Kern          30631.5        30870.3
+  11 │ Mendocino     84380.6        80215.9
 ```
 """
-function total(x::Symbol, by::Symbol, design::SimpleRandomSample)
-    function domain_total(x::AbstractVector, design::SimpleRandomSample, weights)
-        function se(x::AbstractVector, design::SimpleRandomSample)
-            # vector of length equal to `sampsize` containing `x` and zeros
-            z = cat(zeros(design.sampsize - length(x)), x; dims=1)
-            variance = design.popsize^2 / design.sampsize * design.fpc * var(z)
-            return sqrt(variance)
-        end
-        total = wsum(x, weights)
-        return DataFrame(total=total, SE=se(x, design::SimpleRandomSample))
-    end
-    gdf = groupby(design.data, by)
-    combine(gdf, [x, :weights] => ((a, b) -> domain_total(a, design, b)) => AsTable)
-end
-
-"""
-```jldoctest
-julia> using Survey, Random, StatsBase; 
-
-julia> apiclus1 = load_data("apiclus1"); 
-
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc); 
-
-julia> total(:api00, dclus1, Bootstrap(replicates = 1000, rng = MersenneTwister(111)))
-1×2 DataFrame
- Row │ total      SE        
-     │ Float64    Float64   
-─────┼──────────────────────
-   1 │ 5.94916e6  1.36593e6
-```
-"""
-function total(x::Symbol, design::OneStageClusterSample, method::Bootstrap)
-    df = bootstrap(x, design, wsum; method.replicates, method.rng)
-    df = rename(df, :statistic => :total)
+function total(x::Symbol, domain::Symbol, design::ReplicateDesign)
+    df = bydomain(x, domain, design, wsum)
+    rename!(df, :statistic => :total)
 end

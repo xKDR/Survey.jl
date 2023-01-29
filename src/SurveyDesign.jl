@@ -11,420 +11,133 @@ Supertype for every survey design type.
 abstract type AbstractSurveyDesign end
 
 """
-    SimpleRandomSample <: AbstractSurveyDesign
+    SurveyDesign <: AbstractSurveyDesign
 
+General survey design encompassing a simple random, stratified, cluster or multi-stage design.
 
-Survey design sampled by simple random sampling.
+In the case of cluster sample, the clusters are chosen by simple random sampling. All
+individuals in one cluster are sampled. The clusters are considered disjoint and nested.
 
-# Arguments:
-`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
-`sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=UInt(nrow(data))`:  the survey sample size.
-`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
-`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
-`probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
-`ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0
-
-The precedence order of using `popsize`, `weights` and `probs` is `popsize` > `weights` > `probs`.
-E.g. If `popsize` is given then it is assumed to be the ground truth over `weights` or `probs`.
-
-If `popsize` is not given `weights` or `probs` must be given. `popsize` is then calculated
-using the weights and the sample size.
-
-```jldoctest
-julia> apisrs = load_data("apisrs");
-
-julia> srs = SimpleRandomSample(apisrs; popsize=:fpc)
-SimpleRandomSample:
-data: 200x42 DataFrame
-weights: 31.0, 31.0, 31.0, ..., 31.0
-probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
-fpc: 6194, 6194, 6194, ..., 6194
-popsize: 6194
-sampsize: 200
-sampfraction: 0.0323
-ignorefpc: false
-```
-"""
-struct SimpleRandomSample <: AbstractSurveyDesign
-    data::AbstractDataFrame
-    sampsize::Union{Unsigned,Nothing}
-    popsize::Union{Unsigned,Nothing}
-    sampfraction::Float64
-    fpc::Float64
-    ignorefpc::Bool
-    function SimpleRandomSample(data::AbstractDataFrame;
-        popsize::Union{Nothing,Symbol,Unsigned,Vector{<:Real}}=nothing,
-        sampsize::Union{Nothing,Symbol,Unsigned,Vector{<:Real}}=nrow(data) |> UInt,
-        weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
-        probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
-        ignorefpc::Bool=false
-    )
-        # If any of weights or probs given as Symbol,
-        # find the corresponding column in `data`
-        if isa(weights, Symbol)
-            weights = data[!, weights]
-        end
-        if isa(probs, Symbol)
-            probs = data[!, probs]
-        end
-        # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
-        if !isa(weights, Union{Nothing,Vector{<:Real}})
-            error("weights should be Vector{<:Real}. You passed $(typeof(weights))")
-        elseif !isa(probs, Union{Nothing,Vector{<:Real}})
-            error("sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
-        end
-        # If popsize given as Symbol or Vector, check all records equal 
-        if isa(popsize, Symbol)
-            if !all(w -> w == first(data[!, popsize]), data[!, popsize])
-                error("popsize must be same for all observations in Simple Random Sample")
-            end
-            popsize = first(data[!, popsize]) |> UInt
-        elseif isa(popsize, Vector{<:Real})
-            if !all(w -> w == first(popsize), popsize)
-                error("popsize must be same for all observations in Simple Random Sample")
-            end
-            popsize = first(popsize) |> UInt
-        end
-        # If sampsize given as Symbol or Vector, check all records equal 
-        if isa(sampsize, Symbol)
-            if !all(w -> w == first(data[!, sampsize]), data[!, sampsize])
-                error("sampsize must be same for all observations in Simple Random Sample")
-            end
-            sampsize = first(data[!, sampsize]) |> UInt
-        elseif isa(sampsize, Vector{<:Real})
-            if !all(w -> w == first(sampsize), sampsize)
-                error("sampsize must be same for all observations in Simple Random Sample")
-            end
-            sampsize = first(sampsize) |> UInt
-        end
-        # If both `weights` and `probs` given, then `weights` is assumed to be ground truth for probs.
-        if !isnothing(weights) && !isnothing(probs)
-            probs = 1 ./ weights
-            data[!, :probs] = probs
-        end
-        # popsize must be nothing or <:Unsigned by now
-        if isnothing(popsize)
-            # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
-            @warn "popsize not given. using weights/probs and sampsize to estimate `popsize`"
-            # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
-            if typeof(weights) <: Vector{<:Real}
-                if !all(w -> w == first(weights), weights)
-                    error("all frequency weights must be equal for Simple Random Sample")
-                end
-            elseif typeof(probs) <: Vector{<:Real}
-                if !all(p -> p == first(probs), probs)
-                    error("all probability weights must be equal for Simple Random Sample")
-                end
-                weights = 1 ./ probs
-            else
-                error("either weights or probs must be given if `popsize` not given")
-            end
-            # Estimate population size
-            popsize = round(sampsize * first(weights)) |> UInt
-        elseif typeof(popsize) <: Unsigned
-            weights = fill(popsize / sampsize, nrow(data)) # If popsize is given, weights vector is made concordant with popsize and sampsize, regardless of given weights argument
-            probs = 1 ./ weights
-        else
-            error("something went wrong, please check validity of inputs.")
-        end
-        # If sampsize greater than popsize than illogical arguments specified.
-        if sampsize > popsize
-            error("population size was estimated to be less than given sampsize. Please check input arguments.")
-        end
-        # If ignorefpc then set weights to 1 ??
-        # TODO: This works under some cases, but should find better way to process ignoring fpc
-        if ignorefpc
-            @warn "assuming all weights are equal to 1.0"
-            weights = ones(nrow(data))
-            probs = 1 ./ weights
-        end
-        # sum of weights must equal to `popsize` for SRS
-        if !isnothing(weights) && !(isapprox(sum(weights), popsize; atol=1e-4))
-            if ignorefpc && !(isapprox(sum(weights), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
-                error("sum of sampling weights should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
-            elseif !ignorefpc
-                error("sum of sampling weights must be equal to `popsize` for `SimpleRandomSample`")
-            end
-        end
-        # sum of probs must equal popsize for SRS
-        if !isnothing(probs) && !(isapprox(sum(1 ./ probs), popsize; atol=1e-4))
-            if ignorefpc && !(isapprox(sum(1 ./ probs), sampsize; atol=1e-4)) # Change if ignorefpc functionality changes
-                error("sum of inverse sampling probabilities should be equal to `sampsize` for `SimpleRandomSample` with `ignorefpc`")
-            elseif !ignorefpc
-                error("sum of inverse of sampling probabilities must be equal to `popsize` for Simple Random Sample")
-            end
-        end
-        ## Set remaining parts of data structure
-        # set sampling fraction
-        sampfraction = sampsize / popsize
-        # set fpc
-        fpc = ignorefpc ? 1 : 1 - (sampsize / popsize)
-        # add columns for frequency and probability weights to `data`
-        data[!, :weights] = weights
-        if isnothing(probs)
-            probs = 1 ./ data[!, :weights]
-        end
-        data[!, :probs] = probs
-        # Initialise the structure
-        new(data, sampsize, popsize, sampfraction, fpc, ignorefpc)
-    end
-end
-
-"""
-    StratifiedSample <: AbstractSurveyDesign
-
-Survey design sampled by stratification.
-
-`strata` must be specified as a Symbol name of a column in `data`.
+`strata` and `clusters` must be given as columns in `data`.
 
 # Arguments:
-`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
-`strata::Symbol`: the stratification variable - must be given as a column in `data`.
-`sampsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=UInt(nrow(data))`:  the survey sample size.
-`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size.
-`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
-`probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing: the sampling probabilities.
-`ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0
-
-The `popsize`, `weights` and `probs` parameters follow the same rules as for [`SimpleRandomSample`](@ref).
+- `data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
+- `strata::Union{Nothing, Symbol}=nothing`: the stratification variable.
+- `clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing`: the clustering variable.
+- `weights::Union{Nothing, Symbol}=nothing`: the sampling weights.
+- `popsize::Union{Nothing, Symbol}=nothing`: the (expected) survey population size.
 
 ```jldoctest
-julia> apistrat = load_data("apistrat");
+julia> apiclus1 = load_data("apiclus1");
 
-julia> dstrat = StratifiedSample(apistrat, :stype; popsize=:fpc)
-StratifiedSample:
-data: 200x45 DataFrame
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, strata=:stype, weights=:pw)
+SurveyDesign:
+data: 183×43 DataFrame
 strata: stype
-weights: 44.2, 44.2, 44.2, ..., 15.1
-probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
-fpc: 0.977, 0.977, 0.977, ..., 0.934
-popsize: 4421, 4421, 4421, ..., 755
-sampsize: 100, 100, 100, ..., 50
-sampfraction: 0.0226, 0.0226, 0.0226, ..., 0.0662
-ignorefpc: false
+    [H, E, E  …  E]
+cluster: dnum
+    [637, 637, 637  …  448]
+popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
+sampsize: [15, 15, 15  …  15]
+weights: [33.847, 33.847, 33.847  …  33.847]
+allprobs: [0.0295, 0.0295, 0.0295  …  0.0295]
 ```
 """
-struct StratifiedSample <: AbstractSurveyDesign
-    data::AbstractDataFrame
-    strata::Symbol
-    ignorefpc::Bool
-    function StratifiedSample(data::AbstractDataFrame, strata::Symbol;
-        popsize::Union{Nothing,Symbol}=nothing,
-        sampsize::Union{Nothing,Symbol}=nothing,
-        weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
-        probs::Union{Nothing,Symbol,Vector{<:Real}}=nothing,
-        ignorefpc::Bool=false
-    )
-        # Store the iterator over each strata, as used multiple times
-        data_groupedby_strata = groupby(data, strata)
-        # If any of weights or probs given as Symbol, find the corresponding column in `data`
-        if isa(weights, Symbol)
-            for each_strata in keys(data_groupedby_strata)
-                if !all(w -> w == first(data_groupedby_strata[each_strata][!, weights]), data_groupedby_strata[each_strata][!, weights])
-                    error("sampling weights within each strata must be equal in StratifiedSample")
-                end
-            end
-            # original_weights_colname = copy(weights)
-            weights = data[!, weights] # If all good with weights column, then store it as Vector
-        end
-        if isa(probs, Symbol)
-            for each_strata in keys(data_groupedby_strata)
-                if !all(p -> p == first(data_groupedby_strata[each_strata][!, probs]), data_groupedby_strata[each_strata][!, probs])
-                    error("sampling probabilities within each strata must be equal in StratifiedSample")
-                end
-            end
-            # original_probs_colname = copy(probs)
-            probs = data[!, probs] # If all good with probs column, then store it as Vector
-        end
-        # If weights/probs vector not numeric/real, ie. string column passed for weights, then raise error
-        if !isa(weights, Union{Nothing,Vector{<:Real}})
-            error("weights should be Vector{<:Real}. You passed $(typeof(weights))")
-        elseif !isa(probs, Union{Nothing,Vector{<:Real}})
-            error("sampling probabilities should be Vector{<:Real}. You passed $(typeof(probs))")
-        end
-        # If popsize given as Symbol or Vector, check all records equal in each strata
-        if isa(popsize, Symbol)
-            for each_strata in keys(data_groupedby_strata)
-                if !all(w -> w == first(data_groupedby_strata[each_strata][!, popsize]), data_groupedby_strata[each_strata][!, popsize])
-                    error("popsize must be same for all observations within each strata in StratifiedSample")
-                end
-            end
-            # original_popsize_colname = copy(popsize)
-            popsize = data[!, popsize]
-        end
-        # If sampsize given as Symbol or Vector, check all records equal 
-        if isa(sampsize, Symbol)
-            if isnothing(popsize) && isnothing(weights) && isnothing(probs)
-                error("if sampsize given, and popsize not given, then weights or probs must given to calculate popsize")
-            end
-            for each_strata in keys(data_groupedby_strata)
-                if !all(w -> w == first(data_groupedby_strata[each_strata][!, sampsize]), data_groupedby_strata[each_strata][!, sampsize])
-                    error("sampsize must be same for all observations within each strata in StratifiedSample")
-                end
-            end
-            # original_sampsize_colname = copy(sampsize)
-            sampsize = data[!, sampsize]
-            # If sampsize column not provided in constructor call, set it as nrow of strata
-        elseif isnothing(sampsize)
-            sampsize = transform(groupby(data, strata), nrow => :counts).counts
-        end
-        # If both `weights` and `probs` given, then `weights` is assumed to be ground truth for probs.
-        if !isnothing(weights) && !isnothing(probs)
-            probs = 1 ./ weights
-            data[!, :probs] = probs
-        end
-        # `popsize` is either nothing or a Vector{<:Real} by now
-        if isnothing(popsize)
-            # If popsize not given, fallback to weights, probs and sampsize to estimate `popsize`
-            @warn "popsize not given. using weights/probs and sampsize to estimate `popsize` for StratifiedSample"
-            # Check that all weights (or probs if weights not given) are equal, as SRS is by definition equi-weighted
-            if typeof(probs) <: Vector{<:Real}
-                weights = 1 ./ probs
-            elseif !(typeof(weights) <: Vector{<:Real})
-                error("either weights or probs must be given if `popsize` not given")
-            end
-            # Estimate population size
-            popsize = sampsize .* weights
-        elseif typeof(popsize) <: Vector{<:Real} # Still need to check if the provided Column is of <:Real
-            # If popsize is given, weights and probs made concordant with popsize and sampsize, regardless of supplied arguments
-            weights = popsize ./ sampsize
-            probs = 1 ./ weights
-        else
-            error("something went wrong. Please check validity of inputs.")
-        end
-        # If sampsize greater than popsize than illogical arguments specified.
-        if any(sampsize .> popsize)
-            error("population sizes were estimated to be less than sampsize. please check input arguments.")
-        end
-        # If ignorefpc then set weights to 1 ??
-        # TODO: This works under some cases, but should find better way to process ignoring fpc
-        if ignorefpc
-            @warn "assuming all weights are equal to 1.0"
-            weights = ones(nrow(data))
-            probs = 1 ./ weights
-        end
-        ## Set remaining parts of data structure
-        # set sampling fraction
-        sampfraction = sampsize ./ popsize
-        # set fpc
-        fpc = ignorefpc ? fill(1, size(data, 1)) : 1 .- (sampsize ./ popsize)
-        # add columns for frequency and probability weights to `data`
-        data[!, :weights] = weights
-        if isnothing(probs)
-            probs = 1 ./ data[!, :weights]
-        end
-        data[!, :probs] = probs
-        data[!, :sampsize] = sampsize
-        data[!, :popsize] = popsize
-        data[!, :fpc] = fpc
-        data[!, :sampfraction] = sampfraction
-        new(data, strata, ignorefpc)
-    end
-end
-
-"""
-    OneStageClusterSample <: AbstractSurveyDesign
-
-Survey design sampled by one stage cluster sampling.
-Clusters chosen by SRS followed by complete sampling of selected clusters.
-Assumes each individual in one and only one cluster; disjoint and nested clusters.
-
-`cluster` must be specified as a Symbol name of a column in `data`.
-
-# Arguments:
-`data::AbstractDataFrame`: the survey dataset (!this gets modified by the constructor).
-`cluster::Symbol`: the stratification variable - must be given as a column in `data`.
-`popsize::Union{Nothing,Symbol,<:Unsigned,Vector{<:Real}}=nothing`: the (expected) survey population size. For 
-
-`weights::Union{Nothing,Symbol,Vector{<:Real}}=nothing`: the sampling weights.
-
-```jldoctest
-julia> apiclus1 = load_data("apiclus1");
-
-julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
-
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
-OneStageClusterSample:
-data: 183x45 DataFrame
-cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
-popsize: fpc
-design.data[!,design.popsize]: 757, 757, 757, ..., 757
-sampsize: sampsize
-design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-weights: weights
-design.data[!,design.weights]: 50.5, 50.5, 50.5, ..., 50.5
-design.data[!,:strata]: 1.0, 1.0, 1.0, ..., 1.0
-design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
-design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
-
-julia> apiclus1 = load_data("apiclus1");
-
-julia> apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
-
-julia> dclus1 = OneStageClusterSample(apiclus1, :dnum; weights=:pw)
-OneStageClusterSample:
-data: 183x46 DataFrame
-cluster: dnum
-design.data[!,design.cluster]: 637, 637, 637, ..., 448
-popsize: popsize
-design.data[!,design.popsize]: 757.0, 757.0, 757.0, ..., 757.0
-sampsize: sampsize
-design.data[!,design.sampsize]: 15, 15, 15, ..., 15
-weights: pw
-design.data[!,design.weights]: 50.5, 50.5, 50.5, ..., 50.5
-design.data[!,:strata]: 1.0, 1.0, 1.0, ..., 1.0
-design.data[!,:probs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
-design.data[!,:allprobs]: 0.0198, 0.0198, 0.0198, ..., 0.0198
-```
-"""
-struct OneStageClusterSample <: AbstractSurveyDesign
+struct SurveyDesign <: AbstractSurveyDesign
     data::AbstractDataFrame
     cluster::Symbol
     popsize::Symbol
     sampsize::Symbol
-    weights::Symbol
+    strata::Symbol
+    weights::Symbol # Effective weights in case of singlestage approx supported
+    allprobs::Symbol # Right now only singlestage approx supported
+    pps::Bool # TODO functionality
+    # Single stage clusters sample, like apiclus1
+    function SurveyDesign(data::AbstractDataFrame;
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing
+    )
+        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
+        if typeof(strata) <: Nothing
+            data.false_strata = repeat(["FALSE_STRATA"], nrow(data))
+            strata = :false_strata
+        end
+        if typeof(clusters) <: Nothing
+            data.false_cluster = 1:nrow(data)
+            cluster = :false_cluster
+        end
+        ## Single stage approximation
+        if typeof(clusters) <: Vector{Symbol}
+            @warn "As part of single-stage approximation, only the first stage cluster ID is retained." 
+            cluster = first(clusters)
+        end
+        if typeof(clusters) <: Symbol
+            cluster = clusters
+        end
+        # For single-stage approximation only one "effective" sampsize vector
+        sampsize_labels = :_sampsize
+        if isa(strata,Symbol) && isnothing(clusters) # If stratified only then sampsize is inside strata
+            data[!, sampsize_labels] = transform(groupby(data, strata), nrow => :counts).counts
+        else
+            data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
+        end
+        if isa(popsize, Symbol)
+            weights_labels = :_weights
+            data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
+        elseif isa(weights, Symbol)
+            if !(typeof(data[!, weights]) <: Vector{<:Real})
+                throw(ArgumentError(string("given weights column ", weights , " is not of numeric type")))
+            else
+                # derive popsize from given `weights`
+                weights_labels = weights
+                popsize = :_popsize
+                data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
+            end
+        else
+            # neither popsize nor weights given
+            weights_labels = :_weights
+            data[!, weights_labels] = repeat([1], nrow(data))
+        end
+        allprobs_labels = :_allprobs
+        data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
+        pps = false # for now no explicit pps supported faster functions, but they can be added
+        new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
+    end
+end
+
+"""
+    ReplicateDesign <: AbstractSurveyDesign
+
+Survey design obtained by replicating an original design using [`bootweights`](@ref).
+
+```jldoctest
+julia> apistrat = load_data("apistrat");
+
+julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+
+julia> bootstrat = bootweights(strat; replicates=1000)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+replicates: 1000
+```
+"""
+struct ReplicateDesign <: AbstractSurveyDesign
+    data::AbstractDataFrame
+    cluster::Symbol
+    popsize::Symbol
+    sampsize::Symbol
+    strata::Symbol
+    weights::Symbol # Effective weights in case of singlestage approx supported
+    allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool
-    has_strata::Bool
-    # Single stage cluster sample, like apiclus1
-    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol, popsize::Symbol; kwargs...) # Right now kwargs does nothing, for expansion
-        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if !(typeof(data[!, popsize]) <: Vector{<:Real})
-            error(string("given popsize column ", popsize , " is not of numeric type"))
-        end
-        if !all(w -> w == first(data[!, popsize]), data[!, popsize])
-            error("popsize must be same for all observations within the cluster in ClusterSample")
-        end
-        # For one-stage sample only one sampsize vector
-        sampsize_labels = :sampsize
-        data_groupedby_cluster = groupby(data, cluster)
-        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        weights = :weights
-        data[!, :weights] = data[!, popsize] ./ data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        data[!, :strata] = ones(nrow(data))
-        pps = false
-        has_strata = false
-        new(data, cluster, popsize, sampsize_labels, weights ,pps, has_strata)
-    end
-    # Single stage cluster sample, like apiclus1
-    function OneStageClusterSample(data::AbstractDataFrame, cluster::Symbol; weights::Symbol=nothing, kwargs...) # Right now kwargs does nothing, for expansion
-        # sampsize here is number of clusters completely sampled, popsize is total clusters in population
-        if !(typeof(data[!, weights]) <: Vector{<:Real})
-            error(string("given weights column ", weights , " is not of numeric type"))
-        end
-        sampsize_labels = :sampsize
-        data_groupedby_cluster = groupby(data, cluster)
-        data[!, sampsize_labels] = fill(size(data_groupedby_cluster, 1),(nrow(data),))
-        popsize = :popsize
-        data[!, popsize] = data[!, weights] .* data[!, sampsize_labels]
-        data[!, :probs] = 1 ./ data[!, weights] # Many formulae are easily defined in terms of sampling probabilties
-        data[!, :weights] = data[!, weights]
-        data[!, :allprobs] = data[!, :probs] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
-        data[!, :strata] = ones(nrow(data))
-        pps = false
-        has_strata = false
-        new(data, cluster, popsize, sampsize_labels, weights, pps, has_strata)
-    end
+    replicates::UInt
 end

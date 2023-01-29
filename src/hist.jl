@@ -11,7 +11,7 @@ Calculate the number of bins to use in a histogram using the Sturges rule.
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SurveyDesign(apisrs; weights=:pw);
 
 julia> sturges(srs, :enroll)
 9
@@ -31,7 +31,7 @@ Calculate the number of bins to use in a histogram using the Freedman-Diaconis r
 ```jldoctest
 julia> apisrs = load_data("apisrs");
 
-julia> srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia> srs = SurveyDesign(apisrs; weights=:pw);
 
 julia> freedman_diaconis(srs, :enroll)
 18
@@ -59,11 +59,16 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 
     The `weights` argument should be a `Symbol` specifying a design variable.
 
-```@example histogram
-apisrs = load_data("apisrs");
-srs = SimpleRandomSample(apisrs;popsize=:fpc);
-h = hist(srs, :enroll)
-save("hist.png", h); nothing # hide
+```julia
+julia> using AlgebraOfGraphics
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SurveyDesign(apisrs; weights=:pw);
+
+julia> h = hist(srs, :enroll);
+
+julia> save("hist.png", h)
 ```
 
 ![](assets/hist.png)
@@ -74,7 +79,7 @@ function hist(design::AbstractSurveyDesign, var::Symbol,
 				 kwargs...
     			)
 	hist = histogram(bins = bins, normalization = normalization, kwargs...)
-	data(design.data) * mapping(var, weights = :weights) * hist |> draw
+	data(design.data) * mapping(var, weights = design.weights) * hist |> draw
 end
 
 function hist(design::AbstractSurveyDesign, var::Symbol,

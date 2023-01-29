@@ -8,11 +8,16 @@ Weights can be specified by a `Symbol` using the keyword argument `weights`.
 The keyword arguments are all the arguments that can be passed to `mapping` in
 [AlgebraOfGraphics](https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.7/).
 
-```@example boxplot
-apisrs = load_data("apisrs");
-srs = SimpleRandomSample(apisrs; weights = :pw);
-bp = boxplot(srs, :stype, :enroll; weights = :pw)
-save("boxplot.png", bp); nothing # hide
+```julia
+julia> using AlgebraOfGraphics
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SurveyDesign(apisrs; weights=:pw);
+
+julia> bp = boxplot(srs, :stype, :enroll; weights = :pw);
+
+julia> save("boxplot.png", bp)
 ```
 
 ![](assets/boxplot.png)

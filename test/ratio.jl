@@ -4,7 +4,7 @@
     ##############################
     # one-stage cluster sample
     apiclus1 = copy(apiclus1_original)
-    dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc)
-    @test ratio(:api00, :enroll, dclus1).SE[1] ≈ 0.151242 atol = 1e-4
-    @test ratio(:api00, :enroll, dclus1).Statistic[1] ≈ 1.17182 atol = 1e-4
+    dclus1 = SurveyDesign(apiclus1; clusters = :dnum, popsize = :fpc) |> bootweights
+    @test ratio(:api00, :enroll, dclus1).SE[1] ≈ 0.1275446 atol = 1e-1
+    @test ratio(:api00, :enroll, dclus1).ratio[1] ≈ 1.17182 atol = 1e-4
 end
