@@ -1,28 +1,31 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>API reference · Survey.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://xKDR.github.io/Survey.jl/api/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">Survey.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../R_comparison/">Moving from R</a></li><li class="is-active"><a class="tocitem" href>API reference</a><ul class="internal"><li><a class="tocitem" href="#Index"><span>Index</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>API reference</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>API reference</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/xKDR/Survey.jl/blob/main/docs/src/api.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="API"><a class="docs-heading-anchor" href="#API">API</a><a id="API-1"></a><a class="docs-heading-anchor-permalink" href="#API" title="Permalink"></a></h1><h2 id="Index"><a class="docs-heading-anchor" href="#Index">Index</a><a id="Index-1"></a><a class="docs-heading-anchor-permalink" href="#Index" title="Permalink"></a></h2><ul><li><a href="#Survey.AbstractSurveyDesign"><code>Survey.AbstractSurveyDesign</code></a></li><li><a href="#Survey.SimpleRandomSample"><code>Survey.SimpleRandomSample</code></a></li><li><a href="#Survey.StratifiedSample"><code>Survey.StratifiedSample</code></a></li><li><a href="#Statistics.mean-Tuple{Symbol, Symbol, SimpleRandomSample}"><code>Statistics.mean</code></a></li><li><a href="#Statistics.mean-Tuple{Symbol, SimpleRandomSample}"><code>Statistics.mean</code></a></li><li><a href="#Statistics.quantile"><code>Statistics.quantile</code></a></li><li><a href="#Survey.boxplot-Tuple{AbstractSurveyDesign, Symbol, Symbol}"><code>Survey.boxplot</code></a></li><li><a href="#Survey.colnames-Tuple{AbstractSurveyDesign}"><code>Survey.colnames</code></a></li><li><a href="#Survey.dim-Tuple{AbstractSurveyDesign}"><code>Survey.dim</code></a></li><li><a href="#Survey.dimnames-Tuple{AbstractSurveyDesign}"><code>Survey.dimnames</code></a></li><li><a href="#Survey.hist"><code>Survey.hist</code></a></li><li><a href="#Survey.load_data"><code>Survey.load_data</code></a></li><li><a href="#Survey.plot-Tuple{AbstractSurveyDesign, Symbol, Symbol}"><code>Survey.plot</code></a></li><li><a href="#Survey.ratio-Tuple{Symbol, Symbol, OneStageClusterSample}"><code>Survey.ratio</code></a></li><li><a href="#Survey.total-Tuple{Symbol, Symbol, SimpleRandomSample}"><code>Survey.total</code></a></li><li><a href="#Survey.total-Tuple{Symbol, SimpleRandomSample}"><code>Survey.total</code></a></li></ul><p>Survey data can be loaded from a <code>DataFrame</code> into a survey design. The package currently supports simple random sample and stratified sample designs. </p><article class="docstring"><header><a class="docstring-binding" id="Survey.AbstractSurveyDesign" href="#Survey.AbstractSurveyDesign"><code>Survey.AbstractSurveyDesign</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">AbstractSurveyDesign</code></pre><p>Supertype for every survey design type. </p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The data passed to a survey constructor is modified. To avoid this pass a copy of the data instead of the original.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/SurveyDesign.jl#L1-L10">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.SimpleRandomSample" href="#Survey.SimpleRandomSample"><code>Survey.SimpleRandomSample</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">SimpleRandomSample &lt;: AbstractSurveyDesign</code></pre><p>Survey design sampled by simple random sampling.</p><p><strong>Arguments:</strong></p><p><code>data::AbstractDataFrame</code>: the survey dataset (!this gets modified by the constructor). <code>sampsize::Union{Nothing,Symbol,&lt;:Unsigned,Vector{&lt;:Real}}=UInt(nrow(data))</code>:  the survey sample size. <code>popsize::Union{Nothing,Symbol,&lt;:Unsigned,Vector{&lt;:Real}}=nothing</code>: the (expected) survey population size. <code>weights::Union{Nothing,Symbol,Vector{&lt;:Real}}=nothing</code>: the sampling weights. <code>probs::Union{Nothing,Symbol,Vector{&lt;:Real}}=nothing: the sampling probabilities.</code>ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0</p><p>The precedence order of using <code>popsize</code>, <code>weights</code> and <code>probs</code> is <code>popsize</code> &gt; <code>weights</code> &gt; <code>probs</code>. E.g. If <code>popsize</code> is given then it is assumed to be the ground truth over <code>weights</code> or <code>probs</code>.</p><p>If <code>popsize</code> is not given <code>weights</code> or <code>probs</code> must be given. <code>popsize</code> is then calculated using the weights and the sample size.</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>API reference · Survey.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link rel="canonical" href="https://xKDR.github.io/Survey.jl/api/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">Survey.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../getting_started/">Getting Started</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../man/dataframes/">DataFrames in Survey</a></li><li><a class="tocitem" href="../man/replicate/">ReplicateDesign</a></li><li><a class="tocitem" href="../man/plotting/">Plotting</a></li><li><a class="tocitem" href="../man/comparisons/">Comparison with other survey analysis tools</a></li><li><a class="tocitem" href="../man/future/">Future plans</a></li></ul></li><li class="is-active"><a class="tocitem" href>API reference</a><ul class="internal"><li><a class="tocitem" href="#Index"><span>Index</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>API reference</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>API reference</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/xKDR/Survey.jl/blob/main/docs/src/api.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="API"><a class="docs-heading-anchor" href="#API">API</a><a id="API-1"></a><a class="docs-heading-anchor-permalink" href="#API" title="Permalink"></a></h1><h2 id="Index"><a class="docs-heading-anchor" href="#Index">Index</a><a id="Index-1"></a><a class="docs-heading-anchor-permalink" href="#Index" title="Permalink"></a></h2><ul><li><a href="#Survey.AbstractSurveyDesign"><code>Survey.AbstractSurveyDesign</code></a></li><li><a href="#Survey.ReplicateDesign"><code>Survey.ReplicateDesign</code></a></li><li><a href="#Survey.SurveyDesign"><code>Survey.SurveyDesign</code></a></li><li><a href="#Statistics.mean"><code>Statistics.mean</code></a></li><li><a href="#Statistics.quantile"><code>Statistics.quantile</code></a></li><li><a href="#Survey.bootweights"><code>Survey.bootweights</code></a></li><li><a href="#Survey.boxplot"><code>Survey.boxplot</code></a></li><li><a href="#Survey.hist"><code>Survey.hist</code></a></li><li><a href="#Survey.load_data"><code>Survey.load_data</code></a></li><li><a href="#Survey.plot"><code>Survey.plot</code></a></li><li><a href="#Survey.ratio"><code>Survey.ratio</code></a></li><li><a href="#Survey.total"><code>Survey.total</code></a></li></ul><article class="docstring"><header><a class="docstring-binding" id="Survey.AbstractSurveyDesign" href="#Survey.AbstractSurveyDesign"><code>Survey.AbstractSurveyDesign</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">AbstractSurveyDesign</code></pre><p>Supertype for every survey design type. </p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The data passed to a survey constructor is modified. To avoid this pass a copy of the data instead of the original.</p></div></div></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/SurveyDesign.jl#L1-L10">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.SurveyDesign" href="#Survey.SurveyDesign"><code>Survey.SurveyDesign</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">SurveyDesign &lt;: AbstractSurveyDesign</code></pre><p>General survey design encompassing a simple random, stratified, cluster or multi-stage design.</p><p>In the case of cluster sample, the clusters are chosen by simple random sampling. All individuals in one cluster are sampled. The clusters are considered disjoint and nested.</p><p><code>strata</code> and <code>clusters</code> must be given as columns in <code>data</code>.</p><p><strong>Arguments:</strong></p><ul><li><code>data::AbstractDataFrame</code>: the survey dataset (!this gets modified by the constructor).</li><li><code>strata::Union{Nothing, Symbol}=nothing</code>: the stratification variable.</li><li><code>clusters::Union{Nothing, Symbol, Vector{Symbol}}=nothing</code>: the clustering variable.</li><li><code>weights::Union{Nothing, Symbol}=nothing</code>: the sampling weights.</li><li><code>popsize::Union{Nothing, Symbol}=nothing</code>: the (expected) survey population size.</li></ul><pre><code class="language-julia-repl hljs">julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
 
-julia&gt; srs = SimpleRandomSample(apisrs; popsize=:fpc)
-SimpleRandomSample:
-data: 200x42 DataFrame
-weights: 31.0, 31.0, 31.0, ..., 31.0
-probs: 0.0323, 0.0323, 0.0323, ..., 0.0323
-fpc: 6194, 6194, 6194, ..., 6194
-popsize: 6194
-sampsize: 200
-sampfraction: 0.0323
-ignorefpc: false</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/SurveyDesign.jl#L13-L47">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.StratifiedSample" href="#Survey.StratifiedSample"><code>Survey.StratifiedSample</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">StratifiedSample &lt;: AbstractSurveyDesign</code></pre><p>Survey design sampled by stratification.</p><p><code>strata</code> must be specified as a Symbol name of a column in <code>data</code>.</p><p><strong>Arguments:</strong></p><p><code>data::AbstractDataFrame</code>: the survey dataset (!this gets modified by the constructor). <code>strata::Symbol</code>: the stratification variable - must be given as a column in <code>data</code>. <code>sampsize::Union{Nothing,Symbol,&lt;:Unsigned,Vector{&lt;:Real}}=UInt(nrow(data))</code>:  the survey sample size. <code>popsize::Union{Nothing,Symbol,&lt;:Unsigned,Vector{&lt;:Real}}=nothing</code>: the (expected) survey population size. <code>weights::Union{Nothing,Symbol,Vector{&lt;:Real}}=nothing</code>: the sampling weights. <code>probs::Union{Nothing,Symbol,Vector{&lt;:Real}}=nothing: the sampling probabilities.</code>ignorefpc::Bool=false`: choose to ignore finite population correction and assume all weights equal to 1.0</p><p>The <code>popsize</code>, <code>weights</code> and <code>probs</code> parameters follow the same rules as for <a href="#Survey.SimpleRandomSample"><code>SimpleRandomSample</code></a>.</p><pre><code class="language-julia-repl hljs">julia&gt; apistrat = load_data(&quot;apistrat&quot;);
-
-julia&gt; dstrat = StratifiedSample(apistrat, :stype; popsize=:fpc)
-StratifiedSample:
-data: 200x45 DataFrame
+julia&gt; dclus1 = SurveyDesign(apiclus1; clusters=:dnum, strata=:stype, weights=:pw)
+SurveyDesign:
+data: 183×43 DataFrame
 strata: stype
-weights: 44.2, 44.2, 44.2, ..., 15.1
-probs: 0.0226, 0.0226, 0.0226, ..., 0.0662
-fpc: 0.977, 0.977, 0.977, ..., 0.934
-popsize: 4421, 4421, 4421, ..., 755
-sampsize: 100, 100, 100, ..., 50
-sampfraction: 0.0226, 0.0226, 0.0226, ..., 0.0662
-ignorefpc: false</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/SurveyDesign.jl#L173-L206">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.load_data" href="#Survey.load_data"><code>Survey.load_data</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">load_data(name)</code></pre><p>Load a sample dataset as a <code>DataFrame</code>.</p><p>All available datasets can be found <a href="https://github.com/xKDR/Survey.jl/tree/main/assets">here</a>.</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;)
+    [H, E, E  …  E]
+cluster: dnum
+    [637, 637, 637  …  448]
+popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
+sampsize: [15, 15, 15  …  15]
+weights: [33.847, 33.847, 33.847  …  33.847]
+allprobs: [0.0295, 0.0295, 0.0295  …  0.0295]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/SurveyDesign.jl#L13-L45">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.ReplicateDesign" href="#Survey.ReplicateDesign"><code>Survey.ReplicateDesign</code></a> — <span class="docstring-category">Type</span></header><section><div><pre><code class="language-julia hljs">ReplicateDesign &lt;: AbstractSurveyDesign</code></pre><p>Survey design obtained by replicating an original design using <a href="#Survey.bootweights"><code>bootweights</code></a>.</p><pre><code class="language-julia-repl hljs">julia&gt; apistrat = load_data(&quot;apistrat&quot;);
+
+julia&gt; strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+
+julia&gt; bootstrat = bootweights(strat; replicates=1000)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+replicates: 1000</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/SurveyDesign.jl#L110-L132">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.load_data" href="#Survey.load_data"><code>Survey.load_data</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">load_data(name)</code></pre><p>Load a sample dataset as a <code>DataFrame</code>.</p><p>All available datasets can be found <a href="https://github.com/xKDR/Survey.jl/tree/main/assets">here</a>.</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;)
 200×40 DataFrame
  Row │ Column1  cds             stype    name             sname                ⋯
      │ Int64    Int64           String1  String15         String               ⋯
@@ -43,175 +46,146 @@ ignorefpc: false</code></pre></div><a class="docs-sourcelink" target="_blank" hr
  198 │    4480  37683386039143  E        Audubon Element  Audubon Elementary   ⋯
  199 │    4062  36678196036222  E        Edison Elementa  Edison Elementary
  200 │    2683  24657716025621  E        Franklin Elemen  Franklin Elementary
-                                                 36 columns and 185 rows omitted</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/load_data.jl#L4-L35">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Statistics.mean-Tuple{Symbol, SimpleRandomSample}" href="#Statistics.mean-Tuple{Symbol, SimpleRandomSample}"><code>Statistics.mean</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">mean(x, design)</code></pre><p>Estimate the population mean of a variable of a simple random sample, and the corresponding standard error.</p><p>The calculations were done according to the book <a href="https://www.academia.edu/29684662/Cochran_1977_Sampling_Techniques_Third_Edition">Sampling Techniques</a> by William Cochran.</p><p>For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
-
-julia&gt; srs = SimpleRandomSample(apisrs;popsize=:fpc);
-
-julia&gt; mean(:enroll, srs)
-1×2 DataFrame
- Row │ mean     SE     
-     │ Float64  Float64 
-─────┼──────────────────
-   1 │  584.61  27.3684
-
-julia&gt; mean([:api00, :api99], srs)
-2×3 DataFrame
- Row │ names   mean     SE     
-     │ String  Float64  Float64 
-─────┼──────────────────────────
-   1 │ api00   656.585  9.24972
-   2 │ api99   624.685  9.5003
-
-julia&gt; strat = load_data(&quot;apistrat&quot;); 
-
-julia&gt; dstrat = StratifiedSample(strat, :stype; popsize  = :fpc); 
-
-julia&gt; mean(:api00, dstrat)
-1×2 DataFrame
- Row │ mean     SE     
-     │ Float64  Float64 
-─────┼──────────────────
-   1 │ 662.287  9.40894</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/mean.jl#L1-L42">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.total-Tuple{Symbol, SimpleRandomSample}" href="#Survey.total-Tuple{Symbol, SimpleRandomSample}"><code>Survey.total</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">total(x, design)</code></pre><p>Estimate the population total for the variable specified by <code>x</code>.</p><p>For OneStageClusterSample, formula adapted from Sarndal pg129, section 4.2.2 Simple Random Cluster Sampling</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey;
-
-julia&gt; apisrs = load_data(&quot;apisrs&quot;);
-
-julia&gt; srs = SimpleRandomSample(apisrs; popsize=:fpc);
-
-julia&gt; total(:enroll, srs)
-1×2 DataFrame
- Row │ total      SE 
-     │ Float64    Float64  
-─────┼─────────────────────
-   1 │ 3.62107e6  1.6952e5
-
-julia&gt; strat = load_data(&quot;apistrat&quot;);
-
-julia&gt; dstrat = StratifiedSample(strat, :stype; popsize=:fpc);
-
-julia&gt; total(:api00, dstrat)
-1×2 DataFrame
- Row │ total      SE      
-     │ Float64    Float64 
-─────┼────────────────────
-   1 │ 4.10221e6  58279.0
-
-julia&gt; total([:api00, :enroll], dstrat)
-2×3 DataFrame
- Row │ names   total      SE            
-     │ String  Float64    Float64       
-─────┼──────────────────────────────────
-   1 │ api00   4.10221e6  58279.0
-   2 │ enroll  3.68718e6      1.14642e5</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/total.jl#L1-L41">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Statistics.quantile" href="#Statistics.quantile"><code>Statistics.quantile</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">quantile(var, design, p; kwargs...)</code></pre><p>Estimate quantiles for a complex survey.</p><p>Hyndman and Fan compiled a taxonomy of nine algorithms to estimate quantiles. These are implemented in Statistics.quantile, which this function calls. The Julia, R and Python-numpy use the same defaults</p><p><strong>References:</strong></p><ul><li>Hyndman, R.J and Fan, Y. (1996) <a href="https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf">&quot;Sample Quantiles in Statistical Packages&quot;</a>, The American Statistician, Vol. 50, No. 4, pp. 361-365.</li><li><a href="https://en.m.wikipedia.org/wiki/Quantile">Quantiles</a> on wikipedia</li><li><a href="https://r-survey.r-forge.r-project.org/svybook/">Complex Surveys: a guide to analysis using R</a>, Section 2.4.1 and Appendix C.4.</li></ul><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
-
-julia&gt; srs = SimpleRandomSample(apisrs;popsize=:fpc);
-
-julia&gt; quantile(:api00,srs,0.5)
-1×2 DataFrame
- Row │ probability  quantile 
-     │ Float64      Float64  
-─────┼───────────────────────
-   1 │         0.5     659.0
-
-julia&gt; quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
-5×2 DataFrame
- Row │ probability  quantile 
-     │ Float64      Float64  
-─────┼───────────────────────
-   1 │        0.1      245.5
-   2 │        0.2      317.6
-   3 │        0.5      453.0
-   4 │        0.75     668.5
-   5 │        0.95    1473.1</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/quantile.jl#L1-L36">source</a></section></article><p>It is often required to estimate population parameters for sub-populations of interest. For example, you may have a sample of heights, but you want the average heights of males and females separately. </p><article class="docstring"><header><a class="docstring-binding" id="Statistics.mean-Tuple{Symbol, Symbol, SimpleRandomSample}" href="#Statistics.mean-Tuple{Symbol, Symbol, SimpleRandomSample}"><code>Statistics.mean</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">mean(x, by, design)</code></pre><p>Estimate the subpopulation mean of a variable <code>x</code>.</p><p>The calculations were done according to the book <a href="https://link.springer.com/book/9780387406206">Model-Assisted Survey Sampling</a> by Carl-Erik Sarndal, Bengt Swensson, Jan Wretman, section 3.3 and Chap 10. Assumes popsize is known and subpopulation size is unknown.</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey; 
-
-julia&gt; srs = load_data(&quot;apisrs&quot;); 
-
-julia&gt; srs = SimpleRandomSample(srs; popsize = :fpc);
-
-julia&gt; mean(:api00, :cname, srs) |&gt; first
-DataFrameRow
- Row │ cname     mean     SE     
-     │ String15  Float64  Float64 
-─────┼────────────────────────────
-   1 │ Kern        573.6  42.8026
-
-julia&gt; strat = load_data(&quot;apistrat&quot;);
-
-julia&gt; dstrat = StratifiedSample(strat, :stype; popsize  = :fpc);
-
-julia&gt; mean(:api00, :cname, dstrat) |&gt; first 
-DataFrameRow
- Row │ cname        mean     SE      
-     │ String15     Float64  Float64 
-─────┼───────────────────────────────
-   1 │ Los Angeles  633.511  21.3912</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/mean.jl#L111-L144">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.total-Tuple{Symbol, Symbol, SimpleRandomSample}" href="#Survey.total-Tuple{Symbol, Symbol, SimpleRandomSample}"><code>Survey.total</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">total(x, by, design)</code></pre><p>Estimate the subpopulation total of a variable <code>x</code>.</p><pre><code class="language-julia-repl hljs">julia&gt; using  Survey;
-
-julia&gt; apisrs = load_data(&quot;apisrs&quot;);
-
-julia&gt; srs = SimpleRandomSample(apisrs;popsize=:fpc);
-
-julia&gt; total(:api00, :cname, srs) |&gt; first
-DataFrameRow
- Row │ cname     total      SE     
-     │ String15  Float64    Float64 
-─────┼──────────────────────────────
-   1 │ Kern      1.77644e5  55600.8
-</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/total.jl#L118-L138">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.ratio-Tuple{Symbol, Symbol, OneStageClusterSample}" href="#Survey.ratio-Tuple{Symbol, Symbol, OneStageClusterSample}"><code>Survey.ratio</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">ratio(numerator, denominator, design)</code></pre><p>Estimate the ratio of the columns specified in numerator and denominator</p><pre><code class="language-julia-repl hljs">julia&gt; using Survey;
+                                                 36 columns and 185 rows omitted</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/load_data.jl#L4-L35">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.bootweights" href="#Survey.bootweights"><code>Survey.bootweights</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia-repl hljs">julia&gt; using Random
 
 julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
 
-julia&gt; apiclus1[!, :pw] = fill(757/15,(size(apiclus1,1),)); # Correct api mistake for pw column
+julia&gt; clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
 
-julia&gt; dclus1 = OneStageClusterSample(apiclus1, :dnum, :fpc);
+julia&gt; bootweights(clus_one_stage; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
+ReplicateDesign:
+data: 183×1044 DataFrame
+strata: none
+cluster: dnum
+    [61, 61, 61  …  815]
+popsize: [757, 757, 757  …  757]
+sampsize: [15, 15, 15  …  15]
+weights: [50.4667, 50.4667, 50.4667  …  50.4667]
+allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
+replicates: 1000</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/bootstrap.jl#L1-L21">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Statistics.mean" href="#Statistics.mean"><code>Statistics.mean</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">mean(var, design)</code></pre><p>Compute the estimated mean of one or more variables within a survey design.</p><pre><code class="language-julia-repl hljs">julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
 
-julia&gt; ratio(:api00, :enroll, dclus1)
+julia&gt; clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |&gt; bootweights;
+
+julia&gt; mean(:api00, clus_one_stage)
 1×2 DataFrame
- Row │ Statistic  SE       
-     │ Float64    Float64  
-─────┼─────────────────────
-   1 │   1.17182  0.151242</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/ratio.jl#L1-L21">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.plot-Tuple{AbstractSurveyDesign, Symbol, Symbol}" href="#Survey.plot-Tuple{AbstractSurveyDesign, Symbol, Symbol}"><code>Survey.plot</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">plot(design, x, y; kwargs...)</code></pre><p>Scatter plot of survey design variables <code>x</code> and <code>y</code>.</p><p>The plot takes into account the frequency weights specified by the user in the design.</p><pre><code class="language- hljs">apisrs = load_data(&quot;apisrs&quot;);
-srs = SimpleRandomSample(apisrs; weights = :pw);
-s = plot(srs, :api99, :api00)
-save(&quot;scatter.png&quot;, s); nothing # hide</code></pre><p><img src="../assets/scatter.png" alt/></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/plot.jl#L1-L17">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.boxplot-Tuple{AbstractSurveyDesign, Symbol, Symbol}" href="#Survey.boxplot-Tuple{AbstractSurveyDesign, Symbol, Symbol}"><code>Survey.boxplot</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">boxplot(design, x, y; kwargs...)</code></pre><p>Box plot of survey design variable <code>y</code> grouped by column <code>x</code>.</p><p>Weights can be specified by a <code>Symbol</code> using the keyword argument <code>weights</code>.</p><p>The keyword arguments are all the arguments that can be passed to <code>mapping</code> in <a href="https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.7/">AlgebraOfGraphics</a>.</p><pre><code class="language- hljs">apisrs = load_data(&quot;apisrs&quot;);
-srs = SimpleRandomSample(apisrs; weights = :pw);
-bp = boxplot(srs, :stype, :enroll; weights = :pw)
-save(&quot;boxplot.png&quot;, bp); nothing # hide</code></pre><p><img src="../assets/boxplot.png" alt/></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/boxplot.jl#L1-L19">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.hist" href="#Survey.hist"><code>Survey.hist</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">hist(design, var, bins = freedman_diaconis; normalization = :density, kwargs...)</code></pre><p>Histogram plot of a survey design variable given by <code>var</code>.</p><p><code>bins</code> can be an <code>Integer</code> specifying the number of equal-width bins, an <code>AbstractVector</code> specifying the bins intervals, or a <code>Function</code> specifying the function used for calculating the number of bins. The possible functions are <code>sturges</code> and <code>freedman_diaconis</code>.</p><p>The normalization can be set to <code>:none</code>, <code>:density</code>, <code>:probability</code> or <code>:pdf</code>. See <a href="https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.9/generated/datatransformations/#AlgebraOfGraphics.histogram">AlgebraOfGraphics.histogram</a> for more information.</p><p>For the complete argument list see <a href="https://makie.juliaplots.org/stable/examples/plotting_functions/hist/">Makie.hist</a>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>weights</code> argument should be a <code>Symbol</code> specifying a design variable.</p></div></div><pre><code class="language- hljs">apisrs = load_data(&quot;apisrs&quot;);
-srs = SimpleRandomSample(apisrs;popsize=:fpc);
-h = hist(srs, :enroll)
-save(&quot;hist.png&quot;, h); nothing # hide</code></pre><p><img src="../assets/hist.png" alt/></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/hist.jl#L42-L70">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.dim-Tuple{AbstractSurveyDesign}" href="#Survey.dim-Tuple{AbstractSurveyDesign}"><code>Survey.dim</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">dim(design)</code></pre><p>Get the dimensions of a <code>SurveyDesign</code>.</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+ Row │ mean     SE
+     │ Float64  Float64
+─────┼──────────────────
+   1 │ 644.169  23.4107
 
-julia&gt; srs = SimpleRandomSample(apisrs; popsize =:fpc);
+julia&gt; mean([:api00, :enroll], clus_one_stage)
+2×3 DataFrame
+ Row │ names   mean     SE
+     │ String  Float64  Float64
+─────┼──────────────────────────
+   1 │ api00   644.169  23.4107
+   2 │ enroll  549.716  45.7835</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/mean.jl#L1-L26">source</a></section><section><div><pre><code class="nohighlight hljs">mean(var, domain, design)</code></pre><p>Compute the estimated mean within a domain.</p><pre><code class="language-julia-repl hljs">julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
 
-julia&gt; dim(srs)
-(200, 42)</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/dimnames.jl#L1-L14">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.dimnames-Tuple{AbstractSurveyDesign}" href="#Survey.dimnames-Tuple{AbstractSurveyDesign}"><code>Survey.dimnames</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">dimnames(design)</code></pre><p>Get the names of the rows and columns of a <code>SurveyDesign</code>.</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+julia&gt; clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |&gt; bootweights;
 
-julia&gt; srs = SimpleRandomSample(apisrs;popsize=:fpc);
+julia&gt; mean(:api00, :cname, clus_one_stage)
+11×3 DataFrame
+ Row │ cname        mean     SE
+     │ String15     Float64  Any
+─────┼───────────────────────────────────
+   1 │ Santa Clara  732.077  58.2169
+   2 │ San Diego    659.436  2.66703
+   3 │ Merced       519.25   2.28936e-15
+   4 │ Los Angeles  647.267  47.6233
+   5 │ Orange       710.563  2.19826e-13
+   6 │ Fresno       472.0    1.13687e-13
+   7 │ Plumas       709.556  1.26058e-13
+   8 │ Alameda      669.0    1.27527e-13
+   9 │ San Joaquin  551.189  2.1791e-13
+  10 │ Kern         452.5    0.0
+  11 │ Mendocino    623.25   1.09545e-13</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/mean.jl#L40-L67">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.total" href="#Survey.total"><code>Survey.total</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">total(var, design)</code></pre><p>Compute the estimated population total for one or more variables within a survey design.</p><pre><code class="language-julia-repl hljs">julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
 
-julia&gt; dimnames(srs)
-2-element Vector{Vector{String}}:
- [&quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;8&quot;, &quot;9&quot;, &quot;10&quot;  …  &quot;191&quot;, &quot;192&quot;, &quot;193&quot;, &quot;194&quot;, &quot;195&quot;, &quot;196&quot;, &quot;197&quot;, &quot;198&quot;, &quot;199&quot;, &quot;200&quot;]
- [&quot;Column1&quot;, &quot;cds&quot;, &quot;stype&quot;, &quot;name&quot;, &quot;sname&quot;, &quot;snum&quot;, &quot;dname&quot;, &quot;dnum&quot;, &quot;cname&quot;, &quot;cnum&quot;  …  &quot;grad.sch&quot;, &quot;avg.ed&quot;, &quot;full&quot;, &quot;emer&quot;, &quot;enroll&quot;, &quot;api.stu&quot;, &quot;pw&quot;, &quot;fpc&quot;, &quot;weights&quot;, &quot;probs&quot;]</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/dimnames.jl#L53-L68">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.colnames-Tuple{AbstractSurveyDesign}" href="#Survey.colnames-Tuple{AbstractSurveyDesign}"><code>Survey.colnames</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">colnames(design)</code></pre><p>Get the column names of a <code>SurveyDesign</code>.</p><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+julia&gt; clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |&gt; bootweights;
 
-julia&gt; srs = SimpleRandomSample(apisrs; popsize=:fpc);
+julia&gt; total(:api00, clus_one_stage)
+1×2 DataFrame
+ Row │ total      SE
+     │ Float64    Float64
+─────┼──────────────────────
+   1 │ 3.98999e6  9.01611e5
 
-julia&gt; colnames(srs)
-42-element Vector{String}:
- &quot;Column1&quot;
- &quot;cds&quot;
- &quot;stype&quot;
- &quot;name&quot;
- &quot;sname&quot;
- &quot;snum&quot;
- &quot;dname&quot;
- &quot;dnum&quot;
- &quot;cname&quot;
- &quot;cnum&quot;
- ⋮
- &quot;avg.ed&quot;
- &quot;full&quot;
- &quot;emer&quot;
- &quot;enroll&quot;
- &quot;api.stu&quot;
- &quot;pw&quot;
- &quot;fpc&quot;
- &quot;weights&quot;
- &quot;probs&quot;</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/75710cab2c455d854f0574d8d8afd9a568a5c744/src/dimnames.jl#L17-L50">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../R_comparison/">« Moving from R</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.23 on <span class="colophon-date" title="Friday 30 December 2022 09:47">Friday 30 December 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+julia&gt; total([:api00, :enroll], clus_one_stage)
+2×3 DataFrame
+ Row │ names   total      SE
+     │ String  Float64    Float64
+─────┼──────────────────────────────
+   1 │ api00   3.98999e6  9.01611e5
+   2 │ enroll  3.40494e6  9.33396e5</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/total.jl#L1-L26">source</a></section><section><div><pre><code class="nohighlight hljs">total(var, domain, design)</code></pre><p>Compute the estimated population total within a domain.</p><pre><code class="language-julia-repl hljs">julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
+
+julia&gt; clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |&gt; bootweights;
+
+julia&gt; total(:api00, :cname, clus_one_stage)
+11×3 DataFrame
+ Row │ cname        total           SE
+     │ String15     Float64         Any
+─────┼────────────────────────────────────────
+   1 │ Santa Clara       6.44244e5  4.2273e5
+   2 │ San Diego         1.2276e6   8.62727e5
+   3 │ Merced        70300.2        71336.3
+   4 │ Los Angeles       3.2862e5   2.93936e5
+   5 │ Orange            3.84807e5  3.88014e5
+   6 │ Fresno        63903.1        64781.7
+   7 │ Plumas            2.16147e5  2.12089e5
+   8 │ Alameda      249080.0        2.49228e5
+   9 │ San Joaquin       6.90276e5  6.81604e5
+  10 │ Kern          30631.5        30870.3
+  11 │ Mendocino     84380.6        80215.9</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/total.jl#L40-L67">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Statistics.quantile" href="#Statistics.quantile"><code>Statistics.quantile</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">quantile(var, design, p; kwargs...)</code></pre><p>Estimate quantiles for a complex survey.</p><p>Hyndman and Fan compiled a taxonomy of nine algorithms to estimate quantiles. These are implemented in Statistics.quantile, which this function calls. The Julia, R and Python-numpy use the same defaults</p><p><strong>References:</strong></p><ul><li>Hyndman, R.J and Fan, Y. (1996) <a href="https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf">&quot;Sample Quantiles in Statistical Packages&quot;</a>, The American Statistician, Vol. 50, No. 4, pp. 361-365.</li><li><a href="https://en.m.wikipedia.org/wiki/Quantile">Quantiles</a> on wikipedia</li><li><a href="https://r-survey.r-forge.r-project.org/svybook/">Complex Surveys: a guide to analysis using R</a>, Section 2.4.1 and Appendix C.4.</li></ul><pre><code class="language-julia-repl hljs">julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+
+julia&gt; srs = SurveyDesign(apisrs; weights=:pw) |&gt; bootweights; 
+
+julia&gt; quantile(:api00, srs, 0.5)
+1×2 DataFrame
+ Row │ 0.5th percentile  SE      
+     │ Float64           Float64 
+─────┼───────────────────────────
+   1 │            659.0  14.9764
+
+julia&gt; quantile(:enroll, srs, [0.1,0.2,0.5,0.75,0.95])
+5×3 DataFrame
+ Row │ percentile  statistic  SE       
+     │ String      Float64    Float64  
+─────┼─────────────────────────────────
+   1 │ 0.1             245.5   20.2964
+   2 │ 0.2             317.6   13.5435
+   3 │ 0.5             453.0   24.9719
+   4 │ 0.75            668.5   34.2487
+   5 │ 0.95           1473.1  142.568</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/quantile.jl#L1-L36">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.ratio" href="#Survey.ratio"><code>Survey.ratio</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">ratio(numerator, denominator, design)</code></pre><p>Estimate the ratio of the columns specified in numerator and denominator.</p><pre><code class="language-julia-repl hljs">julia&gt; apiclus1 = load_data(&quot;apiclus1&quot;);
+
+julia&gt; clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) |&gt; bootweights;
+
+julia&gt; ratio(:api00, :enroll, clus_one_stage)
+1×2 DataFrame
+ Row │ ratio    SE
+     │ Float64  Float64
+─────┼───────────────────
+   1 │ 1.17182  0.131518
+</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/ratio.jl#L1-L19">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.plot" href="#Survey.plot"><code>Survey.plot</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">plot(design, x, y; kwargs...)</code></pre><p>Scatter plot of survey design variables <code>x</code> and <code>y</code>.</p><p>The plot takes into account the frequency weights specified by the user in the design.</p><pre><code class="language-julia hljs">julia&gt; using AlgebraOfGraphics
+
+julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+
+julia&gt; srs = SurveyDesign(apisrs; weights=:pw);
+
+julia&gt; s = plot(srs, :api99, :api00);
+
+julia&gt; save(&quot;scatter.png&quot;, s)</code></pre><p><img src="../assets/scatter.png" alt/></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/plot.jl#L1-L22">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.boxplot" href="#Survey.boxplot"><code>Survey.boxplot</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">boxplot(design, x, y; kwargs...)</code></pre><p>Box plot of survey design variable <code>y</code> grouped by column <code>x</code>.</p><p>Weights can be specified by a <code>Symbol</code> using the keyword argument <code>weights</code>.</p><p>The keyword arguments are all the arguments that can be passed to <code>mapping</code> in <a href="https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.7/">AlgebraOfGraphics</a>.</p><pre><code class="language-julia hljs">julia&gt; using AlgebraOfGraphics
+
+julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+
+julia&gt; srs = SurveyDesign(apisrs; weights=:pw);
+
+julia&gt; bp = boxplot(srs, :stype, :enroll; weights = :pw);
+
+julia&gt; save(&quot;boxplot.png&quot;, bp)</code></pre><p><img src="../assets/boxplot.png" alt/></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/boxplot.jl#L1-L24">source</a></section></article><article class="docstring"><header><a class="docstring-binding" id="Survey.hist" href="#Survey.hist"><code>Survey.hist</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">hist(design, var, bins = freedman_diaconis; normalization = :density, kwargs...)</code></pre><p>Histogram plot of a survey design variable given by <code>var</code>.</p><p><code>bins</code> can be an <code>Integer</code> specifying the number of equal-width bins, an <code>AbstractVector</code> specifying the bins intervals, or a <code>Function</code> specifying the function used for calculating the number of bins. The possible functions are <code>sturges</code> and <code>freedman_diaconis</code>.</p><p>The normalization can be set to <code>:none</code>, <code>:density</code>, <code>:probability</code> or <code>:pdf</code>. See <a href="https://docs.juliahub.com/AlgebraOfGraphics/CHIaw/0.4.9/generated/datatransformations/#AlgebraOfGraphics.histogram">AlgebraOfGraphics.histogram</a> for more information.</p><p>For the complete argument list see <a href="https://makie.juliaplots.org/stable/examples/plotting_functions/hist/">Makie.hist</a>.</p><div class="admonition is-info"><header class="admonition-header">Note</header><div class="admonition-body"><p>The <code>weights</code> argument should be a <code>Symbol</code> specifying a design variable.</p></div></div><pre><code class="language-julia hljs">julia&gt; using AlgebraOfGraphics
+
+julia&gt; apisrs = load_data(&quot;apisrs&quot;);
+
+julia&gt; srs = SurveyDesign(apisrs; weights=:pw);
+
+julia&gt; h = hist(srs, :enroll);
+
+julia&gt; save(&quot;hist.png&quot;, h)</code></pre><p><img src="../assets/hist.png" alt/></p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/xKDR/Survey.jl/blob/4d7bbf447f64f8d00224c59c0500f74721f863a1/src/hist.jl#L42-L75">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../man/future/">« Future plans</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Sunday 29 January 2023 14:16">Sunday 29 January 2023</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

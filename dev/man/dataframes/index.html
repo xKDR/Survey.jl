@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>DataFrames in Survey · Survey.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://xKDR.github.io/Survey.jl/man/dataframes/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Survey.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../getting_started/">Getting Started</a></li><li><span class="tocitem">Manual</span><ul><li class="is-active"><a class="tocitem" href>DataFrames in Survey</a><ul class="internal"><li><a class="tocitem" href="#Data-manipulation"><span>Data manipulation</span></a></li><li><a class="tocitem" href="#Why-DataFrames"><span>Why DataFrames</span></a></li></ul></li><li><a class="tocitem" href="../replicate/">ReplicateDesign</a></li><li><a class="tocitem" href="../plotting/">Plotting</a></li><li><a class="tocitem" href="../comparisons/">Comparison with other survey analysis tools</a></li><li><a class="tocitem" href="../future/">Future plans</a></li></ul></li><li><a class="tocitem" href="../../api/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>DataFrames in Survey</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>DataFrames in Survey</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/xKDR/Survey.jl/blob/main/docs/src/man/dataframes.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="manual"><a class="docs-heading-anchor" href="#manual">DataFrames in Survey</a><a id="manual-1"></a><a class="docs-heading-anchor-permalink" href="#manual" title="Permalink"></a></h1><p>The internal structure of a survey design is build upon <a href="https://dataframes.juliadata.org/stable/"><code>DataFrames</code></a>. In fact, the <code>data</code> argument is the only required argument for the constructor and it must be an <a href="https://dataframes.juliadata.org/stable/lib/types/#DataFrames.AbstractDataFrame"><code>AbstractDataFrame</code></a>.</p><h2 id="Data-manipulation"><a class="docs-heading-anchor" href="#Data-manipulation">Data manipulation</a><a id="Data-manipulation-1"></a><a class="docs-heading-anchor-permalink" href="#Data-manipulation" title="Permalink"></a></h2><p>The provided <code>DataFrame</code> is altered by the <a href="../../api/#Survey.SurveyDesign"><code>SurveyDesign</code></a> constructor in order to add columns for frequency and probability weights, sample and population sizes and, if necessary, strata and cluster information.</p><p>Notice the change in <code>apisrs</code>:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; apisrs = load_data(&quot;apisrs&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">200×40 DataFrame
+ Row │ Column1  cds             stype    name             sname                ⋯
+     │ Int64    Int64           String1  String15         String               ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │    1039  15739081534155  H        McFarland High   McFarland High       ⋯
+   2 │    1124  19642126066716  E        Stowers (Cecil   Stowers (Cecil B.) E
+   3 │    2868  30664493030640  H        Brea-Olinda Hig  Brea-Olinda High
+   4 │    1273  19644516012744  E        Alameda Element  Alameda Elementary
+   5 │    4926  40688096043293  E        Sunnyside Eleme  Sunnyside Elementary ⋯
+   6 │    2463  19734456014278  E        Los Molinos Ele  Los Molinos Elementa
+   7 │    2031  19647336058200  M        Northridge Midd  Northridge Middle
+   8 │    1736  19647336017271  E        Glassell Park E  Glassell Park Elemen
+  ⋮  │    ⋮           ⋮            ⋮            ⋮                       ⋮      ⋱
+ 194 │    4880  39686766042782  E        Tyler Skills El  Tyler Skills Element ⋯
+ 195 │     993  15636851531987  H        Desert Junior/S  Desert Junior/Senior
+ 196 │     969  15635291534775  H        North High       North High
+ 197 │    1752  19647336017446  E        Hammel Street E  Hammel Street Elemen
+ 198 │    4480  37683386039143  E        Audubon Element  Audubon Elementary   ⋯
+ 199 │    4062  36678196036222  E        Edison Elementa  Edison Elementary
+ 200 │    2683  24657716025621  E        Franklin Elemen  Franklin Elementary
+                                                 36 columns and 185 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; names(apisrs)</code><code class="nohighlight hljs ansi" style="display:block;">40-element Vector{String}:
+ &quot;Column1&quot;
+ &quot;cds&quot;
+ &quot;stype&quot;
+ &quot;name&quot;
+ &quot;sname&quot;
+ &quot;snum&quot;
+ &quot;dname&quot;
+ &quot;dnum&quot;
+ &quot;cname&quot;
+ &quot;cnum&quot;
+ ⋮
+ &quot;col.grad&quot;
+ &quot;grad.sch&quot;
+ &quot;avg.ed&quot;
+ &quot;full&quot;
+ &quot;emer&quot;
+ &quot;enroll&quot;
+ &quot;api.stu&quot;
+ &quot;pw&quot;
+ &quot;fpc&quot;</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; srs = SurveyDesign(apisrs; weights=:pw);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; apisrs</code><code class="nohighlight hljs ansi" style="display:block;">200×45 DataFrame
+ Row │ Column1  cds             stype    name             sname                ⋯
+     │ Int64    Int64           String1  String15         String               ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │    1039  15739081534155  H        McFarland High   McFarland High       ⋯
+   2 │    1124  19642126066716  E        Stowers (Cecil   Stowers (Cecil B.) E
+   3 │    2868  30664493030640  H        Brea-Olinda Hig  Brea-Olinda High
+   4 │    1273  19644516012744  E        Alameda Element  Alameda Elementary
+   5 │    4926  40688096043293  E        Sunnyside Eleme  Sunnyside Elementary ⋯
+   6 │    2463  19734456014278  E        Los Molinos Ele  Los Molinos Elementa
+   7 │    2031  19647336058200  M        Northridge Midd  Northridge Middle
+   8 │    1736  19647336017271  E        Glassell Park E  Glassell Park Elemen
+  ⋮  │    ⋮           ⋮            ⋮            ⋮                       ⋮      ⋱
+ 194 │    4880  39686766042782  E        Tyler Skills El  Tyler Skills Element ⋯
+ 195 │     993  15636851531987  H        Desert Junior/S  Desert Junior/Senior
+ 196 │     969  15635291534775  H        North High       North High
+ 197 │    1752  19647336017446  E        Hammel Street E  Hammel Street Elemen
+ 198 │    4480  37683386039143  E        Audubon Element  Audubon Elementary   ⋯
+ 199 │    4062  36678196036222  E        Edison Elementa  Edison Elementary
+ 200 │    2683  24657716025621  E        Franklin Elemen  Franklin Elementary
+                                                 41 columns and 185 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; names(apisrs)</code><code class="nohighlight hljs ansi" style="display:block;">45-element Vector{String}:
+ &quot;Column1&quot;
+ &quot;cds&quot;
+ &quot;stype&quot;
+ &quot;name&quot;
+ &quot;sname&quot;
+ &quot;snum&quot;
+ &quot;dname&quot;
+ &quot;dnum&quot;
+ &quot;cname&quot;
+ &quot;cnum&quot;
+ ⋮
+ &quot;enroll&quot;
+ &quot;api.stu&quot;
+ &quot;pw&quot;
+ &quot;fpc&quot;
+ &quot;false_strata&quot;
+ &quot;false_cluster&quot;
+ &quot;_sampsize&quot;
+ &quot;_popsize&quot;
+ &quot;_allprobs&quot;</code></pre><p>Five columns were added:</p><ul><li><p><code>false_strata</code> - only in the case of no stratification</p><p>This column is necessary because when making a <a href="../../api/#Survey.ReplicateDesign"><code>ReplicateDesign</code></a>, the <a href="../../api/#Survey.bootweights"><code>bootweights</code></a> function uses <a href="https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.groupby"><code>groupby</code></a> with a column representing the stratification variable. If there are no strata, there is no such column so it should be added in order to keep <code>bootweights</code> general.</p></li><li><p><code>false_cluster</code> - only in the case of no clustering</p><p>The reasoning is the same as in the case of no stratification.</p></li><li><p><code>_sampsize</code> - sample sizes</p></li><li><p><code>_popsize</code> - population sizes</p><p>These match the stratification variable:</p></li></ul><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; apistrat = load_data(&quot;apistrat&quot;);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; apistrat[:, [:stype, :_sampsize, :_popsize]]</code><code class="nohighlight hljs ansi" style="display:block;">200×3 DataFrame
+ Row │ stype    _sampsize  _popsize
+     │ String1  Int64      Float64
+─────┼──────────────────────────────
+   1 │ E              100    4421.0
+   2 │ E              100    4421.0
+   3 │ E              100    4421.0
+   4 │ E              100    4421.0
+   5 │ E              100    4421.0
+   6 │ E              100    4421.0
+   7 │ E              100    4421.0
+   8 │ E              100    4421.0
+  ⋮  │    ⋮         ⋮         ⋮
+ 194 │ E              100    4421.0
+ 195 │ E              100    4421.0
+ 196 │ E              100    4421.0
+ 197 │ H               50     755.0
+ 198 │ M               50    1018.0
+ 199 │ E              100    4421.0
+ 200 │ H               50     755.0
+                    185 rows omitted</code></pre><ul><li><code>_allprobs</code> - probability weights</li></ul><p>No column was added for frequency weights because the column passed through the <code>weights</code> argument is used by other functions, hence there is no need to add a new column. If <code>weights</code> is not specified, then a column called <code>_weights</code> is added.</p><h2 id="Why-DataFrames"><a class="docs-heading-anchor" href="#Why-DataFrames">Why DataFrames</a><a id="Why-DataFrames-1"></a><a class="docs-heading-anchor-permalink" href="#Why-DataFrames" title="Permalink"></a></h2><p>Survey data most of the time, if not always, is structured in a way that is very well suited for data frames. The <a href="https://dataframes.juliadata.org/stable/"><code>DataFrames.jl</code></a> package is mature and well maintained and provides a lot of functionality that proves useful for using inside functions such as <a href="../../api/#Survey.bootweights"><code>bootweights</code></a> or <a href="../../api/#Statistics.mean"><code>mean</code></a>. Mainly, the functions used are <a href="https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.groupby"><code>groupby</code></a> and <a href="https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.combine"><code>combine</code></a>.</p><p>Now that support for <a href="https://dataframes.juliadata.org/stable/lib/metadata/">metadata</a> was introduced in <code>DataFrames.jl</code>, it becomes possible to use metadata in <code>Survey.jl</code> to reduce space complexity. For example, stratification and clustering information could be stored as metadata of the <code>DataFrame</code> passed through <code>data</code>.</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../getting_started/">« Getting Started</a><a class="docs-footer-nextpage" href="../replicate/">ReplicateDesign »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Sunday 29 January 2023 14:16">Sunday 29 January 2023</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
