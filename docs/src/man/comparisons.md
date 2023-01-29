@@ -9,7 +9,7 @@ and [R](https://CRAN.R-project.org/package=survey).
 
 The inspiration for `Survey.jl` comes from R. Hence the syntax is in most cases
 very similar to the syntax in the [`survey` package](https://cran.r-project.org/web/packages/survey/survey.pdf)
-from R. To showcase this we will use the `apisrs` dataset found in both R's
+from R. To showcase this we will use the `api` datasets found in both R's
 `survey` and `Survey.jl`. See the [Tutorial](@ref) section for more details about
 the `api` datesets.
 
