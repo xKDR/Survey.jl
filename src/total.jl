@@ -50,17 +50,17 @@ julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) 
 julia> total(:api00, :cname, clus_one_stage)
 11×3 DataFrame
  Row │ cname        total           SE
-     │ String15     Float64         Any
-─────┼────────────────────────────────────────
-   1 │ Santa Clara       6.44244e5  4.2273e5
-   2 │ San Diego         1.2276e6   8.62727e5
+     │ String15     Float64         Float64
+─────┼────────────────────────────────────────────
+   1 │ Santa Clara       6.44244e5      4.2273e5
+   2 │ San Diego         1.2276e6       8.62727e5
    3 │ Merced        70300.2        71336.3
-   4 │ Los Angeles       3.2862e5   2.93936e5
-   5 │ Orange            3.84807e5  3.88014e5
+   4 │ Los Angeles       3.2862e5       2.93936e5
+   5 │ Orange            3.84807e5      3.88014e5
    6 │ Fresno        63903.1        64781.7
-   7 │ Plumas            2.16147e5  2.12089e5
-   8 │ Alameda      249080.0        2.49228e5
-   9 │ San Joaquin       6.90276e5  6.81604e5
+   7 │ Plumas            2.16147e5      2.12089e5
+   8 │ Alameda      249080.0            2.49228e5
+   9 │ San Joaquin       6.90276e5      6.81604e5
   10 │ Kern          30631.5        30870.3
   11 │ Mendocino     84380.6        80215.9
 ```

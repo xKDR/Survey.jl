@@ -22,7 +22,7 @@ replicates: 1000
 function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
     H = length(keys(stratified))
-    substrata_dfs = []
+    substrata_dfs = DataFrame[]
     for h in 1:H
         substrata = DataFrame(stratified[h])
         cluster_sorted = sort(substrata, design.cluster)

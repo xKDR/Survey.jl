@@ -50,19 +50,19 @@ julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) 
 julia> mean(:api00, :cname, clus_one_stage)
 11×3 DataFrame
  Row │ cname        mean     SE
-     │ String15     Float64  Any
-─────┼───────────────────────────────────
+     │ String15     Float64  Float64
+─────┼────────────────────────────────────
    1 │ Santa Clara  732.077  58.2169
-   2 │ San Diego    659.436  2.66703
-   3 │ Merced       519.25   2.28936e-15
+   2 │ San Diego    659.436   2.66703
+   3 │ Merced       519.25    2.28936e-15
    4 │ Los Angeles  647.267  47.6233
-   5 │ Orange       710.563  2.19826e-13
-   6 │ Fresno       472.0    1.13687e-13
-   7 │ Plumas       709.556  1.26058e-13
-   8 │ Alameda      669.0    1.27527e-13
-   9 │ San Joaquin  551.189  2.1791e-13
-  10 │ Kern         452.5    0.0
-  11 │ Mendocino    623.25   1.09545e-13
+   5 │ Orange       710.563   2.19826e-13
+   6 │ Fresno       472.0     1.13687e-13
+   7 │ Plumas       709.556   1.26058e-13
+   8 │ Alameda      669.0     1.27527e-13
+   9 │ San Joaquin  551.189   2.1791e-13
+  10 │ Kern         452.5     0.0
+  11 │ Mendocino    623.25    1.09545e-13
 ```
 """
 function mean(x::Symbol, domain::Symbol, design::ReplicateDesign)
