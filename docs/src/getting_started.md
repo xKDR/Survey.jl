@@ -69,17 +69,19 @@ basic usage of the package. For that, we will stick with a simple random sample.
 Now you can analyse your design according to your needs using the
 [functionality](@ref Index) provided by the package. For example, you can compute
 the estimated mean or population total for a given variable. Let's say we're
-interested in the mean Academic Performance Index from the year 1999. First we
-need to convert the [`SurveyDesign`](@ref) to a [`ReplicateDesign`](@ref) using
-bootstrapping:
+interested in the mean Academic Performance Index from the year 1999. If we are
+only interested in the estimated mean, then we can directly pass our design to
+the [`mean`](@ref) function:
+
+```@repl tutorial
+mean(:api99, srs)
+```
+
+If we also want to know the standard error of the mean, we need to convert the
+[`SurveyDesign`](@ref) to a [`ReplicateDesign`](@ref) using bootstrapping:
 
 ```@repl tutorial
 bsrs = bootweights(srs; replicates = 1000)
-```
-
-We do this because [TODO: explain why]. Now we can compute the estimated mean:
-
-```@repl tutorial
 mean(:api99, bsrs)
 ```
 
