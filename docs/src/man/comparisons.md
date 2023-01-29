@@ -44,7 +44,7 @@ clus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw) # clustered (one sta
 #### Creating a replicate design
 
 ```R
-bsrs = as.svrepdesign(srs, type="bootstrap")
+bsrs = as.svrepdesign(srs, type="subbootstrap")
 ```
 
 ```julia
