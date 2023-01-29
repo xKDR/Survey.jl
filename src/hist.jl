@@ -59,11 +59,16 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 
     The `weights` argument should be a `Symbol` specifying a design variable.
 
-```@example histogram
-apisrs = load_data("apisrs");
-srs = SurveyDesign(apisrs; weights=:pw);
-h = hist(srs, :enroll)
-save("hist.png", h); nothing # hide
+```julia
+julia> using AlgebraOfGraphics
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SurveyDesign(apisrs; weights=:pw);
+
+julia> h = hist(srs, :enroll);
+
+julia> save("hist.png", h)
 ```
 
 ![](assets/hist.png)

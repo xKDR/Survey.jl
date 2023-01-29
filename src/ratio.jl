@@ -1,7 +1,7 @@
 """
     ratio(numerator, denominator, design)
 
-Estimate the ratio of the columns specified in numerator and denominator
+Estimate the ratio of the columns specified in numerator and denominator.
 
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");

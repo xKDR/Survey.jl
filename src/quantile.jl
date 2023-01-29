@@ -15,32 +15,14 @@ julia> apisrs = load_data("apisrs");
 
 julia> srs = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
 
-julia> quantile(:api00,srs,0.5)
+julia> quantile(:api00, srs, 0.5)
 1×2 DataFrame
  Row │ 0.5th percentile  SE      
      │ Float64           Float64 
 ─────┼───────────────────────────
    1 │            659.0  14.9764
-```
-"""
-function quantile(var::Symbol, design::ReplicateDesign, p::Real;kwargs...)
-    v = design.data[!, var]
-    probs = design.data[!, design.allprobs]
-    X = Statistics.quantile(v, ProbabilityWeights(probs), p)
-    Xt = [Statistics.quantile(v, ProbabilityWeights(design.data[! , "replicate_"*string(i)]), p) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
-    df = DataFrame(percentile = X, SE = sqrt(variance))
-    rename!(df, :percentile => string(p) * "th percentile")
-    return df
-end
 
-"""
-```jldoctest
-julia> apisrs = load_data("apisrs");
-
-julia> srs = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
-
-julia> quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
+julia> quantile(:enroll, srs, [0.1,0.2,0.5,0.75,0.95])
 5×3 DataFrame
  Row │ percentile  statistic  SE       
      │ String      Float64    Float64  
@@ -52,6 +34,17 @@ julia> quantile(:enroll,srs,[0.1,0.2,0.5,0.75,0.95])
    5 │ 0.95           1473.1  142.568
 ```
 """
+function quantile(var::Symbol, design::ReplicateDesign, p::Real; kwargs...)
+    v = design.data[!, var]
+    probs = design.data[!, design.allprobs]
+    X = Statistics.quantile(v, ProbabilityWeights(probs), p)
+    Xt = [Statistics.quantile(v, ProbabilityWeights(design.data[! , "replicate_"*string(i)]), p) for i in 1:design.replicates]
+    variance = sum((Xt .- X).^2) / design.replicates
+    df = DataFrame(percentile = X, SE = sqrt(variance))
+    rename!(df, :percentile => string(p) * "th percentile")
+    return df
+end
+
 function quantile(var::Symbol, design::ReplicateDesign, probs::Vector{<:Real}; kwargs...)
     df = vcat([rename!(quantile(var, design, prob; kwargs...),[:statistic, :SE]) for prob in probs]...)
     df.percentile = string.(probs)

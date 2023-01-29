@@ -17,14 +17,21 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
-        "Moving from R" => "R_comparison.md",
-        "API reference" => "api.md"
+        "Getting Started" => "getting_started.md",
+        "Manual" => [
+            "DataFrames in Survey" => "man/dataframes.md",
+            "ReplicateDesign" => "man/replicate.md",
+            "Plotting" => "man/plotting.md",
+            "Comparison with other survey analysis tools" => "man/comparisons.md",
+            "Future plans" => "man/future.md",
+        ],
+        "API reference" => "api.md",
     ],
     checkdocs=:exports,
 )
 
 deploydocs(;
     repo="github.com/xKDR/Survey.jl",
-    target = "build",
-    devbranch="main"
+    target="build",
+    devbranch="main",
 )
