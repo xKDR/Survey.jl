@@ -74,7 +74,7 @@ need to convert the [`SurveyDesign`](@ref) to a [`ReplicateDesign`](@ref) using
 bootstrapping:
 
 ```@repl tutorial
-bsrs = bootweights(srs)
+bsrs = bootweights(srs; replicates = 1000)
 ```
 
 We do this because [TODO: explain why]. Now we can compute the estimated mean:
