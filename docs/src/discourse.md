@@ -23,14 +23,14 @@ GitHub - [xKDR/Survey.jl: Analysis of Complex Surveys](https://github.com/xKDR/S
 [API reference](https://xkdr.github.io/Survey.jl/dev/api/)
 [Comparison with other survey analysis tools](https://xkdr.github.io/Survey.jl/dev/man/comparisons/) - currently has comparison with R
 
-
 ### Future ideas
 - Variance by Taylor linearization for `SurveyDesign`
 - Support additional replicate weighting algorithms (BRR, Jackknife, other bootstrap flavours) for `ReplicateDesign`
 - Support for more complex survey designs
 - Post-stratification, raking or calibration, GREG estimation and related methods.
 - Code analysis and optimisation
-- Contingency tables analysis
+- Contingency table analysis, support for [CategoricalArrays](https://github.com/JuliaData/CategoricalArrays.jl)
+- Wrappers and connection with [GLM.jl])(https://github.com/JuliaStats/GLM.jl)
 - Association and likelihood ratio tests
 - Support for [imputing missing data](https://stat.ethz.ch/CRAN/web/packages/mitools/index.html)
 
