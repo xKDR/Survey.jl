@@ -16,6 +16,8 @@ Other highlights include:
 - Actively developed and maintained
 - Substatially faster than R `survey` for same functionalities (benchmarking article in the works)
 
+A lot of functionality/interfaces are inspired by the `survey` and related packages in the R ecosystem.
+
 ### Repository URL: 
 GitHub - [xKDR/Survey.jl: Analysis of Complex Surveys](https://github.com/xKDR/Survey.jl)
 [Documentation home](https://xkdr.github.io/Survey.jl/dev/)
@@ -30,12 +32,13 @@ GitHub - [xKDR/Survey.jl: Analysis of Complex Surveys](https://github.com/xKDR/S
 - Post-stratification, raking or calibration, GREG estimation and related methods.
 - Code analysis and optimisation
 - Contingency table analysis, support for [CategoricalArrays](https://github.com/JuliaData/CategoricalArrays.jl)
-- Wrappers and connection with [GLM.jl])(https://github.com/JuliaStats/GLM.jl)
+- Wrappers and connection with [GLM.jl](https://github.com/JuliaStats/GLM.jl)
 - Association and likelihood ratio tests
 - Support for [imputing missing data](https://stat.ethz.ch/CRAN/web/packages/mitools/index.html)
 
-# Why a package for Survey analysis in Julia?
+# Why a package for survey analysis in Julia?
 There has been interest in a package for survey analysis in the Julia community for quite some time [ref here](yolo). 
+
 Surveys are getting larger and more complex in their design. Packages designed for their analysis have not been able to keep with the increasing complexities. For instance, several survey analysis routines used in our organisation (based on R `survey`) take hours to compute
 
 , whereas using Julia
