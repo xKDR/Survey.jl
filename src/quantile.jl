@@ -34,12 +34,10 @@ end
 """
 Use replicate weights to compute the standard error of the estimated quantile. 
 
-```jldoctest
-julia> apisrs = load_data("apisrs");
+```jldoctest; setup = :(apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw))
+julia> srs_boot = srs |> bootweights; 
 
-julia> srs = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
-
-julia> quantile(:api00, srs, 0.5)
+julia> quantile(:api00, srs_boot, 0.5)
 1×2 DataFrame
  Row │ 0.5th percentile  SE
      │ Float64           Float64
