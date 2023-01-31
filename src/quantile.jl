@@ -32,19 +32,14 @@ function quantile(var::Symbol, design::SurveyDesign, p::Real; kwargs...)
 end
 
 """
-    quantile(var, design, p; kwargs...)
 Use replicate weights to compute the standard error of the estimated quantile. 
 
-```jldoctest; setup = :(apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs; weights=:pw))
+```jldoctest
+julia> apisrs = load_data("apisrs");
 
-julia> srs_boot = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
+julia> srs = SurveyDesign(apisrs; weights=:pw) |> bootweights; 
 
-julia> quantile(:api00, srs_boot, 0.5)
-1×2 DataFrame
- Row │ 0.5th percentile  SE
-     │ Float64           Float64
-─────┼───────────────────────────
-   1 │            659.0  14.9764
+julia> quantile(:api00, srs, 0.5)
 1×2 DataFrame
  Row │ 0.5th percentile  SE
      │ Float64           Float64
