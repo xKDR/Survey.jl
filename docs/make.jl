@@ -7,7 +7,7 @@ DocMeta.setdocmeta!(Survey, :DocTestSetup, :(using Survey); recursive=true)
 makedocs(;
     modules=[Survey],
     authors="xKDR Forum",
-    # doctest = :fix, 
+    doctest = :fix, 
     repo="https://github.com/xKDR/Survey.jl/blob/{commit}{path}#{line}",
     sitename="$Survey.jl",
     format=Documenter.HTML(;
