@@ -76,24 +76,24 @@ replicates: 1000</code><br/><code class="language-julia-repl hljs" style="displa
 ─────┼─────────────────────
    1 │ 1.05107  0.00371922</code></pre><p>If you&#39;re interested in a certain statistic estimated by a specific domain, you can add the domain as the second parameter to your function. Let&#39;s say you want to find the estimated total number of students enrolled in schools from each county:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; total(:enroll, :cname, bsrs)</code><code class="nohighlight hljs ansi" style="display:block;">38×3 DataFrame
  Row │ cname            total           SE
-     │ String15         Float64         Any
-─────┼────────────────────────────────────────────
+     │ String15         Float64         Float64
+─────┼────────────────────────────────────────────────
    1 │ Kern                  1.95823e5  74731.2
-   2 │ Los Angeles      867129.0        1.36622e5
+   2 │ Los Angeles      867129.0            1.36622e5
    3 │ Orange                1.68786e5  63858.0
-   4 │ San Luis Obispo    6720.49       6790.49
+   4 │ San Luis Obispo    6720.49        6790.49
    5 │ San Francisco     30319.6        18197.6
-   6 │ Modoc              6503.7        6481.36
+   6 │ Modoc              6503.7         6481.36
    7 │ Alameda          134224.0        46808.0
    8 │ Solano            64479.5        39542.0
-  ⋮  │        ⋮               ⋮             ⋮
+  ⋮  │        ⋮               ⋮               ⋮
   32 │ Kings             32642.4        23541.9
   33 │ Shasta            36203.9        32062.1
   34 │ Yolo              12171.2        12502.9
   35 │ Calaveras         12976.4        13241.6
   36 │ Napa              39239.0        30181.9
-  37 │ Lake               6410.79       6986.29
+  37 │ Lake               6410.79        6986.29
   38 │ Merced            15392.1        15202.2
-                                   23 rows omitted</code></pre><p>Another way to visualize data is through graphs. You can make a histogram to better see the distribution of enrolled students:</p><pre><code class="language-julia hljs">julia&gt; hist(srs, :enroll)</code></pre><p>The REPL doesn&#39;t show the plot. To see it, you need to save it locally.</p><pre><code class="language-julia hljs">julia&gt; import AlgebraOfGraphics.save
+                                       23 rows omitted</code></pre><p>Another way to visualize data is through graphs. You can make a histogram to better see the distribution of enrolled students:</p><pre><code class="language-julia hljs">julia&gt; hist(srs, :enroll)</code></pre><p>The REPL doesn&#39;t show the plot. To see it, you need to save it locally.</p><pre><code class="language-julia hljs">julia&gt; import AlgebraOfGraphics.save
 
-julia&gt; save(&quot;hist.png&quot;, h)</code></pre><p><img src="../assets/hist.png" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../man/dataframes/">DataFrames in Survey »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Monday 30 January 2023 05:41">Monday 30 January 2023</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+julia&gt; save(&quot;hist.png&quot;, h)</code></pre><p><img src="../assets/hist.png" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../man/dataframes/">DataFrames in Survey »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Tuesday 31 January 2023 05:05">Tuesday 31 January 2023</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
