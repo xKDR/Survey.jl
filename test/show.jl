@@ -1,8 +1,5 @@
 @testset "No strata, no clusters" begin
     io = IOBuffer()
-
-    apisrs = load_data("apisrs")
-    srs = SurveyDesign(apisrs; weights=:pw)
     refstr = """
     SurveyDesign:
     data: 200×45 DataFrame
@@ -17,7 +14,6 @@
     str = String(take!(io))
     @test str == refstr
 
-    bsrs = srs |> bootweights
     refstrb = """
     ReplicateDesign:
     data: 200×4045 DataFrame
@@ -29,7 +25,7 @@
     allprobs: [0.0323, 0.0323, 0.0323  …  0.0323]
     replicates: 4000"""
 
-    show(io, MIME("text/plain"), bsrs)
+    show(io, MIME("text/plain"), srs_boot)
     strb = String(take!(io))
     @test strb == refstrb
 end
@@ -37,8 +33,6 @@ end
 @testset "With strata, no clusters" begin
     io = IOBuffer()
 
-    apistrat = load_data("apistrat")
-    strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
     refstr = """
     SurveyDesign:
     data: 200×44 DataFrame
@@ -54,7 +48,6 @@ end
     str = String(take!(io))
     @test str == refstr
 
-    stratb = strat |> bootweights
     refstrb = """
     ReplicateDesign:
     data: 200×4044 DataFrame
@@ -67,7 +60,7 @@ end
     allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
     replicates: 4000"""
 
-    show(io, MIME("text/plain"), stratb)
+    show(io, MIME("text/plain"), strat_boot)
     strb = String(take!(io))
     @test strb == refstrb
 end
@@ -75,37 +68,34 @@ end
 @testset "No strata, with clusters" begin
     io = IOBuffer()
 
-    apiclus1 = load_data("apiclus1")
-    clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw)
     refstr = """
     SurveyDesign:
     data: 183×44 DataFrame
     strata: none
     cluster: dnum
         [637, 637, 637  …  448]
-    popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
+    popsize: [757.0, 757.0, 757.0  …  757.0]
     sampsize: [15, 15, 15  …  15]
-    weights: [33.847, 33.847, 33.847  …  33.847]
-    allprobs: [0.0295, 0.0295, 0.0295  …  0.0295]"""
+    weights: [50.4667, 50.4667, 50.4667  …  50.4667]
+    allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]"""
 
-    show(io, MIME("text/plain"), clus_one_stage)
+    show(io, MIME("text/plain"), dclus1)
     str = String(take!(io))
     @test str == refstr
 
-    clus_one_stageb = clus_one_stage |> bootweights
     refstrb = """
     ReplicateDesign:
     data: 183×4044 DataFrame
     strata: none
     cluster: dnum
         [61, 61, 61  …  815]
-    popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
+    popsize: [757.0, 757.0, 757.0  …  757.0]
     sampsize: [15, 15, 15  …  15]
-    weights: [33.847, 33.847, 33.847  …  33.847]
-    allprobs: [0.0295, 0.0295, 0.0295  …  0.0295]
+    weights: [50.4667, 50.4667, 50.4667  …  50.4667]
+    allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
     replicates: 4000"""
 
-    show(io, MIME("text/plain"), clus_one_stageb)
+    show(io, MIME("text/plain"), dclus1_boot)
     strb = String(take!(io))
     @test strb == refstrb
 end
