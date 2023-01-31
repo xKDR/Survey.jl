@@ -20,7 +20,7 @@ For each replicate, the `DataFrame` of `ReplicateDesign` has an additional colum
 ```@repl bootstrap
 names(strat_boot.data)
 ```
-`replicate_1`,`replicate_2`,`replicate_3`,`replicate_4`,`replicate_5`,`replicate_6`,`replicate_7`,`replicate_8`,`replicate_9`,`replicate_10`, are the replicate weight columns. 
+`replicate_1`, `replicate_2`, `replicate_3`, `replicate_4`, `replicate_5`, `replicate_6`, `replicate_7`, `replicate_8`, `replicate_9`, `replicate_10`, are the replicate weight columns. 
 
 While a `SurveyDesign` can be used to estimate a statistics. For example: 
 
