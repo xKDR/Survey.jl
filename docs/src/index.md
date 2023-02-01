@@ -27,7 +27,7 @@ We plan for efficient implementations of all the methods in R `survey`. Features
 - Post-stratification, raking or calibration, GREG estimation and related methods.
 - Code analysis and optimisation
 - Contingency table analysis, support for [CategoricalArrays](https://github.com/JuliaData/CategoricalArrays.jl)
-- Wrappers and connection with [GLM.jl](https://github.com/JuliaStats/GLM.jl)
+- Integration with [CRRao.jl](https://github.com/xKDR/CRRao.jl) for regressions, with design based standard errors. 
 - Support and speedups with [CategoricalsArrays](https://github.com/JuliaData/CategoricalArrays.jl)
 - Association and likelihood ratio tests
 - Support for [imputing missing data](https://stat.ethz.ch/CRAN/web/packages/mitools/index.html)
