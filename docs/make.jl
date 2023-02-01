@@ -20,10 +20,9 @@ makedocs(;
         "Getting Started" => "getting_started.md",
         "Manual" => [
             "DataFrames in Survey" => "man/dataframes.md",
-            "ReplicateDesign" => "man/replicate.md",
+            "Replicate weights" => "man/replicate.md",
             "Plotting" => "man/plotting.md",
             "Comparison with other survey analysis tools" => "man/comparisons.md",
-            "Future plans" => "man/future.md",
         ],
         "API reference" => "api.md",
     ],
