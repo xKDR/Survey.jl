@@ -67,8 +67,3 @@ proves useful for using inside functions such as [`bootweights`](@ref) or
 [`mean`](@ref). Mainly, the functions used are
 [`groupby`](https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.groupby)
 and [`combine`](https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.combine).
-
-Now that support for [metadata](https://dataframes.juliadata.org/stable/lib/metadata/)
-was introduced in `DataFrames.jl`, it becomes possible to use metadata in
-`Survey.jl` to reduce space complexity. For example, stratification and clustering
-information could be stored as metadata of the `DataFrame` passed through `data`.
