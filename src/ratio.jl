@@ -6,9 +6,9 @@ Estimate the ratio of the columns specified in numerator and denominator.
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
 
-julia> ratio(:api00, :enroll, clus_one_stage)
+julia> ratio(:api00, :enroll, dclus1)
 1×1 DataFrame
  Row │ ratio
      │ Float64
@@ -25,8 +25,8 @@ end
 """
 Use replicate weights to compute the standard error of the ratio.
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> bclus1 = bootweights(clus_one_stage); 
+```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
+julia> bclus1 = bootweights(dclus1); 
 
 julia> ratio(:api00, :enroll, bclus1)
 1×2 DataFrame

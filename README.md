@@ -51,7 +51,7 @@ probs: [0.0323, 0.0323, 0.0323  …  0.0323]
 
 julia> apistrat = load_data("apistrat");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
 SurveyDesign:
 data: 200×46 DataFrame
 strata: stype
@@ -64,7 +64,7 @@ probs: [0.0226, 0.0226, 0.0226  …  0.0662]
 
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
 data: 183×46 DataFrame
 strata: none

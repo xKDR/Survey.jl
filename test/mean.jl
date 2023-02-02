@@ -7,13 +7,13 @@
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
 
-    @test mean(:api00, srs_boot).mean[1] ≈ 656.585 atol = 1e-4
-    @test mean(:api00, srs_boot).SE[1] ≈ 9.402772170880636 atol = 1e-1
-    @test mean(:enroll, srs_boot).mean[1] ≈ 584.61 atol = 1e-4
-    @test mean(:enroll, srs_boot).SE[1] ≈ 27.821214737089324 atol = 1
+    @test mean(:api00, bsrs).mean[1] ≈ 656.585 atol = 1e-4
+    @test mean(:api00, bsrs).SE[1] ≈ 9.402772170880636 atol = 1e-1
+    @test mean(:enroll, bsrs).mean[1] ≈ 584.61 atol = 1e-4
+    @test mean(:enroll, bsrs).SE[1] ≈ 27.821214737089324 atol = 1
     ##############################
     ### Vector of Symbols
-    mean_vec_sym = mean([:api00,:enroll], srs_boot)
+    mean_vec_sym = mean([:api00,:enroll], bsrs)
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
     @test mean_vec_sym.SE[1] ≈ 9.3065 rtol = 1e-1
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
@@ -29,9 +29,9 @@
 end
 
 @testset "mean_Stratified" begin
-    mean_strat = mean(:api00, strat)
+    mean_strat = mean(:api00, dstrat)
     @test mean_strat.mean[1] ≈ 662.29 rtol = 1e-1
-    mean_strat = mean(:api00, strat_boot)
+    mean_strat = mean(:api00, bstrat)
     @test mean_strat.mean[1] ≈ 662.29 rtol = 1e-1
     @test mean_strat.SE[1] ≈ 9.48296 atol = 1e-1
 end
@@ -42,7 +42,7 @@ end
     @test mean_symb_srs.mean[2] ≈ 666.141 rtol = 1e-1
     @test mean_symb_srs.mean[3] ≈ 654.273 rtol = 1e-1
 
-    mean_symb_srs = mean(:api00, :stype, srs_boot)
+    mean_symb_srs = mean(:api00, :stype, bsrs)
     @test mean_symb_srs.mean[1] ≈ 605.36 rtol = 1e-1
     @test mean_symb_srs.mean[2] ≈ 666.141 rtol = 1e-1
     @test mean_symb_srs.mean[3] ≈ 654.273 rtol = 1e-1
@@ -52,12 +52,12 @@ end
 end
 
 @testset "mean_svyby_Stratified" begin
-    mean_strat_symb = mean(:api00, :stype, strat)
+    mean_strat_symb = mean(:api00, :stype, dstrat)
     @test mean_strat_symb.mean[1] ≈ 674.43 rtol = 1e-1
     @test mean_strat_symb.mean[2] ≈ 636.6 rtol = 1e-1
     @test mean_strat_symb.mean[3] ≈ 625.82 rtol = 1e-1
 
-    mean_strat_symb = mean(:api00, :stype, strat_boot)
+    mean_strat_symb = mean(:api00, :stype, bstrat)
     @test mean_strat_symb.mean[1] ≈ 674.43 rtol = 1e-1
     @test mean_strat_symb.mean[2] ≈ 636.6 rtol = 1e-1
     @test mean_strat_symb.mean[3] ≈ 625.82 rtol = 1e-1

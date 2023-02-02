@@ -6,9 +6,9 @@ Estimate the population total of variable.
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
 
-julia> total(:api00, clus_one_stage)
+julia> total(:api00, dclus1)
 1×1 DataFrame
  Row │ total
      │ Float64
@@ -24,10 +24,10 @@ end
 """
 Use replicate weights to compute the standard error of the estimated total. 
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> clus_one_stage_boot = clus_one_stage |> bootweights;
+```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
+julia> bclus1 = dclus1 |> bootweights;
 
-julia> total(:api00, clus_one_stage_boot)
+julia> total(:api00, bclus1)
 1×2 DataFrame
  Row │ total      SE
      │ Float64    Float64
@@ -45,8 +45,8 @@ end
 """
 Estimate the population total of a list of variables.
 
-```jldoctest totallabel; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); clus_one_stage_boot = clus_one_stage |> bootweights)
-julia> total([:api00, :enroll], clus_one_stage)
+```jldoctest totallabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
+julia> total([:api00, :enroll], dclus1)
 2×2 DataFrame
  Row │ names   total
      │ String  Float64
@@ -58,7 +58,7 @@ julia> total([:api00, :enroll], clus_one_stage)
 Use replicate weights to compute the standard error of the estimated means. 
 
 ```jldoctest totallabel
-julia> total([:api00, :enroll], clus_one_stage_boot)
+julia> total([:api00, :enroll], bclus1)
 2×3 DataFrame
  Row │ names   total      SE
      │ String  Float64    Float64
@@ -78,8 +78,8 @@ end
 
 Estimate population totals of domains.
 
-```jldoctest totallabel; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); clus_one_stage_boot = clus_one_stage |> bootweights)
-julia> total(:api00, :cname, clus_one_stage)
+```jldoctest totallabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
+julia> total(:api00, :cname, dclus1)
 11×2 DataFrame
  Row │ cname        total
      │ String15     Float64
@@ -99,7 +99,7 @@ julia> total(:api00, :cname, clus_one_stage)
 Use the replicate design to compute standard errors of the estimated totals. 
 
 ```jldoctest totallabel
-julia> total(:api00, :cname, clus_one_stage_boot)
+julia> total(:api00, :cname, bclus1)
 11×3 DataFrame
  Row │ cname        total           SE
      │ String15     Float64         Float64

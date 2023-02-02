@@ -31,13 +31,13 @@ julia> srs = load_data("apisrs")
 
 ```R
 > srs = svydesign(id=~1, data=apisrs, weights=~pw) # simple random sample
-> strat = svydesign(id=~1, data=apistrat, strata=~stype, weights=~pw) # stratified
+> dstrat = svydesign(id=~1, data=apistrat, strata=~stype, weights=~pw) # stratified
 > clus1 = svydesign(id=~dnum, data=apiclus1, weights=~pw) # clustered (one stage)
 ```
 
 ```julia
 julia> srs = SurveyDesign(apisrs; weights=:pw) # simple random sample
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw) # stratified
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw) # stratified
 julia> clus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw) # clustered (one stage)
 ```
 

@@ -47,7 +47,7 @@ Five columns were added:
 
 ```@repl manual_DataFrames
 apistrat = load_data("apistrat");
-strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 apistrat[:, [:stype, :_sampsize, :_popsize]]
 ```
 
