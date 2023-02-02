@@ -1,4 +1,6 @@
 """
+Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign` which has additional columns for replicate weights. 
+
 ```jldoctest
 julia> using Random
 
