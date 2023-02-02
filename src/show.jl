@@ -1,5 +1,3 @@
-surveyio(io) = IOContext(io, :compact=>true, :limit=>true, :displaysize=>(50, 50))
-
 """
 Helper function that transforms a given `Number` or `Vector` into a short-form string.
 """
