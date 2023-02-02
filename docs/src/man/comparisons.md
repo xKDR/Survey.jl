@@ -18,81 +18,81 @@ All examples show the R code first, followed by the Julia code.
 #### Loading data
 
 ```R
-data(api)
+> data(api)
 # all `api` datasets are loaded globally
 ```
 
 ```julia
-srs = load_data("apisrs")
+julia> srs = load_data("apisrs")
 # only one dataset is loaded and stored in a variable
 ```
 
 #### Creating a design
 
 ```R
-srs = svydesign(id=~1, data=apisrs, weights=~pw) # simple random sample
-strat = svydesign(id=~1, data=apistrat, strata=~stype, weights=~pw) # stratified
-clus1 = svydesign(id=~dnum, data=apiclus1, weights=~pw) # clustered (one stage)
+> srs = svydesign(id=~1, data=apisrs, weights=~pw) # simple random sample
+> strat = svydesign(id=~1, data=apistrat, strata=~stype, weights=~pw) # stratified
+> clus1 = svydesign(id=~dnum, data=apiclus1, weights=~pw) # clustered (one stage)
 ```
 
 ```julia
-srs = SurveyDesign(apisrs; weights=:pw) # simple random sample
-strat = SurveyDesign(apistrat; strata=:stype, weights=:pw) # stratified
-clus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw) # clustered (one stage)
+julia> srs = SurveyDesign(apisrs; weights=:pw) # simple random sample
+julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw) # stratified
+julia> clus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw) # clustered (one stage)
 ```
 
 #### Creating a replicate design
 
 ```R
-bsrs = as.svrepdesign(srs, type="subbootstrap")
+> bsrs = as.svrepdesign(srs, type="subbootstrap")
 ```
 
 ```julia
-bsrs = bootweights(srs)
+julia> bsrs = bootweights(srs)
 ```
 
 #### Computing the estimated mean
 
 ```R
-svymean(~api00, bsrs)
-svymean(~api99+~api00, bsrs)
+> svymean(~api00, bsrs)
+> svymean(~api99+~api00, bsrs)
 ```
 
 ```julia
-mean(:api00, bsrs)
-mean([:api99, :api00], bsrs)
+julia> mean(:api00, bsrs)
+julia> mean([:api99, :api00], bsrs)
 ```
 
 #### Computing the estimated total
 
 ```R
-svytotal(~api00, bsrs)
-svytotal(~api99+~api00, bsrs)
+> svytotal(~api00, bsrs)
+> svytotal(~api99+~api00, bsrs)
 ```
 
 ```julia
-total(:api00, bsrs)
-total([:api99, :api00], bsrs)
+julia> total(:api00, bsrs)
+julia> total([:api99, :api00], bsrs)
 ```
 
 #### Computing quantiles
 
 ```R
-svyquantile(~api00, bsrs, 0.5)
-svyquantile(~api00, bsrs, c(0.25, 0.5, 0.75))
+> svyquantile(~api00, bsrs, 0.5)
+> svyquantile(~api00, bsrs, c(0.25, 0.5, 0.75))
 ```
 
 ```julia
-quantile(:api00, bsrs, 0.5)
-quantile(:api00, bsrs, [0.25, 0.5, 0.75])
+julia> quantile(:api00, bsrs, 0.5)
+julia> quantile(:api00, bsrs, [0.25, 0.5, 0.75])
 ```
 
 #### Domain estimation
 
 ```R
-svyby(~api00, ~cname, bsrs, svymean)
+> svyby(~api00, ~cname, bsrs, svymean)
 ```
 
 ```julia
-mean(:api00, :cname, bsrs)
+julia> mean(:api00, :cname, bsrs)
 ```
