@@ -3,7 +3,7 @@
 Estimate quantile of a variable.
 
 Hyndman and Fan compiled a taxonomy of nine algorithms to estimate quantiles. These are implemented in Statistics.quantile, which this function calls.
-The Julia, R and Python-numpy use the same defaults
+Julia, R and Python-numpy use the same defaults
 
 # References:
 - Hyndman, R.J and Fan, Y. (1996) ["Sample Quantiles in Statistical Packages"](https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf), The American Statistician, Vol. 50, No. 4, pp. 361-365.
@@ -21,6 +21,7 @@ julia> quantile(:api00, srs, 0.5)
      │ Float64
 ─────┼──────────────────
    1 │            659.0
+```
 """
 function quantile(var::Symbol, design::SurveyDesign, p::Real; kwargs...)
     v = design.data[!, var]

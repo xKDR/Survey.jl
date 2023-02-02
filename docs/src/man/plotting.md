@@ -15,6 +15,6 @@ Moreover, in order to choose the preferred
 [`Makie backend`](https://docs.makie.org/stable/#makie_ecosystem) you must
 explicitly use it:
 
-```@repl
+```julia
 using AlgebraOfGraphics, CairoMakie
 ```

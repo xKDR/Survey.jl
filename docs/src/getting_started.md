@@ -1,4 +1,4 @@
-## Instalation
+## Installation
 
 The `Survey.jl` package is not yet registered. For now, installation of the package
 is done using the following command:
