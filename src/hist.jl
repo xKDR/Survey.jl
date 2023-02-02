@@ -1,6 +1,5 @@
 sturges(n::Integer) = ceil(Int, log2(n)) + 1
-sturges(vec::AbstractVector) = ceil(Int, log2(length(vec))) + 1
-sturges(df::DataFrame, var::Symbol) = ceil(Int, log2(size(df[!, var], 1))) + 1
+sturges(vec::AbstractVector) = sturges(length(vec))
 
 """
     sturges(design::SurveyDesign, var::Symbol)
@@ -17,10 +16,9 @@ julia> sturges(srs, :enroll)
 9
 ```
 """
-sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data, var)
+sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data[!, var])
 
 freedman_diaconis(v::AbstractVector) = round(Int, length(v)^(1 / 3) * (maximum(v) - minimum(v)) / (2 * iqr(v)))
-freedman_diaconis(df::DataFrame, var::Symbol) = freedman_diaconis(df[!, var])
 
 """
     freedman_diaconis(design::SurveyDesign, var::Symbol)
