@@ -5,6 +5,13 @@
     apisrs_original[!, :derived_probs] = 1 ./ apisrs_original.pw
     apisrs_original[!, :derived_sampsize] = fill(200.0, size(apisrs_original, 1))
     ##############################
+    # Test unweighted case, when neither popsize nor weights are given
+    apisrs = copy(apisrs_original)
+    srs_unweighted = SurveyDesign(apisrs)
+    @test srs_unweighted.data[!,srs_unweighted.weights][1] ≈ 1 atol = 1e-4
+    @test srs_unweighted.data[!,srs_unweighted.sampsize][1] ≈ 200 atol = 1e-4
+    @test srs_unweighted.data[!,srs_unweighted.popsize][1] ≈ 200 atol = 1e-4
+    ##############################
     ### Basic functionality
     ### weights as Symbol
     apisrs = copy(apisrs_original)
