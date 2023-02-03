@@ -12,9 +12,7 @@ developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tl
 
 All types of survey design are supported by this package.
 
-> **_NOTE:_**  For multistage sampling a single stage approximation is used. For
-more information see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of
-the documentation.
+> **_NOTE:_**  For multistage sampling a single stage approximation is used.[^1]
 
 ## Installation
 ```julia
@@ -175,3 +173,7 @@ contains a list of features that contributors can implement in the short-term.
 ## Support
 
 We gratefully acknowledge the JuliaLab at MIT for financial support for this project.
+
+## References
+
+[^1]: [Lumley, Thomas. Complex surveys: a guide to analysis using R. John Wiley & Sons, 2011.](https://books.google.co.in/books?hl=en&lr=&id=L96ludyhFBsC&oi=fnd&pg=PP12&dq=complex+surveys+lumley&ots=ie0y1lnzv1&sig=c4UHI3arjspMJ6OYzlX32E9rNRI#v=onepage&q=complex%20surveys%20lumley&f=false) Page 44
