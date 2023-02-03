@@ -155,9 +155,7 @@ julia> total(:enroll, :cname, bootsrs)
 
 This gives us the total number of enrolled students in each county.
 
-All functionalities are supported by each design type. For a more complete guide,
-see the [Tutorial](https://xkdr.github.io/Survey.jl/dev/#Basic-demo) section in
-the documentation.
+All functionalities are supported by each design type.
 
 ## Goals
 
