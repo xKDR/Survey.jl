@@ -77,7 +77,7 @@ probs: [0.0295, 0.0295, 0.0295  …  0.0295]
 
 julia> apiclus2 = load_data("apiclus2");
 
-julia> clus_two_stage = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
+julia> dclus2 = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
 SurveyDesign:
 data: 126×47 DataFrame
 strata: none
