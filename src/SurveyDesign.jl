@@ -99,8 +99,10 @@ struct SurveyDesign <: AbstractSurveyDesign
             # neither popsize nor weights given
             weights_labels = :_weights
             data[!, weights_labels] = repeat([1], nrow(data))
+            popsize = :_popsize
+            data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
         end
-        allprobs_labels = :allprobs
+        allprobs_labels = :_allprobs
         data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         pps = false # for now no explicit pps supported faster functions, but they can be added
         new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
@@ -115,9 +117,9 @@ Survey design obtained by replicating an original design using [`bootweights`](@
 ```jldoctest
 julia> apistrat = load_data("apistrat");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
-julia> bootstrat = bootweights(strat; replicates=1000)
+julia> bootstrat = bootweights(dstrat; replicates=1000)
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype

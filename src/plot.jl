@@ -6,11 +6,16 @@ Scatter plot of survey design variables `x` and `y`.
 The plot takes into account the frequency weights specified by the user
 in the design.
 
-```@example plot
-apisrs = load_data("apisrs");
-srs = SurveyDesign(apisrs; weights=:pw);
-s = plot(srs, :api99, :api00)
-save("scatter.png", s); nothing # hide
+```julia
+julia> using AlgebraOfGraphics
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SurveyDesign(apisrs; weights=:pw);
+
+julia> s = plot(srs, :api99, :api00);
+
+julia> save("scatter.png", s)
 ```
 
 ![](assets/scatter.png)

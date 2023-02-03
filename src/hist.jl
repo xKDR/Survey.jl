@@ -1,6 +1,5 @@
 sturges(n::Integer) = ceil(Int, log2(n)) + 1
-sturges(vec::AbstractVector) = ceil(Int, log2(length(vec))) + 1
-sturges(df::DataFrame, var::Symbol) = ceil(Int, log2(size(df[!, var], 1))) + 1
+sturges(vec::AbstractVector) = sturges(length(vec))
 
 """
     sturges(design::SurveyDesign, var::Symbol)
@@ -17,10 +16,9 @@ julia> sturges(srs, :enroll)
 9
 ```
 """
-sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data, var)
+sturges(design::AbstractSurveyDesign, var::Symbol) = sturges(design.data[!, var])
 
 freedman_diaconis(v::AbstractVector) = round(Int, length(v)^(1 / 3) * (maximum(v) - minimum(v)) / (2 * iqr(v)))
-freedman_diaconis(df::DataFrame, var::Symbol) = freedman_diaconis(df[!, var])
 
 """
     freedman_diaconis(design::SurveyDesign, var::Symbol)
@@ -59,11 +57,16 @@ For the complete argument list see [Makie.hist](https://makie.juliaplots.org/sta
 
     The `weights` argument should be a `Symbol` specifying a design variable.
 
-```@example histogram
-apisrs = load_data("apisrs");
-srs = SurveyDesign(apisrs; weights=:pw);
-h = hist(srs, :enroll)
-save("hist.png", h); nothing # hide
+```julia
+julia> using AlgebraOfGraphics
+
+julia> apisrs = load_data("apisrs");
+
+julia> srs = SurveyDesign(apisrs; weights=:pw);
+
+julia> h = hist(srs, :enroll);
+
+julia> save("hist.png", h)
 ```
 
 ![](assets/hist.png)

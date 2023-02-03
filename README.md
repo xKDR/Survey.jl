@@ -12,9 +12,7 @@ developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tl
 
 All types of survey design are supported by this package.
 
-> **_NOTE:_**  For multistage sampling a single stage approximation is used. For
-more information see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of
-the documentation.
+> **_NOTE:_**  For multistage sampling a single stage approximation is used.[^1]
 
 ## Installation
 ```julia
@@ -51,7 +49,7 @@ probs: [0.0323, 0.0323, 0.0323  …  0.0323]
 
 julia> apistrat = load_data("apistrat");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
 SurveyDesign:
 data: 200×46 DataFrame
 strata: stype
@@ -64,7 +62,7 @@ probs: [0.0226, 0.0226, 0.0226  …  0.0662]
 
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
 data: 183×46 DataFrame
 strata: none
@@ -77,7 +75,7 @@ probs: [0.0295, 0.0295, 0.0295  …  0.0295]
 
 julia> apiclus2 = load_data("apiclus2");
 
-julia> clus_two_stage = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
+julia> dclus2 = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
 SurveyDesign:
 data: 126×47 DataFrame
 strata: none
@@ -175,3 +173,7 @@ contains a list of features that contributors can implement in the short-term.
 ## Support
 
 We gratefully acknowledge the JuliaLab at MIT for financial support for this project.
+
+## References
+
+[^1]: [Lumley, Thomas. Complex surveys: a guide to analysis using R. John Wiley & Sons, 2011.](https://books.google.co.in/books?hl=en&lr=&id=L96ludyhFBsC&oi=fnd&pg=PP12&dq=complex+surveys+lumley&ots=ie0y1lnzv1&sig=c4UHI3arjspMJ6OYzlX32E9rNRI#v=onepage&q=complex%20surveys%20lumley&f=false) Page 44

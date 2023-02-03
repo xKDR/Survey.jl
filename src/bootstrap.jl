@@ -1,14 +1,14 @@
 """
+Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign` which has additional columns for replicate weights. 
+
 ```jldoctest
 julia> using Random
 
 julia> apiclus1 = load_data("apiclus1");
 
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
-
-
-julia> bootweights(clus_one_stage; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
+julia> bootweights(dclus1; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
 ReplicateDesign:
 data: 183×1044 DataFrame
 strata: none
@@ -24,20 +24,17 @@ replicates: 1000
 function bootweights(design::SurveyDesign; replicates=4000, rng=MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
     H = length(keys(stratified))
-    substrata_dfs = []
+    substrata_dfs = DataFrame[]
     for h in 1:H
         substrata = DataFrame(stratified[h])
         cluster_sorted = sort(substrata, design.cluster)
         psus = unique(cluster_sorted[!, design.cluster])
         npsus = [(count(==(i), cluster_sorted[!, design.cluster])) for i in psus]
         nh = length(psus)
-        randinds = rand(rng, 1:(nh), replicates, (nh-1))
+        cluster_weights = cluster_sorted[!, design.weights] 
         for replicate in 1:replicates
-            rh = zeros(Int, nh)
-            for i in randinds[replicate, :]
-                rh[i] += 1
-            end            
-            cluster_sorted[!, "replicate_" * string(replicate)] = vcat([fill(rh[i] * (nh / (nh-1)), npsus[i]) for i in 1:length(rh)]...) .* cluster_sorted[!, design.weights] 
+            randinds = rand(rng, 1:(nh), (nh-1))          
+            cluster_sorted[!, "replicate_" * string(replicate)] = vcat([fill((count(==(i), randinds)) * (nh / (nh-1)), npsus[i]) for i in 1:nh]...) .* cluster_weights
         end   
         push!(substrata_dfs, cluster_sorted)
     end

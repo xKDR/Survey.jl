@@ -1,11 +1,6 @@
 @testset "hist.jl" begin
     @test Survey.sturges(10) == 5
     @test Survey.sturges([1, 2, 5, 10, 15, 17, 20]) == 4
-
-    # SimpleRandomSample
-    apisrs = load_data("apisrs")
-    srs = srs = SurveyDesign(apisrs; weights=:pw);
-
     h = hist(srs, :enroll)
     @test h.grid[1].entries[1].positional[2] |> length == 21
 
