@@ -115,9 +115,9 @@ Survey design obtained by replicating an original design using [`bootweights`](@
 ```jldoctest
 julia> apistrat = load_data("apistrat");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
-julia> bootstrat = bootweights(strat; replicates=1000)
+julia> bootstrat = bootweights(dstrat; replicates=1000)
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype

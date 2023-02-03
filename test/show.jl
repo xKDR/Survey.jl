@@ -25,7 +25,7 @@
     allprobs: [0.0323, 0.0323, 0.0323  …  0.0323]
     replicates: 4000"""
 
-    show(io, MIME("text/plain"), srs_boot)
+    show(io, MIME("text/plain"), bsrs)
     strb = String(take!(io))
     @test strb == refstrb
 end
@@ -44,7 +44,7 @@ end
     weights: [44.21, 44.21, 44.21  …  15.1]
     allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]"""
 
-    show(io, MIME("text/plain"), strat)
+    show(io, MIME("text/plain"), dstrat)
     str = String(take!(io))
     @test str == refstr
 
@@ -60,7 +60,7 @@ end
     allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
     replicates: 4000"""
 
-    show(io, MIME("text/plain"), strat_boot)
+    show(io, MIME("text/plain"), bstrat)
     strb = String(take!(io))
     @test strb == refstrb
 end

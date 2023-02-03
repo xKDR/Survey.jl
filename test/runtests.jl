@@ -8,11 +8,11 @@ const SE_TOL = 1e-1
 # Simple random sample
 apisrs = load_data("apisrs") # Load API dataset
 srs = SurveyDesign(apisrs, weights = :pw) 
-srs_boot = srs |> bootweights # Create replicate design
+bsrs = srs |> bootweights # Create replicate design
 # Stratified sample
 apistrat = load_data("apistrat") # Load API dataset
-strat = SurveyDesign(apistrat, strata = :stype, weights = :pw) # Create SurveyDesign
-strat_boot = strat |> bootweights # Create replicate design
+dstrat = SurveyDesign(apistrat, strata = :stype, weights = :pw) # Create SurveyDesign
+bstrat = dstrat |> bootweights # Create replicate design
 
 # One-stage cluster sample
 apiclus1 = load_data("apiclus1") # Load API dataset
