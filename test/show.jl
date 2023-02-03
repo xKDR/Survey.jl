@@ -101,7 +101,7 @@ end
 end
 
 @testset "makeshort" begin
-    @test Survey.makeshort(pi/2) == "1.5708"
+    @test Survey.makeshort(pi / 2) == "1.5708"
     @test Survey.makeshort(23) == "23"
     @test Survey.makeshort(ones(100)) == "[1.0, 1.0, 1.0  …  1.0]"
     @test Survey.makeshort(ones(3)) == "[1.0, 1.0, 1.0]"
