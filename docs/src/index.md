@@ -4,11 +4,11 @@ CurrentModule = Survey
 
 # Survey
 
-This package is used to study complex survey data. It aims to provide an efficient computing framework for survey analysis, and be a faster alternative to the `survey` package ecosystem in R developed by Prof Thomas Lumley[^1].
+This package is used to study complex survey data. It aims to provide an efficient computing framework for survey analysis, and be a faster alternative to the `survey` package[^12] ecosystem in R developed by Prof Thomas Lumley[^1].
 
 Surveys are a standard tool for empirical research in social and behavioral sciences, and also widely used by governments and businesses alike. In order to get a better representation or more precise estimates, complex surveys use sophisticated sampling techniques like clustering, stratification, unequal probability selection or a combination of these. Computing population estimates from a survey with corresponding standard errors requires several corrections, weights calibrations and adjustments, wherein stems the need for a "survey" package which automatically applies these mathematical techniques.
 
-Several software tools are available to study complex surveys[^10]. The R[^12] package is a widely used open-source package. 
+Several software tools are available to study complex surveys[^10]. The R package is a widely used open-source package. 
 
 ## Why a package for survey analysis in Julia?
 
