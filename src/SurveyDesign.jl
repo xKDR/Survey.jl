@@ -99,6 +99,8 @@ struct SurveyDesign <: AbstractSurveyDesign
             # neither popsize nor weights given
             weights_labels = :_weights
             data[!, weights_labels] = repeat([1], nrow(data))
+            popsize = :_popsize
+            data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
         end
         allprobs_labels = :_allprobs
         data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
