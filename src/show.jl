@@ -5,12 +5,16 @@ function makeshort(x)
     if isa(x[1], Float64)
         x = round.(x, digits=4) # Rounded to 4 digits after the decimal place
     end
-    # print short vectors or single values as they are, compress otherwise
-    if length(x) > 1
-        return "[" * (length(x) < 3 ? join(x, ", ") : join(x[1:3], ", ") * "  …  " * string(last(x))) * "]"
+    if typeof(x) <: Number # TODO: use multiple dispatch. 
+        return string(x)
     end
-    return x
-end
+    # Compress long vectors
+    if length(x) > 4
+        return "[" * (length(x) < 3 ? join(x, ", ") : join(x[1:3], ", ") * "  …  " * string(last(x))) * "]"
+    else
+        return "[" * join(x, ", ") * "]"
+    end
+end 
 
 """
 Print information in the form:
@@ -22,12 +26,10 @@ function printinfo(io::IO, name::String, content, args...; newline::Bool=true)
 end
 
 "Print information about a survey design."
-Base.show(io::IO, ::MIME"text/plain", design::AbstractSurveyDesign) =
-    surveyshow(io, design)
-
 Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign) = 
     surveyshow(io, design)
 
+"Print information about a replicate weights design."
 function Base.show(io::IO, ::MIME"text/plain", design::ReplicateDesign)
     # new_io = IOContext(io, :compact=>true, :limit=>true, :displaysize=>(50, 50))
     surveyshow(io, design)
