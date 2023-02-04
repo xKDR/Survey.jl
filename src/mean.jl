@@ -45,17 +45,22 @@ julia> mean(:api00, bclus1)
    1 │ 644.169  23.4107
 ```
 """
-function mean(x::Symbol, design::ReplicateDesign; ci_type::Union{Nothing,String}=nothing, kwargs...)
+function mean(x::Symbol, design::ReplicateDesign)
     X = mean(design.data[!, x], weights(design.data[!,design.weights]))
     Xt = [mean(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
     variance = sum((Xt .- X).^2) / design.replicates
-    SE = sqrt(variance)
-    if !isnothing(ci_type)
-        ci_lower, ci_upper = _ci(X, SE, ci_type; kwargs...)
-        return DataFrame(mean = X, SE = SE, ci_lower = ci_lower, ci_upper = ci_upper )
-    else
-        return DataFrame(mean = X, SE = SE)
-    end
+    DataFrame(mean = X, SE = sqrt(variance))
+end
+
+"""
+Add confidence intervals for mean, using multiple dispatch
+"""
+function mean(x::Symbol, design::ReplicateDesign; ci_type::String="normal", kwargs...)
+    df_mean = mean(x,design)
+    ci_lower, ci_upper = _ci(df_mean, ci_type; kwargs...)
+    df_mean[!,:ci_lower] = ci_lower
+    df_mean[!,:ci_upper] = ci_upper
+    return df_mean
 end
 
 """
