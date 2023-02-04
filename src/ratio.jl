@@ -18,7 +18,9 @@ julia> ratio(:api00, :enroll, dclus1)
 ```
 """
 function ratio(variable_num::Symbol, variable_den::Symbol, design::SurveyDesign)
-    X = wsum(design.data[!, variable_num], design.data[!, design.weights]) / wsum(design.data[!, variable_den], design.data[!, design.weights])
+    X =
+        wsum(design.data[!, variable_num], design.data[!, design.weights]) /
+        wsum(design.data[!, variable_den], design.data[!, design.weights])
     DataFrame(ratio = X)
 end
 
@@ -38,8 +40,18 @@ julia> ratio(:api00, :enroll, bclus1)
 ```
 """
 function ratio(variable_num::Symbol, variable_den::Symbol, design::ReplicateDesign)
-    X = wsum(design.data[!, variable_num], design.data[!, design.weights]) / wsum(design.data[!, variable_den], design.data[!, design.weights])
-    Xt = [(wsum(design.data[!, variable_num], weights(design.data[! , "replicate_"*string(i)]))) / (wsum(design.data[!, variable_den], weights(design.data[! , "replicate_"*string(i)]))) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
+    X =
+        wsum(design.data[!, variable_num], design.data[!, design.weights]) /
+        wsum(design.data[!, variable_den], design.data[!, design.weights])
+    Xt = [
+        (wsum(
+            design.data[!, variable_num],
+            weights(design.data[!, "replicate_"*string(i)]),
+        )) / (wsum(
+            design.data[!, variable_den],
+            weights(design.data[!, "replicate_"*string(i)]),
+        )) for i = 1:design.replicates
+    ]
+    variance = sum((Xt .- X) .^ 2) / design.replicates
     DataFrame(ratio = X, SE = sqrt(variance))
 end

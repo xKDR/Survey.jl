@@ -50,8 +50,14 @@ function quantile(var::Symbol, design::ReplicateDesign, p::Real; kwargs...)
     v = design.data[!, var]
     probs = design.data[!, design.allprobs]
     X = Statistics.quantile(v, ProbabilityWeights(probs), p)
-    Xt = [Statistics.quantile(v, ProbabilityWeights(design.data[! , "replicate_"*string(i)]), p) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
+    Xt = [
+        Statistics.quantile(
+            v,
+            ProbabilityWeights(design.data[!, "replicate_"*string(i)]),
+            p,
+        ) for i = 1:design.replicates
+    ]
+    variance = sum((Xt .- X) .^ 2) / design.replicates
     df = DataFrame(percentile = X, SE = sqrt(variance))
     rename!(df, :percentile => string(p) * "th percentile")
     return df
@@ -75,7 +81,11 @@ julia> quantile(:enroll, srs, [0.1,0.2,0.5,0.75,0.95])
 ```
 """
 function quantile(var::Symbol, design::SurveyDesign, probs::Vector{<:Real}; kwargs...) # A function with AbstractSurveyDesign might be able to achieve both with and without SE. 
-    df = vcat([rename!(quantile(var, design, prob; kwargs...),[:statistic]) for prob in probs]...)
+    df = vcat(
+        [
+            rename!(quantile(var, design, prob; kwargs...), [:statistic]) for prob in probs
+        ]...,
+    )
     df.percentile = string.(probs)
     return df[!, [:percentile, :statistic]]
 end
@@ -97,8 +107,18 @@ julia> quantile(:enroll, bsrs, [0.1,0.2,0.5,0.75,0.95])
    5 │ 0.95           1473.1  142.568
 ```
 """
-function quantile(var::Symbol, design::AbstractSurveyDesign, probs::Vector{<:Real}; kwargs...)
-    df = vcat([rename!(quantile(var, design, prob; kwargs...),[:statistic, :SE]) for prob in probs]...)
+function quantile(
+    var::Symbol,
+    design::AbstractSurveyDesign,
+    probs::Vector{<:Real};
+    kwargs...,
+)
+    df = vcat(
+        [
+            rename!(quantile(var, design, prob; kwargs...), [:statistic, :SE]) for
+            prob in probs
+        ]...,
+    )
     df.percentile = string.(probs)
     return df[!, [:percentile, :statistic, :SE]]
 end

@@ -26,7 +26,7 @@ julia> mean(:api00, dclus1)
 ```
 """
 function mean(x::Symbol, design::SurveyDesign)
-    X = mean(design.data[!, x], weights(design.data[!,design.weights]))
+    X = mean(design.data[!, x], weights(design.data[!, design.weights]))
     DataFrame(mean = X)
 end
 
@@ -46,9 +46,12 @@ julia> mean(:api00, bclus1)
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
-    X = mean(design.data[!, x], weights(design.data[!,design.weights]))
-    Xt = [mean(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
+    X = mean(design.data[!, x], weights(design.data[!, design.weights]))
+    Xt = [
+        mean(design.data[!, x], weights(design.data[!, "replicate_"*string(i)])) for
+        i = 1:design.replicates
+    ]
+    variance = sum((Xt .- X) .^ 2) / design.replicates
     DataFrame(mean = X, SE = sqrt(variance))
 end
 
