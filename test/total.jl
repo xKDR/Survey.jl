@@ -81,7 +81,7 @@ end
     @test tot.total[2] ≈ 3687178 rtol = STAT_TOL ## :enroll
 
     tot = total([:api00, :enroll], bstrat)
-     ## :api00
+    ## :api00
     @test tot.total[1] ≈ 4102208 rtol = STAT_TOL
     @test tot.SE[1] ≈ 60746 rtol = SE_TOL
     ## :enroll

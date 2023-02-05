@@ -37,5 +37,5 @@ function load_data(name)
     name = name * ".csv"
     @assert name ∈ readdir(asset_path())
 
-    CSV.read(asset_path(name), DataFrame, missingstring="NA")
+    CSV.read(asset_path(name), DataFrame, missingstring = "NA")
 end

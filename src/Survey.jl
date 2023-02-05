@@ -4,7 +4,7 @@ using DataFrames
 using Statistics
 import Statistics: quantile
 using StatsBase
-import StatsBase: mean,quantile
+import StatsBase: mean, quantile
 using CSV
 using LinearAlgebra
 using CairoMakie
