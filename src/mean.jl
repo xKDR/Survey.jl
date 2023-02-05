@@ -55,9 +55,6 @@ function mean(x::Symbol, design::ReplicateDesign)
     DataFrame(mean = X, SE = sqrt(variance))
 end
 
-"""
-Add confidence intervals for mean, using multiple dispatch
-"""
 function mean(x::Symbol, design::ReplicateDesign, ci_type::String; alpha::Float64=0.05, dof::Float64=Inf64, margin::Float64=2.0)
     df_mean = mean(x, design)
     ci_lower, ci_upper = _ci(df_mean[!,1], df_mean[!,2], ci_type, alpha, dof, margin)
@@ -95,6 +92,14 @@ function mean(x::Vector{Symbol}, design::AbstractSurveyDesign)
     df = reduce(vcat, [mean(i, design) for i in x])
     insertcols!(df, 1, :names => String.(x))
     return df
+end
+
+function mean(x::Vector{Symbol}, design::ReplicateDesign, ci_type::String; alpha::Float64=0.05, dof::Float64=Inf64, margin::Float64=2.0)
+    df_mean = mean(x, design)
+    ci_lower, ci_upper = _ci(df_mean[!,2], df_mean[!,3], ci_type, alpha, dof, margin) # mean and SE are in 2nd and 3rd columns
+    df_mean[!,:ci_lower] = ci_lower
+    df_mean[!,:ci_upper] = ci_upper
+    return df_mean
 end
 
 """
@@ -146,4 +151,12 @@ function mean(x::Symbol, domain::Symbol, design::AbstractSurveyDesign)
     df = bydomain(x, domain, design, weighted_mean)
     rename!(df, :statistic => :mean)
     return df
+end
+
+function mean(x::Symbol, domain::Symbol, design::ReplicateDesign, ci_type::String; alpha::Float64=0.05, dof::Float64=Inf64, margin::Float64=2.0)
+    df_mean = mean(x, design)
+    ci_lower, ci_upper = _ci(df_mean[!,2], df_mean[!,3], ci_type, alpha, dof, margin) # domain mean and SE are in 2nd and 3rd columns
+    df_mean[!,:ci_lower] = ci_lower
+    df_mean[!,:ci_upper] = ci_upper
+    return df_mean
 end
