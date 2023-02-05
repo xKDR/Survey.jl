@@ -2,7 +2,7 @@
     Calculate confidence intervals for given estimates.
     Supports normal, margin of error and t-distribution based CI.
 """
-function _ci(estimate::AbstractVector,se::AbstractVector, type::String, alpha::Float64=0.05, dof::Float64=Inf64, margin::Float64=2.0)
+function _ci(estimate::AbstractVector, se::AbstractVector, type::String, alpha::Float64, dof::Int64, margin::Float64)
     # Parse type of CI, calc critical value
     if type == "normal"
         critical_value = quantile(Normal(),1-alpha/2)
