@@ -4,8 +4,12 @@ using DataFrames
 using Statistics
 import Statistics: quantile
 using StatsBase
+<<<<<<< HEAD
 import StatsBase: mean,quantile
 using Distributions
+=======
+import StatsBase: mean, quantile
+>>>>>>> main
 using CSV
 using LinearAlgebra
 using CairoMakie
@@ -36,7 +40,6 @@ export plot
 export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
-export jkknife
 export ratio
 
 end

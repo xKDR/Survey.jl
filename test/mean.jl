@@ -3,7 +3,7 @@
     @test mean(:enroll, srs).mean[1] ≈ 584.61 atol = 1e-4
     ##############################
     ### Vector of Symbols
-    mean_vec_sym = mean([:api00,:enroll], srs)
+    mean_vec_sym = mean([:api00, :enroll], srs)
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
 
@@ -13,7 +13,7 @@
     @test mean(:enroll, bsrs).SE[1] ≈ 27.821214737089324 atol = 1
     ##############################
     ### Vector of Symbols
-    mean_vec_sym = mean([:api00,:enroll], bsrs)
+    mean_vec_sym = mean([:api00, :enroll], bsrs)
     @test mean_vec_sym.mean[1] ≈ 656.585 atol = 1e-4
     @test mean_vec_sym.SE[1] ≈ 9.3065 rtol = 1e-1
     @test mean_vec_sym.mean[2] ≈ 584.61 atol = 1e-4
@@ -74,9 +74,9 @@ end
     @test size(mn)[1] == apiclus1.cname |> unique |> length
     @test filter(:cname => ==("Los Angeles"), mn).mean[1] ≈ 647.2667 rtol = STAT_TOL
     @test filter(:cname => ==("Santa Clara"), mn).mean[1] ≈ 732.0769 rtol = STAT_TOL
-    
+
     @test mean(:api00, dclus1_boot).mean[1] ≈ 644.17 rtol = 1e-1
-    @test mean(:api00, dclus1_boot).SE[1] ≈  23.291 rtol = 1e-1 # without fpc as it hasn't been figured out for bootstrap. 
+    @test mean(:api00, dclus1_boot).SE[1] ≈ 23.291 rtol = 1e-1 # without fpc as it hasn't been figured out for bootstrap. 
 
     mn = mean(:api00, :cname, dclus1_boot)
     @test size(mn)[1] == apiclus1.cname |> unique |> length

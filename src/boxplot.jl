@@ -23,8 +23,8 @@ julia> save("boxplot.png", bp)
 ![](assets/boxplot.png)
 """
 function boxplot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
-	map = mapping(x, y; kwargs...)
-	data = AlgebraOfGraphics.data(design.data)
+    map = mapping(x, y; kwargs...)
+    data = AlgebraOfGraphics.data(design.data)
 
-	data * visual(BoxPlot) * map |> draw
+    data * visual(BoxPlot) * map |> draw
 end

@@ -17,7 +17,7 @@ julia> total(:api00, dclus1)
 ```
 """
 function total(x::Symbol, design::SurveyDesign)
-    X = wsum(design.data[!, x], weights(design.data[!,design.weights]))
+    X = wsum(design.data[!, x], weights(design.data[!, design.weights]))
     DataFrame(total = X)
 end
 
@@ -36,9 +36,12 @@ julia> total(:api00, bclus1)
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
-    X = wsum(design.data[!, x], weights(design.data[!,design.weights]))
-    Xt = [wsum(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
+    X = wsum(design.data[!, x], weights(design.data[!, design.weights]))
+    Xt = [
+        wsum(design.data[!, x], weights(design.data[!, "replicate_"*string(i)])) for
+        i = 1:design.replicates
+    ]
+    variance = sum((Xt .- X) .^ 2) / design.replicates
     DataFrame(total = X, SE = sqrt(variance))
 end
 
