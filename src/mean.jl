@@ -55,7 +55,6 @@ function mean(x::Symbol, design::ReplicateDesign)
     DataFrame(mean = X, SE = sqrt(variance))
 end
 
-
 """
 Estimate the mean of a list of variables.
 
@@ -139,8 +138,32 @@ function mean(x::Symbol, domain::Symbol, design::AbstractSurveyDesign)
 end
 
 """
+    mean(x, design, ci_type; kwargs)
+    mean(x, domain, design, ci_type; kwargs)
 
-Confidence intervals for `mean`
+Confidence intervals for `mean`. Three options for ci_type:
+```julia
+ci_type="normal"    # use Normal distribution critical values
+ci_type="t"         # use Student t distribution critical values
+ci_type="margin"    # use margin of error
+````
+
+```math
+\left[ \bar{x} - critical value * SE , \bar{x} + critical value * SE  \right]
+```
+Keyword arguments for each type of CI
+```julia
+alpha         # Significance level. Confidence level is 100*(1 - alpha)%
+dof           # Degrees of freedom when ci_type="t"
+margin        # Margin of error when ci_type="margin"
+```
+Also works when `Vector{Symbol}` and `domain` are specified.
+```julia
+# TODO example
+```
+External links
+[Confidence intervals on Wikipedia](https://en.wikipedia.org/wiki/Confidence_interval)
+
 """
 function mean(x::Symbol, design::ReplicateDesign, ci_type::String; alpha::Float64=0.05, dof::Int64=nrow(design.data)-1, margin::Float64=2.0)
     df_mean = mean(x, design)
