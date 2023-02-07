@@ -35,11 +35,6 @@ the [Academic Performance Index](https://r-survey.r-forge.r-project.org/survey/h
 schools with at least 100 students and for various probability samples of the
 data.
 
-!!! note
-
-    The API program has been discontinued at the end of 2018. Information is archived
-    [here](https://www.cde.ca.gov/re/pr/api.asp).
-
 ```@repl tutorial
 apisrs = load_data("apisrs")
 ```
