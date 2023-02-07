@@ -12,6 +12,8 @@ using AlgebraOfGraphics
 using CategoricalArrays
 using Random
 using Missings
+using GLM
+import GLM: glm
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
@@ -25,6 +27,7 @@ include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
 include("by.jl")
+include("reg.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
@@ -36,5 +39,6 @@ export boxplot
 export bootweights
 export jkknife
 export ratio
+export @formula, glm
 
 end
