@@ -6,10 +6,7 @@
 [![codecov](https://codecov.io/gh/xKDR/Survey.jl/branch/main/graph/badge.svg?token=4PFSF47BT2)](https://codecov.io/gh/xKDR/Survey.jl)
 [![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
 
-This package is used to study complex survey data. It aims to be a fast alternative
-to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
-developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
-
+This package is used to study complex survey data. It aims to provide an efficient computing framework for large survey data. 
 All types of survey design are supported by this package.
 
 > **_NOTE:_**  For multistage sampling a single stage approximation is used.[^1]
