@@ -17,7 +17,7 @@ Several software tools are available to study complex surveys[^1]. The [survey p
 ## Current features
 Presently, summary statistics such as `mean`, `total`, `ratio`, and `quantile` can be estimated for whole of sample as well as subpopulations/domains using this package. Variance estimation for these estimators are performed using Rao-Wu bootstrap[^2]. Basic visualisations such a scatter plot, histogram and box plot can also be generated. 
 
-The package is built on top of [DataFrames.jl](https://dataframes.juliadata.org/stable/) and all its rich set of features are available for data manipulation. Plots are generated using [AlgebraOfGraphics](https://github.com/MakieOrg/AlgebraOfGraphics.jl).
+The package is built on top of [DataFrames.jl](https://dataframes.juliadata.org/stable/) and supports a variety of features for data manipulation. Plots are generated using [AlgebraOfGraphics](https://github.com/MakieOrg/AlgebraOfGraphics.jl).
 
 ## Plans
 We plan for efficient implementations of all the methods in R `survey`. Features for future releases will include:
