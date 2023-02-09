@@ -90,7 +90,7 @@ You can write a function which calculates the CI given inputs in a file called `
 This way you are modifying as little as possible of previously written code, and integrating your functionality into the API with least frictions. Docstring and doctests can also simply be written with your additional multiple dispatch function.
 
 ## Contributing
-
+* Codedev coverage has reached 100%. So please make sure to add testing cases of contributed code to keep it at 100%.
 * If you want to propose a new functionality it is strongly recommended to open an issue first and reach a decision on the final design.
   Then a pull request serves an implementation of the agreed way how things should work.
 * If you are a new contributor and would like to get a guidance on what area
