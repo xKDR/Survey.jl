@@ -9,14 +9,6 @@ function srs_variance(x::Symbol, design::AbstractSurveyDesign)
 end
 
 """
-    Horvitz-Thompson total
-"""
-function ht_total(x::Symbol, design::AbstractSurveyDesign)
-    X̂ = wsum(design.data[!, x], weights(design.data[!, design.weights]))
-    DataFrame(ht_total = X̂)
-end
-
-"""
     Strata totals
 """
 function strata_totals(x::Symbol, design::AbstractSurveyDesign)
