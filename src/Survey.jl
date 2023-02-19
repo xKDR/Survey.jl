@@ -26,6 +26,8 @@ include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
 include("by.jl")
+include("ht.jl")
+include("analytical.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
@@ -36,5 +38,6 @@ export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
 export ratio
+export HartleyRao
 
 end
