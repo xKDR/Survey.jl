@@ -6,10 +6,7 @@
 [![codecov](https://codecov.io/gh/xKDR/Survey.jl/branch/main/graph/badge.svg?token=4PFSF47BT2)](https://codecov.io/gh/xKDR/Survey.jl)
 [![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
 
-This package is used to study complex survey data. It aims to be a fast alternative
-to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
-developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
-
+This package is used to study complex survey data. It aims to provide an efficient computing framework for large survey data. 
 All types of survey design are supported by this package.
 
 > **_NOTE:_**  For multistage sampling a single stage approximation is used.[^1]
@@ -133,7 +130,7 @@ julia> mean([:api99, :api00], bootsrs)
    2 │ api00   656.585  9.5409
 ```
 
-... or we can calculate domain estimates:
+... and we can also calculate domain estimates:
 
 ```julia
 julia> total(:enroll, :cname, bootsrs)
@@ -162,11 +159,11 @@ All functionalities are supported by each design type.
 We want to implement all the features provided by the
 [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 in a Julia-native way. The main goal is to have a complete package that provides
-a large range of functionality and takes efficiency into consideration, such that
-large surveys can be analysed fast.
+a large range of functionality and takes efficiency into consideration for
+large surveys to be analysed fast.
 
 The [milestones](https://github.com/xKDR/Survey.jl/milestones) section of the repository
-contains a list of features that contributors can implement in the short-term.
+contains a list of features that contributors can implement in the short-term. Please see [contributing guidelines](https://github.com/xKDR/Survey.jl/blob/main/CONTRIBUTING.md) on how to contribute to the project.
 
 ## Support
 
