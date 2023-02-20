@@ -1,13 +1,12 @@
-function bydomain(x::Symbol, domain::Symbol, design::SurveyDesign, func::Function)
+function bydomain(x::Symbol, domain, design::SurveyDesign, func::Function)
     gdf = groupby(design.data, domain)
-    nd = length(unique(design.data[!, domain]))
     X = combine(gdf, [x, design.weights] => ((a, b) -> func(a, weights(b))) => :statistic)
     return X
 end
 
-function bydomain(x::Symbol, domain::Symbol, design::ReplicateDesign, func::Function)
+function bydomain(x::Symbol, domain, design::ReplicateDesign, func::Function)
     gdf = groupby(design.data, domain)
-    nd = length(unique(design.data[!, domain]))
+    nd = length(gdf)
     X = combine(gdf, [x, design.weights] => ((a, b) -> func(a, weights(b))) => :statistic)
     Xt_mat = Array{Float64,2}(undef, (nd, design.replicates))
     for i = 1:design.replicates
