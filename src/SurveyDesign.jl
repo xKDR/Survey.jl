@@ -127,14 +127,58 @@ end
 """
     ReplicateDesign <: AbstractSurveyDesign
 
-Survey design obtained by replicating an original design using [`bootweights`](@ref).
+Survey design obtained by replicating an original design using [`bootweights`](@ref). If
+replicate weights are available, then they can be used to directly create a `ReplicateDesign`.
+
+# Constructors
+
+```julia
+ReplicateDesign(
+    data::AbstractDataFrame;
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing, strata::Union{Nothing,Symbol} = nothing,
+    popsize::Union{Nothing,Symbol} = nothing,
+    weights::Union{Nothing,Symbol} = nothing,
+    replicates::UInt,
+    replicate_weights::Vector{Symbol}
+)
+```
+
+# Examples
+
+Here is an example where the [`bootweights`](@ref) function is used to create a `ReplicateDesign`.
 
 ```jldoctest
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
-julia> bootstrat = bootweights(dstrat; replicates=1000)
+julia> bootstrat = bootweights(dstrat; replicates=1000)     # creating a ReplicateDesign using bootweights
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+replicates: 1000
+
+```
+
+If the replicate weights are given to us already, then we can directly pass them to the `ReplicateDesign` constructor. For instance, in
+the above example, suppose we save the `bootstrat` data as a CSV file.
+
+```jldoctest
+julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
+```
+
+We can now pass the replicate weights directly to the `ReplicateDesign` constructor.
+
+```jldoctest
+julia> apistrat_fromcsv = CSV.read("apistrat_withreplicates.csv", DataFrame);
+
+julia> bootstrat_direct = ReplicateDesign(apistrat_fromcsv; strata=:stype, weights=:pw, replicates=UInt(1000), replicate_weights=[Symbol("replicate_"*string(replicate)) for replicate in 1:1000])
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype
@@ -146,6 +190,7 @@ weights: [44.21, 44.21, 44.21  …  15.1]
 allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 replicates: 1000
 ```
+
 """
 struct ReplicateDesign <: AbstractSurveyDesign
     data::AbstractDataFrame
