@@ -157,4 +157,54 @@ struct ReplicateDesign <: AbstractSurveyDesign
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool
     replicates::UInt
+    replicate_weights::Vector{Symbol}
+
+    # default constructor
+    function ReplicateDesign(
+        data::DataFrame,
+        cluster::Symbol,
+        popsize::Symbol,
+        sampsize::Symbol,
+        strata::Symbol,
+        weights::Symbol,
+        allprobs::Symbol,
+        pps::Bool,
+        replicates::UInt,
+        replicate_weights::Vector{Symbol}
+    )
+        new(data, cluster, popsize, sampsize, strata, weights, allprobs,
+           pps, replicates, replicate_weights)
+    end
+
+    # constructor with given replicate_weights
+    function ReplicateDesign(
+        data::AbstractDataFrame;
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing,
+        replicates::UInt,
+        replicate_weights::Vector{Symbol}
+    )
+        # call the SurveyDesign constructor
+        base_design = SurveyDesign(
+                        data;
+                        clusters=clusters,
+                        strata=strata,
+                        popsize=popsize,
+                        weights=weights
+                      )
+        new(
+            base_design.data,
+            base_design.cluster,
+            base_design.popsize,
+            base_design.sampsize,
+            base_design.strata,
+            base_design.weights,
+            base_design.allprobs,
+            base_design.pps,
+            replicates,
+            replicate_weights
+        )
+    end
 end
