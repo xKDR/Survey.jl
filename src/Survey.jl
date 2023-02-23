@@ -12,6 +12,7 @@ using AlgebraOfGraphics
 using CategoricalArrays
 using Random
 using Missings
+using RData
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
