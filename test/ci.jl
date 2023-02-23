@@ -3,7 +3,7 @@
     # 95% CI - normal
     @test mean(:api00, dclus1_boot, "normal").ci_lower[1] ≈ 598.28529 atol = 1e-4
     # 95% CI, with dof=Infinity - t
-    @test mean(:api00, dclus1_boot, "t").ci_upper[1] ≈ 690.361 atol = 1e-4
+    @test mean(:api00, dclus1_boot, "t").ci_upper[1] ≈ 690.3606 atol = 1e-4
     # margin of 2 SE
     @test mean(:api00, dclus1_boot, "margin").ci_upper[1] ≈ 690.99077 atol = 1e-4
 
@@ -16,9 +16,9 @@
     #### Test "t" keyword options
     #### For illustration purposes, dclus1_boot is actually a 'large' sample
     # 90% CI
-    @test mean(:api00, dclus1_boot, "t", dof = 30).ci_upper[1] ≈ 691.98 atol = 1e-4
+    @test mean(:api00, dclus1_boot, "t", dof = 30).ci_upper[1] ≈ 691.9804 atol = 1e-4
     # 85% CI
-    @test mean(:api00, dclus1_boot, "t", alpha = 0.1, dof = 50).ci_lower[1] ≈ 683.403 atol = 1e-4
+    @test mean(:api00, dclus1_boot, "t", alpha = 0.1, dof = 50).ci_lower[1] ≈ 604.9353 atol = 1e-4
 
     #### Test "t" keyword options
     # 3 - sigma
