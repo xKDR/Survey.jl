@@ -13,6 +13,7 @@ using CategoricalArrays
 using Random
 using Missings
 using RData
+using Downloads
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
