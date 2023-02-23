@@ -22,13 +22,13 @@ dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) # Create Survey
 dclus1_boot = dclus1 |> bootweights # Create replicate design
 
 # download multistage stratified surveys
-download("https://www.restore.ac.uk/PEAS/ex2datafiles/data/ex2.RData","./assets/shs.rda")
+Downloads.download("https://www.restore.ac.uk/PEAS/ex2datafiles/data/ex2.RData","./assets/shs.rda")
 shs = load("assets/shs.rda")
 shs = shs["shs"]
 dshs = SurveyDesign(shs; clusters= :PSU, weights = :GROSSWT, strata = :STRATUM)
 
-download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6.RData","./assets/ESYTC.rda")
-download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6det.RData","./assets/ESYTCdet.rda")
+Downloads.download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6.RData","./assets/ESYTC.rda")
+Downloads.download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6det.RData","./assets/ESYTCdet.rda")
 esytc = load("assets/ESYTC.rda")
 
 esytc_det = load("assets/ESYTCdet.rda")
