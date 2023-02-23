@@ -2,6 +2,7 @@ using Survey
 using Test
 using RData
 using CategoricalArrays
+using Downloads
 
 const STAT_TOL = 1e-5
 const SE_TOL = 1e-1
@@ -23,14 +24,14 @@ dclus1_boot = dclus1 |> bootweights # Create replicate design
 
 # download multistage stratified surveys
 Downloads.download("https://www.restore.ac.uk/PEAS/ex2datafiles/data/ex2.RData","./assets/shs.rda")
+Downloads.download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6.RData","./assets/ESYTC.rda")
+Downloads.download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6det.RData","./assets/ESYTCdet.rda")
+
 shs = load("assets/shs.rda")
 shs = shs["shs"]
 dshs = SurveyDesign(shs; clusters= :PSU, weights = :GROSSWT, strata = :STRATUM)
 
-Downloads.download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6.RData","./assets/ESYTC.rda")
-Downloads.download("https://www.restore.ac.uk/PEAS/ex6datafiles/data/ex6det.RData","./assets/ESYTCdet.rda")
 esytc = load("assets/ESYTC.rda")
-
 esytc_det = load("assets/ESYTCdet.rda")
 esytc_det = esytc_det["data"]
 desytc = SurveyDesign(shs; clusters= :PSU, weights = :GROSSWT, strata = :STRATUM)
