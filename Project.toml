@@ -1,6 +1,6 @@
 name = "Survey"
 uuid = "c1a98b4d-6cd2-47ec-b9e9-69b59c35373c"
-authors = ["Ayush Patnaik"]
+authors = ["Ayush Patnaik" <ayushpatnaik@gmail.com>"]
 version = "0.1.0"
 
 [deps]
