@@ -153,7 +153,7 @@ names of these columns must be of the form `replicate_i`, where `i` ranges from 
 
 Here is an example where the [`bootweights`](@ref) function is used to create a `ReplicateDesign`.
 
-```jldoctest replicate-design
+```jldoctest replicate-design; setup = :(using Survey, CSV, DataFrames)
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
@@ -177,7 +177,9 @@ the above example, suppose we had the `bootstrat` data as a CSV file.
 
 ```jldoctest replicate-design
 julia> using CSV;
+
 julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
+
 ```
 
 We can now pass the replicate weights directly to the `ReplicateDesign` constructor.
@@ -196,6 +198,7 @@ sampsize: [100, 100, 100  …  50]
 weights: [44.21, 44.21, 44.21  …  15.1]
 allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 replicates: 1000
+
 ```
 
 """
