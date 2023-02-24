@@ -14,6 +14,8 @@ Sizes of survey datasets have also been growing with advances in computing power
 
 Several software tools are available to study complex surveys[^1]. The [survey package in R](https://cran.r-project.org/web/packages/survey/index.html) is a widely used open-source package.
 
+Discourse [post](https://discourse.julialang.org/t/ann-announcing-survey-jl-for-analysis-of-complex-surveys/94667) announcing the package.
+
 ## Current features
 Presently, summary statistics such as `mean`, `total`, `ratio`, and `quantile` can be estimated for whole of sample as well as subpopulations/domains using this package. Variance estimation for these estimators are performed using Rao-Wu bootstrap[^2]. Basic visualisations such a scatter plot, histogram and box plot can also be generated. 
 
