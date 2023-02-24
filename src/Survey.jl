@@ -37,7 +37,6 @@ export plot
 export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
-export jkknife
 export ratio
 export @formula, glm
 

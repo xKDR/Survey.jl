@@ -1,13 +1,6 @@
 ## Installation
 
-The `Survey.jl` package is not yet registered. For now, installation of the package
-is done using the following command:
-
-```julia
-]  add "https://github.com/xKDR/Survey.jl.git"
-```
-
-After registration, the regular `Pkg` commands can be used for installing the package:
+The `Survey.jl` package is registered. Regular `Pkg` commands can be used for installing the package:
 
 ```@repl
 using Pkg
