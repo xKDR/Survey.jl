@@ -98,7 +98,8 @@ cluster: none
 popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
 sampsize: [200, 200, 200  …  200]
 weights: [31.0, 31.0, 31.0  …  31.0]
-probs: [0.0323, 0.0323, 0.0323  …  0.0323]
+allprobs: [0.0323, 0.0323, 0.0323  …  0.0323]
+type: bootstrap
 replicates: 1000
 
 julia> mean(:api00, bootsrs)
