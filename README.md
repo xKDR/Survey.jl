@@ -13,7 +13,7 @@ All types of survey design are supported by this package.
 
 ## Installation
 ```julia
-]  add "https://github.com/xKDR/Survey.jl.git"
+]  add Survey
 ```
 
 ## Basic usage
