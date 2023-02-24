@@ -9,6 +9,4 @@
     # one stage cluster
     tot = total(:api00, dclus1)
     @test tot.SE[1] ≈ 4880240 rtol = STAT_TOL
-
-    ht_total(x, dclus1)
 end

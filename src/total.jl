@@ -17,9 +17,9 @@ julia> total(:api00, dclus1)
 ```
 """
 function total(x::Symbol, design::SurveyDesign)
-    X = wsum(design.data[!, x], weights(design.data[!, design.weights]))
-    variance = HartleyRao(design.data[!, x], design, X)
-    DataFrame(total = X, SE = sqrt(variance))
+    X̂ = wsum(design.data[!, x], weights(design.data[!, design.weights]))
+    variance = HartleyRao(x, design, X̂)
+    DataFrame(total = X̂, SE = sqrt(variance))
 end
 
 """

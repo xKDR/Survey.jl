@@ -9,11 +9,20 @@ function HartleyRao(x::Symbol, design::SurveyDesign, HT_total)
                         ((y .* design.data[!,design.weights]) .- (HT_total ./ design.data[!,design.sampsize])) .^ 2)
     return hartley_rao_var
 end
+
 """
-    Horvitz-Thompson total
+    HorvitzThompsonTotal(x, design)
+
+Horvitz-Thompson total
 """
-function ht_total(x::Symbol, design::AbstractSurveyDesign)
+function HorvitzThompsonTotal(x::Symbol, design::SurveyDesign)
     X̂ₕₜ = wsum(design.data[!, x], weights(design.data[!, design.weights]))
     var = HartleyRao(x, design, X̂ₕₜ)
-    DataFrame(total = X̂, var = var)
+    DataFrame(total = X̂ₕₜ, var = var)
+end
+
+function HorvitzThompsonTotal(x::Vector{Symbol}, design::SurveyDesign)
+    df = reduce(vcat, [HorvitzThompsonTotal(i, design) for i in x])
+    insertcols!(df, 1, :names => String.(x))
+    return df
 end
