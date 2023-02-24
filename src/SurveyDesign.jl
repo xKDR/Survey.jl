@@ -211,6 +211,7 @@ struct ReplicateDesign <: AbstractSurveyDesign
     weights::Symbol # Effective weights in case of singlestage approx supported
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool
+    type::String
     replicates::UInt
     replicate_weights::Vector{Symbol}
 
@@ -224,11 +225,12 @@ struct ReplicateDesign <: AbstractSurveyDesign
         weights::Symbol,
         allprobs::Symbol,
         pps::Bool,
+        type::String,
         replicates::UInt,
         replicate_weights::Vector{Symbol}
     )
         new(data, cluster, popsize, sampsize, strata, weights, allprobs,
-           pps, replicates, replicate_weights)
+           pps, type, replicates, replicate_weights)
     end
 
     # constructor with given replicate_weights
@@ -257,6 +259,7 @@ struct ReplicateDesign <: AbstractSurveyDesign
             base_design.weights,
             base_design.allprobs,
             base_design.pps,
+            "bootstrap",
             length(replicate_weights),
             replicate_weights
         )

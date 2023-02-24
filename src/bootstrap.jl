@@ -54,6 +54,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         design.weights,
         design.allprobs,
         design.pps,
+        "bootstrap",
         UInt(replicates),
         [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates]
     )
