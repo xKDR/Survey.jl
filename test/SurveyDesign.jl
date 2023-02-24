@@ -259,3 +259,17 @@ end
     yrbs = copy(yrbs_original)
     dyrbs = SurveyDesign(yrbs; clusters = :psu, strata = :stratum, weights = :weight)
 end
+
+@testset "ReplicateDesign_constructor" begin
+    for (sample, sample_direct) in [(bsrs, bsrs_direct), (bstrat, bstrat_direct), (dclus1_boot, dclus1_boot_direct)]
+        @test isequal(sample.data, sample_direct.data)
+        @test isequal(sample.popsize, sample_direct.popsize)
+        @test isequal(sample.sampsize, sample_direct.sampsize)
+        @test isequal(sample.strata, sample_direct.strata)
+        @test isequal(sample.weights, sample_direct.weights)
+        @test isequal(sample.allprobs, sample_direct.allprobs)
+        @test isequal(sample.pps, sample_direct.pps)
+        @test isequal(sample.replicates, sample_direct.replicates)
+        @test isequal(sample.replicate_weights, sample_direct.replicate_weights)
+    end
+end
