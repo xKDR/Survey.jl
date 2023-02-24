@@ -136,17 +136,24 @@ replicate weights are available, then they can be used to directly create a `Rep
 ReplicateDesign(
     data::AbstractDataFrame,
     replicate_weights::Vector{Symbol};
-    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing, strata::Union{Nothing,Symbol} = nothing,
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+    strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
 )
 ```
 
+# Arguments
+
+The constructor has the same arguments as [`SurveyDesign`](@ref). The only additional argument is `replicate_weights`, which
+must be a `Vector` of `Symbols`. The `Symbol`s should represent the columns of `data` which contain the replicate weights. The
+names of these columns must be of the form `replicate_i`, where `i` ranges from 1 to the number of replicate weights.
+
 # Examples
 
 Here is an example where the [`bootweights`](@ref) function is used to create a `ReplicateDesign`.
 
-```jldoctest
+```jldoctest replicate-design
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
@@ -166,15 +173,16 @@ replicates: 1000
 ```
 
 If the replicate weights are given to us already, then we can directly pass them to the `ReplicateDesign` constructor. For instance, in
-the above example, suppose we save the `bootstrat` data as a CSV file.
+the above example, suppose we had the `bootstrat` data as a CSV file.
 
-```jldoctest
+```jldoctest replicate-design
+julia> using CSV;
 julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
 ```
 
 We can now pass the replicate weights directly to the `ReplicateDesign` constructor.
 
-```jldoctest
+```jldoctest replicate-design
 julia> apistrat_fromcsv = CSV.read("apistrat_withreplicates.csv", DataFrame);
 
 julia> bootstrat_direct = ReplicateDesign(apistrat_fromcsv, [Symbol("replicate_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
