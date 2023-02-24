@@ -53,11 +53,12 @@ struct SurveyDesign <: AbstractSurveyDesign
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool # TODO functionality
     # Single stage clusters sample, like apiclus1
-    function SurveyDesign(data::AbstractDataFrame;
-        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
-        strata::Union{Nothing,Symbol}=nothing,
-        popsize::Union{Nothing,Symbol}=nothing,
-        weights::Union{Nothing,Symbol}=nothing
+    function SurveyDesign(
+        data::AbstractDataFrame;
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing,
     )
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
         if typeof(strata) <: Nothing
@@ -70,7 +71,7 @@ struct SurveyDesign <: AbstractSurveyDesign
         end
         ## Single stage approximation
         if typeof(clusters) <: Vector{Symbol}
-            @warn "As part of single-stage approximation, only the first stage cluster ID is retained." 
+            @warn "As part of single-stage approximation, only the first stage cluster ID is retained."
             cluster = first(clusters)
         end
         if typeof(clusters) <: Symbol
@@ -78,8 +79,9 @@ struct SurveyDesign <: AbstractSurveyDesign
         end
         # For single-stage approximation only one "effective" sampsize vector
         sampsize_labels = :_sampsize
-        if isa(strata,Symbol) && isnothing(clusters) # If stratified only then sampsize is inside strata
-            data[!, sampsize_labels] = transform(groupby(data, strata), nrow => :counts).counts
+        if isa(strata, Symbol) && isnothing(clusters) # If stratified only then sampsize is inside strata
+            data[!, sampsize_labels] =
+                transform(groupby(data, strata), nrow => :counts).counts
         else
             data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
         end
@@ -88,7 +90,11 @@ struct SurveyDesign <: AbstractSurveyDesign
             data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         elseif isa(weights, Symbol)
             if !(typeof(data[!, weights]) <: Vector{<:Real})
-                throw(ArgumentError(string("given weights column ", weights , " is not of numeric type")))
+                throw(
+                    ArgumentError(
+                        string("given weights column ", weights, " is not of numeric type"),
+                    ),
+                )
             else
                 # derive popsize from given `weights`
                 weights_labels = weights
@@ -99,11 +105,22 @@ struct SurveyDesign <: AbstractSurveyDesign
             # neither popsize nor weights given
             weights_labels = :_weights
             data[!, weights_labels] = repeat([1], nrow(data))
+            popsize = :_popsize
+            data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
         end
         allprobs_labels = :_allprobs
         data[!, allprobs_labels] = 1 ./ data[!, weights_labels] # In one-stage cluster sample, allprobs is just probs, no multiplication needed
         pps = false # for now no explicit pps supported faster functions, but they can be added
-        new(data, cluster, popsize, sampsize_labels, strata, weights_labels, allprobs_labels, pps)
+        new(
+            data,
+            cluster,
+            popsize,
+            sampsize_labels,
+            strata,
+            weights_labels,
+            allprobs_labels,
+            pps,
+        )
     end
 end
 
@@ -115,9 +132,9 @@ Survey design obtained by replicating an original design using [`bootweights`](@
 ```jldoctest
 julia> apistrat = load_data("apistrat");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
-julia> bootstrat = bootweights(strat; replicates=1000)
+julia> bootstrat = bootweights(dstrat; replicates=1000)
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype

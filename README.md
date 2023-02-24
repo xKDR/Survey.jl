@@ -6,19 +6,14 @@
 [![codecov](https://codecov.io/gh/xKDR/Survey.jl/branch/main/graph/badge.svg?token=4PFSF47BT2)](https://codecov.io/gh/xKDR/Survey.jl)
 [![Milestones](https://img.shields.io/badge/-milestones-brightgreen)](https://github.com/xKDR/Survey.jl/milestones)
 
-This package is used to study complex survey data. It aims to be a fast alternative
-to the [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
-developed by [Professor Thomas Lumley](https://www.stat.auckland.ac.nz/people/tlum005).
-
+This package is used to study complex survey data. It aims to provide an efficient computing framework for large survey data. 
 All types of survey design are supported by this package.
 
-> **_NOTE:_**  For multistage sampling a single stage approximation is used. For
-more information see the [TODO](https://xkdr.github.io/Survey.jl/dev/) section of
-the documentation.
+> **_NOTE:_**  For multistage sampling a single stage approximation is used.[^1]
 
 ## Installation
 ```julia
-]  add "https://github.com/xKDR/Survey.jl.git"
+]  add Survey
 ```
 
 ## Basic usage
@@ -51,7 +46,7 @@ probs: [0.0323, 0.0323, 0.0323  …  0.0323]
 
 julia> apistrat = load_data("apistrat");
 
-julia> strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
 SurveyDesign:
 data: 200×46 DataFrame
 strata: stype
@@ -64,7 +59,7 @@ probs: [0.0226, 0.0226, 0.0226  …  0.0662]
 
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
 data: 183×46 DataFrame
 strata: none
@@ -77,7 +72,7 @@ probs: [0.0295, 0.0295, 0.0295  …  0.0295]
 
 julia> apiclus2 = load_data("apiclus2");
 
-julia> clus_two_stage = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
+julia> dclus2 = SurveyDesign(apiclus2; clusters=[:dnum, :snum], weights=:pw)
 SurveyDesign:
 data: 126×47 DataFrame
 strata: none
@@ -135,7 +130,7 @@ julia> mean([:api99, :api00], bootsrs)
    2 │ api00   656.585  9.5409
 ```
 
-... or we can calculate domain estimates:
+... and we can also calculate domain estimates:
 
 ```julia
 julia> total(:enroll, :cname, bootsrs)
@@ -157,21 +152,23 @@ julia> total(:enroll, :cname, bootsrs)
 
 This gives us the total number of enrolled students in each county.
 
-All functionalities are supported by each design type. For a more complete guide,
-see the [Tutorial](https://xkdr.github.io/Survey.jl/dev/#Basic-demo) section in
-the documentation.
+All functionalities are supported by each design type.
 
 ## Goals
 
 We want to implement all the features provided by the
 [Survey package in R](https://cran.r-project.org/web/packages/survey/index.html)
 in a Julia-native way. The main goal is to have a complete package that provides
-a large range of functionality and takes efficiency into consideration, such that
-large surveys can be analysed fast.
+a large range of functionality and takes efficiency into consideration for
+large surveys to be analysed fast.
 
 The [milestones](https://github.com/xKDR/Survey.jl/milestones) section of the repository
-contains a list of features that contributors can implement in the short-term.
+contains a list of features that contributors can implement in the short-term. Please see [contributing guidelines](https://github.com/xKDR/Survey.jl/blob/main/CONTRIBUTING.md) on how to contribute to the project.
 
 ## Support
 
 We gratefully acknowledge the JuliaLab at MIT for financial support for this project.
+
+## References
+
+[^1]: [Lumley, Thomas. Complex surveys: a guide to analysis using R. John Wiley & Sons, 2011.](https://books.google.co.in/books?hl=en&lr=&id=L96ludyhFBsC&oi=fnd&pg=PP12&dq=complex+surveys+lumley&ots=ie0y1lnzv1&sig=c4UHI3arjspMJ6OYzlX32E9rNRI#v=onepage&q=complex%20surveys%20lumley&f=false) Page 44

@@ -4,7 +4,7 @@
     tot = total(:api00, srs)
     @test tot.total[1] ≈ 4066888 rtol = STAT_TOL
 
-    tot = total(:api00, srs_boot)
+    tot = total(:api00, bsrs)
     @test tot.total[1] ≈ 4066888 rtol = STAT_TOL
     @test tot.SE[1] ≈ 58526 rtol = SE_TOL
     # equivalent R code and results:
@@ -23,7 +23,7 @@
     @test tot.total[1] ≈ 4066888 rtol = STAT_TOL
     ## :enroll
     @test tot.total[2] ≈ 3621074 rtol = STAT_TOL
-    tot = total([:api00, :enroll], srs_boot)
+    tot = total([:api00, :enroll], bsrs)
     ## :api00
     @test tot.total[1] ≈ 4066888 rtol = STAT_TOL
     @test tot.SE[1] ≈ 57502 rtol = SE_TOL
@@ -46,7 +46,7 @@
     @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 917238.49 rtol = STAT_TOL
     @test filter(:cname => ==("Monterey"), tot).total[1] ≈ 74947.40 rtol = STAT_TOL
 
-    tot = total(:api00, :cname, srs_boot)
+    tot = total(:api00, :cname, bsrs)
     @test size(tot)[1] == apisrs.cname |> unique |> length
     @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 917238.49 rtol = STAT_TOL
     @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 122193.02 rtol = SE_TOL
@@ -59,15 +59,15 @@ end
 
 @testset "total Stratified" begin
     # base functionality
-    tot = total(:api00, strat)
+    tot = total(:api00, dstrat)
     @test tot.total[1] ≈ 4102208 rtol = STAT_TOL
 
-    tot = total(:api00, strat_boot)
+    tot = total(:api00, bstrat)
     @test tot.total[1] ≈ 4102208 rtol = STAT_TOL
     @test tot.SE[1] ≈ 60746 rtol = SE_TOL
     # equivalent R code and results:
-    # > strat <- svydesign(data=apistrat, id=~1, weights=~pw, strata=~stype)
-    # > stratrep <- as.svrepdesign(strat, type="bootstrap", replicates=4000)
+    # > dstrat <- svydesign(data=apistrat, id=~1, weights=~pw, strata=~stype)
+    # > stratrep <- as.svrepdesign(dstrat, type="bootstrap", replicates=4000)
     # > svytotal(~api00, stratrep)
     #     total    SE
     # api00 4102208 60746
@@ -76,12 +76,12 @@ end
     # api00 662.29 9.8072
 
     # Vector{Symbol}
-    tot = total([:api00, :enroll], strat)
+    tot = total([:api00, :enroll], dstrat)
     @test tot.total[1] ≈ 4102208 rtol = STAT_TOL ## :api00
     @test tot.total[2] ≈ 3687178 rtol = STAT_TOL ## :enroll
 
-    tot = total([:api00, :enroll], strat_boot)
-     ## :api00
+    tot = total([:api00, :enroll], bstrat)
+    ## :api00
     @test tot.total[1] ≈ 4102208 rtol = STAT_TOL
     @test tot.SE[1] ≈ 60746 rtol = SE_TOL
     ## :enroll
@@ -95,12 +95,12 @@ end
     # enroll 595.28 18.9412
 
     # subpopulation
-    tot = total(:api00, :cname, strat)
+    tot = total(:api00, :cname, dstrat)
     @test size(tot)[1] == apistrat.cname |> unique |> length
     @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 869905.98 rtol = STAT_TOL
     @test filter(:cname => ==("Monterey"), tot).total[1] ≈ 72103.09 rtol = STAT_TOL
 
-    tot = total(:api00, :cname, strat_boot)
+    tot = total(:api00, :cname, bstrat)
     @test size(tot)[1] == apistrat.cname |> unique |> length
     @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 869905.98 rtol = STAT_TOL
     @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 134195.81 rtol = SE_TOL

@@ -2,20 +2,20 @@ using Survey
 using Documenter
 using Random
 
-DocMeta.setdocmeta!(Survey, :DocTestSetup, :(using Survey); recursive=true)
+DocMeta.setdocmeta!(Survey, :DocTestSetup, :(using Survey); recursive = true)
 
 makedocs(;
-    modules=[Survey],
-    authors="xKDR Forum",
+    modules = [Survey],
+    authors = "xKDR Forum",
     # doctest = :fix, 
-    repo="https://github.com/xKDR/Survey.jl/blob/{commit}{path}#{line}",
-    sitename="$Survey.jl",
-    format=Documenter.HTML(;
-        prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://xKDR.github.io/Survey.jl",
-        assets=String[],
+    repo = "https://github.com/xKDR/Survey.jl/blob/{commit}{path}#{line}",
+    sitename = "$Survey.jl",
+    format = Documenter.HTML(;
+        prettyurls = get(ENV, "CI", "false") == "true",
+        canonical = "https://xKDR.github.io/Survey.jl",
+        assets = String[],
     ),
-    pages=[
+    pages = [
         "Home" => "index.md",
         "Getting Started" => "getting_started.md",
         "Manual" => [
@@ -26,11 +26,7 @@ makedocs(;
         ],
         "API reference" => "api.md",
     ],
-    checkdocs=:exports,
+    checkdocs = :exports,
 )
 
-deploydocs(;
-    repo="github.com/xKDR/Survey.jl",
-    target="build",
-    devbranch="main",
-)
+deploydocs(; repo = "github.com/xKDR/Survey.jl", target = "build", devbranch = "main")

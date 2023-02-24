@@ -36,9 +36,9 @@ end
 Use replicate weights to compute the standard error of the estimated quantile. 
 
 ```jldoctest; setup = :(apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw))
-julia> srs_boot = srs |> bootweights; 
+julia> bsrs = srs |> bootweights; 
 
-julia> quantile(:api00, srs_boot, 0.5)
+julia> quantile(:api00, bsrs, 0.5)
 1×2 DataFrame
  Row │ 0.5th percentile  SE
      │ Float64           Float64
@@ -50,8 +50,14 @@ function quantile(var::Symbol, design::ReplicateDesign, p::Real; kwargs...)
     v = design.data[!, var]
     probs = design.data[!, design.allprobs]
     X = Statistics.quantile(v, ProbabilityWeights(probs), p)
-    Xt = [Statistics.quantile(v, ProbabilityWeights(design.data[! , "replicate_"*string(i)]), p) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
+    Xt = [
+        Statistics.quantile(
+            v,
+            ProbabilityWeights(design.data[!, "replicate_"*string(i)]),
+            p,
+        ) for i = 1:design.replicates
+    ]
+    variance = sum((Xt .- X) .^ 2) / design.replicates
     df = DataFrame(percentile = X, SE = sqrt(variance))
     rename!(df, :percentile => string(p) * "th percentile")
     return df
@@ -75,7 +81,11 @@ julia> quantile(:enroll, srs, [0.1,0.2,0.5,0.75,0.95])
 ```
 """
 function quantile(var::Symbol, design::SurveyDesign, probs::Vector{<:Real}; kwargs...) # A function with AbstractSurveyDesign might be able to achieve both with and without SE. 
-    df = vcat([rename!(quantile(var, design, prob; kwargs...),[:statistic]) for prob in probs]...)
+    df = vcat(
+        [
+            rename!(quantile(var, design, prob; kwargs...), [:statistic]) for prob in probs
+        ]...,
+    )
     df.percentile = string.(probs)
     return df[!, [:percentile, :statistic]]
 end
@@ -84,8 +94,8 @@ end
 
 Use replicate weights to compute the standard errors of the estimated quantiles. 
 
-```jldoctest; setup = :(apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs; weights=:pw); srs_boot = SurveyDesign(apisrs; weights=:pw) |> bootweights)
-julia> quantile(:enroll, srs_boot, [0.1,0.2,0.5,0.75,0.95])
+```jldoctest; setup = :(apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs; weights=:pw); bsrs = SurveyDesign(apisrs; weights=:pw) |> bootweights)
+julia> quantile(:enroll, bsrs, [0.1,0.2,0.5,0.75,0.95])
 5×3 DataFrame
  Row │ percentile  statistic  SE       
      │ String      Float64    Float64  
@@ -97,8 +107,18 @@ julia> quantile(:enroll, srs_boot, [0.1,0.2,0.5,0.75,0.95])
    5 │ 0.95           1473.1  142.568
 ```
 """
-function quantile(var::Symbol, design::AbstractSurveyDesign, probs::Vector{<:Real}; kwargs...)
-    df = vcat([rename!(quantile(var, design, prob; kwargs...),[:statistic, :SE]) for prob in probs]...)
+function quantile(
+    var::Symbol,
+    design::AbstractSurveyDesign,
+    probs::Vector{<:Real};
+    kwargs...,
+)
+    df = vcat(
+        [
+            rename!(quantile(var, design, prob; kwargs...), [:statistic, :SE]) for
+            prob in probs
+        ]...,
+    )
     df.percentile = string.(probs)
     return df[!, [:percentile, :statistic, :SE]]
 end

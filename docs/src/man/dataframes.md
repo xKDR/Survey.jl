@@ -2,7 +2,7 @@
 
 The internal structure of a survey design is build upon
 [`DataFrames`](https://dataframes.juliadata.org/stable/). In fact, the `data`
-argument is the only required argument for the constructor and it must be an
+argument is the only required argument for the constructor, and it must be an
 [`AbstractDataFrame`](https://dataframes.juliadata.org/stable/lib/types/#DataFrames.AbstractDataFrame).
 
 ## Data manipulation
@@ -32,7 +32,7 @@ Five columns were added:
   This column is necessary because when making a [`ReplicateDesign`](@ref), the
   [`bootweights`](@ref) function uses [`groupby`](https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.groupby)
   with a column representing the stratification variable. If there are no strata,
-  there is no such column so it should be added in order to keep `bootweights`
+  there is no such column, so it should be added in order to keep `bootweights`
   general.
 
 - `false_cluster` - only in the case of no clustering
@@ -47,7 +47,7 @@ Five columns were added:
 
 ```@repl manual_DataFrames
 apistrat = load_data("apistrat");
-strat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 apistrat[:, [:stype, :_sampsize, :_popsize]]
 ```
 
@@ -57,13 +57,3 @@ No column was added for frequency weights because the column passed through the
 `weights` argument is used by other functions, hence there is no need to add a
 new column. If `weights` is not specified, then a column called `_weights` is
 added.
-
-## Why DataFrames
-
-Survey data most of the time, if not always, is structured in a way that is very
-well suited for data frames. The [`DataFrames.jl`](https://dataframes.juliadata.org/stable/)
-package is mature and well maintained and provides a lot of functionality that
-proves useful for using inside functions such as [`bootweights`](@ref) or
-[`mean`](@ref). Mainly, the functions used are
-[`groupby`](https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.groupby)
-and [`combine`](https://dataframes.juliadata.org/stable/lib/functions/#DataFrames.combine).

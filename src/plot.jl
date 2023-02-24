@@ -21,5 +21,7 @@ julia> save("scatter.png", s)
 ![](assets/scatter.png)
 """
 function plot(design::AbstractSurveyDesign, x::Symbol, y::Symbol; kwargs...)
-    data(design.data) * mapping(x, y, markersize = design.weights) * visual(Scatter, marker = '￮') |> draw
+    data(design.data) *
+    mapping(x, y, markersize = design.weights) *
+    visual(Scatter, marker = '￮') |> draw
 end

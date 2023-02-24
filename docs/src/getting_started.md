@@ -1,13 +1,6 @@
 ## Installation
 
-The `Survey.jl` package is not yet registered. For now, installation of the package
-is done using the following command:
-
-```julia
-]  add "https://github.com/xKDR/Survey.jl.git"
-```
-
-After registration, the regular `Pkg` commands can be used for installing the package:
+The `Survey.jl` package is registered. Regular `Pkg` commands can be used for installing the package:
 
 ```@repl
 using Pkg
@@ -34,11 +27,6 @@ the [Academic Performance Index](https://r-survey.r-forge.r-project.org/survey/h
 (API) datasets for Californian schools. The datasets contain information for all
 schools with at least 100 students and for various probability samples of the
 data.
-
-!!! note
-
-    The API program has been discontinued at the end of 2018. Information is archived
-    [here](https://www.cde.ca.gov/re/pr/api.asp).
 
 ```@repl tutorial
 apisrs = load_data("apisrs")

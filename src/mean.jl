@@ -6,7 +6,7 @@ Estimate the mean of a variable.
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw)
 SurveyDesign:
 data: 183×44 DataFrame
 strata: none
@@ -17,7 +17,7 @@ sampsize: [15, 15, 15  …  15]
 weights: [33.847, 33.847, 33.847  …  33.847]
 allprobs: [0.0295, 0.0295, 0.0295  …  0.0295]
 
-julia> mean(:api00, clus_one_stage)
+julia> mean(:api00, dclus1)
 1×1 DataFrame
  Row │ mean
      │ Float64
@@ -26,7 +26,7 @@ julia> mean(:api00, clus_one_stage)
 ```
 """
 function mean(x::Symbol, design::SurveyDesign)
-    X = mean(design.data[!, x], weights(design.data[!,design.weights]))
+    X = mean(design.data[!, x], weights(design.data[!, design.weights]))
     DataFrame(mean = X)
 end
 
@@ -34,10 +34,10 @@ end
 
 Use replicate weights to compute the standard error of the estimated mean. 
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> clus_one_stage_boot = clus_one_stage |> bootweights;
+```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
+julia> bclus1 = dclus1 |> bootweights;
 
-julia> mean(:api00, clus_one_stage_boot)
+julia> mean(:api00, bclus1)
 1×2 DataFrame
  Row │ mean     SE
      │ Float64  Float64
@@ -46,17 +46,20 @@ julia> mean(:api00, clus_one_stage_boot)
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
-    X = mean(design.data[!, x], weights(design.data[!,design.weights]))
-    Xt = [mean(design.data[!, x], weights(design.data[! , "replicate_"*string(i)])) for i in 1:design.replicates]
-    variance = sum((Xt .- X).^2) / design.replicates
+    X = mean(design.data[!, x], weights(design.data[!, design.weights]))
+    Xt = [
+        mean(design.data[!, x], weights(design.data[!, "replicate_"*string(i)])) for
+        i = 1:design.replicates
+    ]
+    variance = sum((Xt .- X) .^ 2) / design.replicates
     DataFrame(mean = X, SE = sqrt(variance))
 end
 
 """
 Estimate the mean of a list of variables.
 
-```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); clus_one_stage_boot = clus_one_stage |> bootweights)
-julia> mean([:api00, :enroll], clus_one_stage)
+```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
+julia> mean([:api00, :enroll], dclus1)
 2×2 DataFrame
  Row │ names   mean
      │ String  Float64
@@ -68,7 +71,7 @@ julia> mean([:api00, :enroll], clus_one_stage)
 Use replicate weights to compute the standard error of the estimated means. 
 
 ```jldoctest meanlabel
-julia> mean([:api00, :enroll], clus_one_stage_boot)
+julia> mean([:api00, :enroll], bclus1)
 2×3 DataFrame
  Row │ names   mean     SE
      │ String  Float64  Float64
@@ -88,8 +91,8 @@ end
 
 Estimate means of domains.
 
-```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); clus_one_stage = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); clus_one_stage_boot = clus_one_stage |> bootweights)
-julia> mean(:api00, :cname, clus_one_stage)
+```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
+julia> mean(:api00, :cname, dclus1)
 11×2 DataFrame
  Row │ cname        mean
      │ String15     Float64
@@ -109,7 +112,7 @@ julia> mean(:api00, :cname, clus_one_stage)
 Use the replicate design to compute standard errors of the estimated means. 
 
 ```jldoctest meanlabel
-julia> mean(:api00, :cname, clus_one_stage_boot)
+julia> mean(:api00, :cname, bclus1)
 11×3 DataFrame
  Row │ cname        mean     SE
      │ String15     Float64  Float64

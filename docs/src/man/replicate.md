@@ -11,27 +11,27 @@ For example:
 ```@repl bootstrap
 using Survey
 apistrat = load_data("apistrat")
-strat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
-strat_boot = bootweights(strat; replicates = 10)
+dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw)
+bstrat = bootweights(dstrat; replicates = 10)
 ```
 
 For each replicate, the `DataFrame` of `ReplicateDesign` has an additional column. The of the column is `replicate_` followed by the replicate number.  
 
 ```@repl bootstrap
-names(strat_boot.data)
+names(bstrat.data)
 ```
 `replicate_1`, `replicate_2`, `replicate_3`, `replicate_4`, `replicate_5`, `replicate_6`, `replicate_7`, `replicate_8`, `replicate_9`, `replicate_10`, are the replicate weight columns. 
 
 While a `SurveyDesign` can be used to estimate a statistics. For example: 
 
 ```@repl bootstrap
-mean(:api00, strat)
+mean(:api00, dstrat)
 ```
 
 The `ReplicateDesign` can be used to compute the standard error of the statistic. For example: 
 
 ```@repl bootstrap
-mean(:api00, strat_boot)
+mean(:api00, bstrat)
 ```
 
 For each replicate weight, the statistic is calculated using it instead of the weight. The standard deviation of those statistics is the standard error of the estimate.  
