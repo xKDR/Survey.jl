@@ -134,12 +134,11 @@ replicate weights are available, then they can be used to directly create a `Rep
 
 ```julia
 ReplicateDesign(
-    data::AbstractDataFrame;
+    data::AbstractDataFrame,
+    replicate_weights::Vector{Symbol};
     clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing, strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
-    weights::Union{Nothing,Symbol} = nothing,
-    replicates::UInt,
-    replicate_weights::Vector{Symbol}
+    weights::Union{Nothing,Symbol} = nothing
 )
 ```
 
@@ -178,7 +177,7 @@ We can now pass the replicate weights directly to the `ReplicateDesign` construc
 ```jldoctest
 julia> apistrat_fromcsv = CSV.read("apistrat_withreplicates.csv", DataFrame);
 
-julia> bootstrat_direct = ReplicateDesign(apistrat_fromcsv; strata=:stype, weights=:pw, replicates=UInt(1000), replicate_weights=[Symbol("replicate_"*string(replicate)) for replicate in 1:1000])
+julia> bootstrat_direct = ReplicateDesign(apistrat_fromcsv, [Symbol("replicate_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype
@@ -223,13 +222,12 @@ struct ReplicateDesign <: AbstractSurveyDesign
 
     # constructor with given replicate_weights
     function ReplicateDesign(
-        data::AbstractDataFrame;
+        data::AbstractDataFrame,
+        replicate_weights::Vector{Symbol};
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
-        weights::Union{Nothing,Symbol} = nothing,
-        replicates::UInt,
-        replicate_weights::Vector{Symbol}
+        weights::Union{Nothing,Symbol} = nothing
     )
         # call the SurveyDesign constructor
         base_design = SurveyDesign(
@@ -248,7 +246,7 @@ struct ReplicateDesign <: AbstractSurveyDesign
             base_design.weights,
             base_design.allprobs,
             base_design.pps,
-            replicates,
+            length(replicate_weights),
             replicate_weights
         )
     end
