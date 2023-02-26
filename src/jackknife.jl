@@ -77,15 +77,15 @@ function jackknifeweights(design::SurveyDesign)
 
         ### if observation unit i is not in stratum h
         not_in_strata = df[df[!,design.strata] .!= strata,:]
-        # Set replicate weights at these indices to: wi  
+        # Set replicate weight at these indices to: wi  
         
         ### if observation unit i is in psu j of stratum h
         in_strata_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu),:]
-        # Set replicate weights at these indices to: 0 
+        # Set replicate weight at these indices to: 0 
         
         ### if observation unit i is in stratum h but not in psu j.
         in_strata_not_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .!= psu),:]
-        # Set replicate weights at these indices to: nh/(nh-1)
+        # Set replicate weight at these indices to: nh/(nh-1) * wi
         
         counter += 1
     end
