@@ -1,6 +1,9 @@
 """
-    Delete 1 jackknife with no/single stratum
+    Delete 1 jackknife with  for unstratified designs.
     
+    Replicate weights are given by:
+    wi(hj)  = 0, if observation unit i is in psu j of stratum h
+            = nh(nh −1)wi, if observation unit i is in stratum h but not in psu j.
     ## Reference
     pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
@@ -17,11 +20,26 @@ function jk1weights(design::SurveyDesign)
             ]...,
         ) .* cluster_weights
     end
-    return cluster_sorted
+    return ReplicateDesign(
+        cluster_sorted,
+        design.cluster,
+        design.popsize,
+        design.sampsize,
+        design.strata,
+        design.weights,
+        design.allprobs,
+        design.pps,
+        length(replicates),
+    )
 end
 
 """
     WIP: Delete-1 jackknife algorithm for replicate weights columns
+    
+    Replicate weights are given by:
+    wi(hj)  = wi, if observation unit i is not in stratum h
+            = 0, if observation unit i is in psu j of stratum h
+            = nh(nh −1)wi, if observation unit i is in stratum h but not in psu j.
 
     ## Reference
     pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
