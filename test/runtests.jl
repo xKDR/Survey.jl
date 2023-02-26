@@ -20,6 +20,11 @@ apiclus1[!, :pw] = fill(757 / 15, (size(apiclus1, 1),)) # Correct api mistake fo
 dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) # Create SurveyDesign
 dclus1_boot = dclus1 |> bootweights # Create replicate design
 
+# NHANES
+nhanes = load_data("nhanes")
+dnhanes = SurveyDesign(nhanes; clusters = :SDMVPSU, strata = :SDMVSTRA, weights = :WTMEC2YR)
+dnhanes_boot = dnhanes |> bootweights
+
 @testset "Survey.jl" begin
     @test size(load_data("apiclus1")) == (183, 40)
     @test size(load_data("apiclus2")) == (126, 41)
