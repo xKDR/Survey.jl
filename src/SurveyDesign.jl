@@ -287,4 +287,22 @@ struct ReplicateDesign <: AbstractSurveyDesign
             popsize=popsize,
             weights=weights
         )
+
+    # replicate weights given as regular expression
+    ReplicateDesign(
+        data::AbstractDataFrame,
+        replicate_weights::Regex;
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing
+    ) =
+        ReplicateDesign(
+            data,
+            Symbol.(names(data)[findall(name -> occursin(replicate_weights, name), names(data))]);
+            clusters=clusters,
+            strata=strata,
+            popsize=popsize,
+            weights=weights
+        )
 end
