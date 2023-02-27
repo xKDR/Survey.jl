@@ -269,4 +269,22 @@ struct ReplicateDesign <: AbstractSurveyDesign
             replicate_weights
         )
     end
+
+    # replicate weights given as a range of columns
+    ReplicateDesign(
+        data::AbstractDataFrame,
+        replicate_weights::UnitRange{Int};
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing
+    ) =
+        ReplicateDesign(
+            data,
+            Symbol.(names(data)[replicate_weights]);
+            clusters=clusters,
+            strata=strata,
+            popsize=popsize,
+            weights=weights
+        )
 end
