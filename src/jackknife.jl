@@ -63,23 +63,29 @@ end
 function jackknifeweights(design::SurveyDesign)
     df = design.data
     ## Find number of psus (nh) in each strata, used inside loop
-    stratified = groupby(df, design.strata)
-    nh_df = combine(x -> length(unique(x[!,design.cluster])), gdf)
+    stratified_gdf = groupby(df, design.strata)
+    nh_df = combine(x -> length(unique(x[!,design.cluster])), stratified_gdf)
     nh_df[!,:multiplier] = nh_df[!,:x1] ./ (nh_df[!,:x1] .- 1 ) 
     
     # Iterate over each combination of strata X cluster
     unique_strata_cols_df = unique(select(df, design.strata, design.cluster))
     counter = 1
+    wᵢ = df[:,design.weights]
     for (strata,psu) in zip(unique_strata_cols_df[!,1],unique_strata_cols_df[!,2])
         colname = "replicate_"*string(counter)
         @show colname, strata, psu
+
+        # Initialise replicate_i with original sampling weights
+        df[!,colname] = wᵢ
+
         ###### three mutually exclusive cases based on strata and psu
 
-        ### if observation unit i is not in stratum h
-        not_in_strata = df[df[!,design.strata] .!= strata,:]
-        # Set replicate weight at these indices to: wi  
-        
+        ### if observation unit i is not in stratum h (usually most of the observations if evenly divided strata)
+        # not_in_strata = df[df[!,design.strata] .!= strata,:]
+        # Keep replicate weight at these indices to: wi  
+
         ### if observation unit i is in psu j of stratum h
+        # return (df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu)
         in_strata_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu),:]
         # Set replicate weight at these indices to: 0 
         
