@@ -244,6 +244,9 @@ struct ReplicateDesign <: AbstractSurveyDesign
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
     )
+        # rename the replicate weights if needed
+        rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
+
         # call the SurveyDesign constructor
         base_design = SurveyDesign(
                         data;
