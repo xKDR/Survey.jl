@@ -20,6 +20,12 @@ apiclus1[!, :pw] = fill(757 / 15, (size(apiclus1, 1),)) # Correct api mistake fo
 dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) # Create SurveyDesign
 dclus1_boot = dclus1 |> bootweights # Create replicate design
 
+# Two-stage cluster sample
+apiclus2 = load_data("apiclus2") # Load API dataset
+apiclus2[!, :pw] = fill(757 / 15, (size(apiclus2, 1),)) # Correct api mistake for pw column
+dclus2 = SurveyDesign(apiclus2; clusters = :dnum, weights = :pw) # Create SurveyDesign
+dclus2_boot = dclus2 |> bootweights # Create replicate design
+
 @testset "Survey.jl" begin
     @test size(load_data("apiclus1")) == (183, 40)
     @test size(load_data("apiclus2")) == (126, 41)
