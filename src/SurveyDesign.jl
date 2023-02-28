@@ -202,7 +202,7 @@ the above example, suppose we had the `bootstrat` data as a CSV file (for this e
 ```jldoctest replicate-design
 julia> using CSV;
 
-julia> DataFrames.rename!(bootstrat.data, ["replicate_"*string(index) => "r_"*string(index) for index in 1:1000])
+julia> DataFrames.rename!(bootstrat.data, ["replicate_"*string(index) => "r_"*string(index) for index in 1:1000]);
 
 julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
 
@@ -225,8 +225,30 @@ type: bootstrap
 replicates: 1000
 
 julia> bootstrat_unitrange = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), UnitRange(45:1044);strata=:stype, weights=:pw)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
+replicates: 1000
 
 julia> bootstrat_regex = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), r"r_\\d";strata=:stype, weights=:pw)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
+replicates: 1000
 
 ```
 
