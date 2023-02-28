@@ -141,13 +141,36 @@ ReplicateDesign(
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
 )
+
+ReplicateDesign(
+    data::AbstractDataFrame,
+    replicate_weights::UnitIndex{Int};
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+    strata::Union{Nothing,Symbol} = nothing,
+    popsize::Union{Nothing,Symbol} = nothing,
+    weights::Union{Nothing,Symbol} = nothing
+)
+
+ReplicateDesign(
+    data::AbstractDataFrame,
+    replicate_weights::Regex;
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+    strata::Union{Nothing,Symbol} = nothing,
+    popsize::Union{Nothing,Symbol} = nothing,
+    weights::Union{Nothing,Symbol} = nothing
+)
 ```
 
 # Arguments
 
-The constructor has the same arguments as [`SurveyDesign`](@ref). The only additional argument is `replicate_weights`, which
-must be a `Vector` of `Symbols`. The `Symbol`s should represent the columns of `data` which contain the replicate weights. The
-names of these columns must be of the form `replicate_i`, where `i` ranges from 1 to the number of replicate weights.
+The constructor has the same arguments as [`SurveyDesign`](@ref). The only additional argument is `replicate_weights`, which can
+be of one of the following types.
+
+- `Vector{Symbol}`: In this case, each `Symbol` in the vector should represent a column of `data` containing the replicate weights.
+- `UnitIndex{Int}`: For instance, this could be UnitRange(5:10). This will mean that the replicate weights are contained in columns 5 through 10.
+- `Regex`: In this case, all the columns of `data` which match this `Regex` will be treated as the columns containing the replicate weights.
+
+All the columns containing the replicate weights will be renamed to the form `replicate_i`, where `i` ranges from 1 to the number of columns containing the replicate weights.
 
 # Examples
 
@@ -174,21 +197,21 @@ replicates: 1000
 ```
 
 If the replicate weights are given to us already, then we can directly pass them to the `ReplicateDesign` constructor. For instance, in
-the above example, suppose we had the `bootstrat` data as a CSV file.
+the above example, suppose we had the `bootstrat` data as a CSV file (for this example, we also rename the columns containing the replicate weights to the form `r_i`).
 
 ```jldoctest replicate-design
 julia> using CSV;
+
+julia> DataFrames.rename!(bootstrat.data, ["replicate_"*string(index) => "r_"*string(index) for index in 1:1000])
 
 julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
 
 ```
 
-We can now pass the replicate weights directly to the `ReplicateDesign` constructor.
+We can now pass the replicate weights directly to the `ReplicateDesign` constructor, either as a `Vector{Symbol}`, a `UnitRange` or a `Regex`.
 
 ```jldoctest replicate-design
-julia> apistrat_fromcsv = CSV.read("apistrat_withreplicates.csv", DataFrame);
-
-julia> bootstrat_direct = ReplicateDesign(apistrat_fromcsv, [Symbol("replicate_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
+julia> bootstrat_direct = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), [Symbol("r_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype
@@ -200,6 +223,10 @@ weights: [44.21, 44.21, 44.21  …  15.1]
 allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 type: bootstrap
 replicates: 1000
+
+julia> bootstrat_unitrange = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), UnitRange(45:1044);strata=:stype, weights=:pw)
+
+julia> bootstrat_regex = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), r"r_\\d";strata=:stype, weights=:pw)
 
 ```
 
