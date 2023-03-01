@@ -23,6 +23,7 @@
     sampsize: [200, 200, 200  …  200]
     weights: [30.97, 30.97, 30.97  …  30.97]
     allprobs: [0.0323, 0.0323, 0.0323  …  0.0323]
+    type: bootstrap
     replicates: 4000"""
 
     show(io, MIME("text/plain"), bsrs)
@@ -58,6 +59,7 @@ end
     sampsize: [100, 100, 100  …  50]
     weights: [44.21, 44.21, 44.21  …  15.1]
     allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+    type: bootstrap
     replicates: 4000"""
 
     show(io, MIME("text/plain"), bstrat)
@@ -93,6 +95,7 @@ end
     sampsize: [15, 15, 15  …  15]
     weights: [50.4667, 50.4667, 50.4667  …  50.4667]
     allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
+    type: bootstrap
     replicates: 4000"""
 
     show(io, MIME("text/plain"), dclus1_boot)
