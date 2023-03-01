@@ -36,6 +36,12 @@ dclus1_boot_direct = ReplicateDesign(dclus1_boot.data, REPLICATES_VECTOR, cluste
 dclus1_boot_unitrange = ReplicateDesign(dclus1_boot.data, unitrange, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
 dclus1_boot_regex = ReplicateDesign(dclus1_boot.data, REPLICATES_REGEX, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
 
+# Two-stage cluster sample
+apiclus2 = load_data("apiclus2") # Load API dataset
+apiclus2[!, :pw] = fill(757 / 15, (size(apiclus2, 1),)) # Correct api mistake for pw column
+dclus2 = SurveyDesign(apiclus2; clusters = :dnum, weights = :pw) # Create SurveyDesign
+dclus2_boot = dclus2 |> bootweights # Create replicate design
+
 @testset "Survey.jl" begin
     @test size(load_data("apiclus1")) == (183, 40)
     @test size(load_data("apiclus2")) == (126, 41)
