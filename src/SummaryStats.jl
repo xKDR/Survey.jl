@@ -12,10 +12,10 @@ abstract type SummaryStats end
 
 """
 
-function confint(estimate::Float64, std_dev::Float64; type::String = "normal", alpha::Float64 = 0.05)
+function confint(estimate::Float64, std_dev::Float64; type::String="normal", alpha::Float64=0.05)
     # Parse type of CI & calculate critical value
     if type == "normal"
-        critical_value = quantile(Normal(),1-alpha/2)
+        critical_value = quantile(Normal(), 1 - alpha / 2)
     end
     # Calculate upper and lower estimates
     lower = estimate .- critical_value .* std_dev
