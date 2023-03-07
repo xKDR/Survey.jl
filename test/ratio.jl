@@ -2,4 +2,7 @@
     @test ratio(:api00, :enroll, dclus1).ratio[1] ≈ 1.17182 atol = 1e-4
     @test ratio(:api00, :enroll, dclus1_boot).SE[1] ≈ 0.1275446 atol = 1e-1
     @test ratio(:api00, :enroll, dclus1_boot).ratio[1] ≈ 1.17182 atol = 1e-4
+    @test ratio(:api00, :enroll, dstrat).ratio[1] ≈ 1.11256 atol = 1e-4
+    @test ratio(:api00, :enroll, dstrat_boot).SE[1] ≈ 0.04185 atol = 1e-1
+    @test ratio(:api00, :enroll, dstrat_boot).ratio[1] ≈ 1.11256 atol = 1e-4
 end
