@@ -44,7 +44,7 @@ dclus2_boot = dclus2 |> bootweights # Create replicate design
 
 # Stratified sample
 apistrat = load_data("apistrat") # Load API dataset
-dstrat = SurveyDesign(apistrat; strata = :stype, weights = :pw, popsize = :fpc) # Create SurveyDesign
+dstrat = SurveyDesign(apistrat; strata = :stype, weights = :pw) # Create SurveyDesign
 dstrat_boot = dstrat |> bootweights # Create replicate design
 
 @testset "Survey.jl" begin
