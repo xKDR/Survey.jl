@@ -1,37 +1,37 @@
-"""
-    Delete 1 jackknife with  for unstratified designs.
+# """
+#     Delete 1 jackknife with  for unstratified designs.
     
-    Replicate weights are given by:
-    wi(hj)  = 0, if observation unit i is in psu j of stratum h
-            = nh(nh −1)wi, if observation unit i is in stratum h but not in psu j.
-    ## Reference
-    pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
-"""
-function jk1weights(design::SurveyDesign)
-    cluster_sorted = sort(design.data, design.cluster) # Does jk need sorting?
-    psus = unique(cluster_sorted[!, design.cluster])
-    nh = length(psus)
-    npsus = [(count(==(i), cluster_sorted[!, design.cluster])) for i in psus]       
-    replicates = [filter(n -> n != i, 1:nh) for i in 1:nh]
-    cluster_weights = cluster_sorted[!, design.weights]
-    for (i,replicate) in enumerate(replicates)
-        cluster_sorted[!, "replicate_"*string(i)] = vcat(
-            [   fill((count(==(i), replicate)) .* (nh / (nh - 1)), npsus[i]) for i = 1:nh
-            ]...,
-        ) .* cluster_weights
-    end
-    return ReplicateDesign(
-        cluster_sorted,
-        design.cluster,
-        design.popsize,
-        design.sampsize,
-        design.strata,
-        design.weights,
-        design.allprobs,
-        design.pps,
-        length(replicates),
-    )
-end
+#     Replicate weights are given by:
+#     wi(hj)  = 0, if observation unit i is in psu j of stratum h
+#             = nh(nh −1)wi, if observation unit i is in stratum h but not in psu j.
+#     ## Reference
+#     pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
+# """
+# function jk1weights(design::SurveyDesign)
+#     cluster_sorted = sort(design.data, design.cluster) # Does jk need sorting?
+#     psus = unique(cluster_sorted[!, design.cluster])
+#     nh = length(psus)
+#     npsus = [(count(==(i), cluster_sorted[!, design.cluster])) for i in psus]       
+#     replicates = [filter(n -> n != i, 1:nh) for i in 1:nh]
+#     cluster_weights = cluster_sorted[!, design.weights]
+#     for (i,replicate) in enumerate(replicates)
+#         cluster_sorted[!, "replicate_"*string(i)] = vcat(
+#             [   fill((count(==(i), replicate)) .* (nh / (nh - 1)), npsus[i]) for i = 1:nh
+#             ]...,
+#         ) .* cluster_weights
+#     end
+#     return ReplicateDesign(
+#         cluster_sorted,
+#         design.cluster,
+#         design.popsize,
+#         design.sampsize,
+#         design.strata,
+#         design.weights,
+#         design.allprobs,
+#         design.pps,
+#         length(replicates),
+#     )
+# end
 
 """
     Jackknife estimator
@@ -49,53 +49,100 @@ function JackknifeEstimator(θ̂::Float64,design::ReplicateDesign)
     return calc_df
 end
 
-"""
-    WIP: Delete-1 jackknife algorithm for replicate weights columns
+# """
+#     WIP: Delete-1 jackknife algorithm for replicate weights columns
     
-    Replicate weights are given by:
-    wi(hj)  = wi, if observation unit i is not in stratum h
-            = 0, if observation unit i is in psu j of stratum h
-            = nh(nh −1)wi, if observation unit i is in stratum h but not in psu j.
+#     Replicate weights are given by:
+#     wi(hj)  = wi, if observation unit i is not in stratum h
+#             = 0, if observation unit i is in psu j of stratum h
+#             = nh(nh −1)wi, if observation unit i is in stratum h but not in psu j.
 
-    ## Reference
-    pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
-"""
+#     ## Reference
+#     pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
+# """
+# function jackknifeweights(design::SurveyDesign)
+#     df = design.data
+#     ## Find number of psus (nh) in each strata, used inside loop
+#     stratified_gdf = groupby(df, design.strata)
+#     nh_df = combine(x -> length(unique(x[!,design.cluster])), stratified_gdf)
+#     nh_df[!,:multiplier] = nh_df[!,:x1] ./ (nh_df[!,:x1] .- 1 ) 
+    
+#     # Iterate over each combination of strata X cluster
+#     unique_strata_cols_df = unique(select(df, design.strata, design.cluster))
+#     counter = 1
+#     wᵢ = df[:,design.weights]
+#     for (strata,psu) in zip(unique_strata_cols_df[!,1],unique_strata_cols_df[!,2])
+#         colname = "replicate_"*string(counter)
+#         @show colname, strata, psu
+
+#         # Initialise replicate_i with original sampling weights
+#         df[!,colname] = wᵢ
+
+#         ###### three mutually exclusive cases based on strata and psu
+
+#         ### if observation unit i is not in stratum h (usually most of the observations if evenly divided strata)
+#         # not_in_strata = df[df[!,design.strata] .!= strata,:]
+#         # Keep replicate weight at these indices to: wi  
+
+#         ### if observation unit i is in psu j of stratum h
+#         # return (df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu)
+#         in_strata_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu),:]
+#         # Set replicate weight at these indices to: 0 
+        
+#         ### if observation unit i is in stratum h but not in psu j.
+#         in_strata_not_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .!= psu),:]
+#         # Set replicate weight at these indices to: nh/(nh-1) * wi
+        
+#         counter += 1
+#     end
+#     return
+# end
+
 function jackknifeweights(design::SurveyDesign)
     df = design.data
-    ## Find number of psus (nh) in each strata, used inside loop
+
+    # Find number of psus (nh) in each strata, used inside loop
     stratified_gdf = groupby(df, design.strata)
-    nh_df = combine(x -> length(unique(x[!,design.cluster])), stratified_gdf)
-    nh_df[!,:multiplier] = nh_df[!,:x1] ./ (nh_df[!,:x1] .- 1 ) 
-    
-    # Iterate over each combination of strata X cluster
+    nh = Dict{String, Int}()
+    for (key, subgroup) in pairs(stratified_gdf)
+        nh[key[design.strata]] = length(unique(subgroup[!, design.cluster]))
+    end
+
+    # iterating over each unique combinations of strata and cluster
     unique_strata_cols_df = unique(select(df, design.strata, design.cluster))
-    counter = 1
-    wᵢ = df[:,design.weights]
-    for (strata,psu) in zip(unique_strata_cols_df[!,1],unique_strata_cols_df[!,2])
-        colname = "replicate_"*string(counter)
-        @show colname, strata, psu
+    replicate_index = 1
+    for row in eachrow(unique_strata_cols_df)
+        stratum = row[design.strata]
+        psu = row[design.cluster]
+        colname = "replicate_"*string(replicate_index)
 
         # Initialise replicate_i with original sampling weights
-        df[!,colname] = wᵢ
+        df[!, colname] = Vector(df[!, design.weights])
 
-        ###### three mutually exclusive cases based on strata and psu
+        # getting indexes
+        same_psu = (df[!, design.strata] .== stratum) .&& (df[!, design.cluster] .== psu)
+        different_psu = (df[!, design.strata] .== stratum) .&& (df[!, design.cluster] .!== psu)
 
-        ### if observation unit i is not in stratum h (usually most of the observations if evenly divided strata)
-        # not_in_strata = df[df[!,design.strata] .!= strata,:]
-        # Keep replicate weight at these indices to: wi  
+        # scaling weights appropriately
+        df[same_psu, colname] .*= 0
+        df[different_psu, colname] .*= nh[stratum]/(nh[stratum] - 1)
 
-        ### if observation unit i is in psu j of stratum h
-        # return (df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu)
-        in_strata_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .== psu),:]
-        # Set replicate weight at these indices to: 0 
-        
-        ### if observation unit i is in stratum h but not in psu j.
-        in_strata_not_psu = df[(df[!,design.strata] .== strata) .&& (df[!,design.cluster] .!= psu),:]
-        # Set replicate weight at these indices to: nh/(nh-1) * wi
-        
-        counter += 1
+        replicate_index += 1
     end
-    return
+
+    return ReplicateDesign(
+        df,
+        design.cluster,
+        design.popsize,
+        design.sampsize,
+        design.strata,
+        design.weights,
+        design.allprobs,
+        design.pps,
+        "jackknife",
+        UInt(DataFrames.nrow(unique_strata_cols_df)),
+        [Symbol("replicate_"*string(index)) for index in 1:DataFrames.nrow(unique_strata_cols_df)]
+    )
 end
 
     # @show unique_strata_cols_df
