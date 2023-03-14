@@ -1,5 +1,6 @@
 # Survey
 
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://xKDR.github.io/Survey.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://xKDR.github.io/Survey.jl/dev)
 ![Build Status](https://github.com/xKDR/Survey.jl/actions/workflows/ci.yml/badge.svg)
 ![Build Status](https://github.com/xKDR/Survey.jl/actions/workflows/documentation.yml/badge.svg)
