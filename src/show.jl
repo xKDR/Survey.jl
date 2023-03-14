@@ -37,6 +37,7 @@ Base.show(io::IO, ::MIME"text/plain", design::SurveyDesign) = surveyshow(io, des
 function Base.show(io::IO, ::MIME"text/plain", design::ReplicateDesign)
     # new_io = IOContext(io, :compact=>true, :limit=>true, :displaysize=>(50, 50))
     surveyshow(io, design)
+    printinfo(io, "\ntype", design.type; newline = false)
     printinfo(io, "\nreplicates", design.replicates; newline = false)
 end
 
