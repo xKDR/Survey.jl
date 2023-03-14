@@ -93,9 +93,7 @@ This way you are modifying as little as possible of previously written code, and
 * Codedev coverage has reached 100%. So please make sure to add testing cases of contributed code to keep it at 100%.
 * If you want to propose a new functionality it is strongly recommended to open an issue first and reach a decision on the final design.
   Then a pull request serves an implementation of the agreed way how things should work.
-* If you are a new contributor and would like to get a guidance on what area
-  you could focus your first PR please do not hesitate to ask and JuliaData members
-  will help you with picking a topic matching your experience.
+* If you are a new contributor and would like to get a guidance on what area you could focus your first PR please do not hesitate to ask and JuliaData members will help you with picking a topic matching your experience.
 * Feel free to open, or comment on, an issue and solicit feedback early on,
   especially if you're unsure about aligning with design goals and direction,
   or if relevant historical comments are ambiguous.
@@ -104,22 +102,14 @@ This way you are modifying as little as possible of previously written code, and
 * Aim for atomic commits, if possible, e.g. `change 'foo' behavior like so` &
   `'bar' handles such and such corner case`,
   rather than `update 'foo' and 'bar'` & `fix typo` & `fix 'bar' better`.
-* Pull requests are tested against release and development branches of Julia,
-  so using `Pkg.test("DataFrames")` as you develop can be helpful.
+* Pull requests are tested against release branches of Julia, so using `Pkg.test("Survey")` as you develop can be helpful.
 * The style guidelines outlined below are not the personal style of most contributors,
   but for consistency throughout the project, we've adopted them.
-* It is recommended to disable GitHub Actions on your fork; check Settings > Actions.
 * If a PR adds a new exported name then make sure to add a docstring for it and
   add a reference to it in the documentation.
 * A PR with breaking changes should have `[BREAKING]` as a first part of its name.
-* If a PR changes or adds functionality please update NEWS.md file accordingly as
-  a part of the PR (along with the link to the PR); please do not add entries
-  to NEWS.md for changes that are bug fixes or are not user visible, such as
-  adding tests, updating documentation or improving code layout.
-* If you make a PR please try to avoid pushing many small commits to GitHub in
-  a sequence as each such commit triggers a separate CI job, which takes over
-  an hour. This has a consequence of making other PRs in packages from the JuliaData
-  ecosystem wait for such CI jobs to finish as hey share a common pool of CI resources.
+* A PR which is still draft or work in progress should have `WIP:` as a first part of its name.
+* If you make a PR please try to avoid pushing many small commits to GitHub in a sequence as each such commit triggers a separate CI job, which takes compuational time, and not a good use of the small pool of CI resources.
 
 ## Style Guidelines
 
