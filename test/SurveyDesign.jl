@@ -259,3 +259,45 @@ end
     yrbs = copy(yrbs_original)
     dyrbs = SurveyDesign(yrbs; clusters = :psu, strata = :stratum, weights = :weight)
 end
+
+@testset "ReplicateDesign_direct" begin
+    for (sample, sample_direct) in [(bsrs, bsrs_direct), (bstrat, bstrat_direct), (dclus1_boot, dclus1_boot_direct)]
+        @test isequal(sample.data, sample_direct.data)
+        @test isequal(sample.popsize, sample_direct.popsize)
+        @test isequal(sample.sampsize, sample_direct.sampsize)
+        @test isequal(sample.strata, sample_direct.strata)
+        @test isequal(sample.weights, sample_direct.weights)
+        @test isequal(sample.allprobs, sample_direct.allprobs)
+        @test isequal(sample.pps, sample_direct.pps)
+        @test isequal(sample.replicates, sample_direct.replicates)
+        @test isequal(sample.replicate_weights, sample_direct.replicate_weights)
+    end
+end
+
+@testset "ReplicateDesign_unitrange" begin
+    for (sample, sample_unitrange) in [(bsrs, bsrs_unitrange), (bstrat, bstrat_unitrange), (dclus1_boot, dclus1_boot_unitrange)]
+        @test isequal(sample.data, sample_unitrange.data)
+        @test isequal(sample.popsize, sample_unitrange.popsize)
+        @test isequal(sample.sampsize, sample_unitrange.sampsize)
+        @test isequal(sample.strata, sample_unitrange.strata)
+        @test isequal(sample.weights, sample_unitrange.weights)
+        @test isequal(sample.allprobs, sample_unitrange.allprobs)
+        @test isequal(sample.pps, sample_unitrange.pps)
+        @test isequal(sample.replicates, sample_unitrange.replicates)
+        @test isequal(sample.replicate_weights, sample_unitrange.replicate_weights)
+    end
+end
+
+@testset "ReplicateDesign_regex" begin
+    for (sample, sample_regex) in [(bsrs, bsrs_regex), (bstrat, bstrat_regex), (dclus1_boot, dclus1_boot_regex)]
+        @test isequal(sample.data, sample_regex.data)
+        @test isequal(sample.popsize, sample_regex.popsize)
+        @test isequal(sample.sampsize, sample_regex.sampsize)
+        @test isequal(sample.strata, sample_regex.strata)
+        @test isequal(sample.weights, sample_regex.weights)
+        @test isequal(sample.allprobs, sample_regex.allprobs)
+        @test isequal(sample.pps, sample_regex.pps)
+        @test isequal(sample.replicates, sample_regex.replicates)
+        @test isequal(sample.replicate_weights, sample_regex.replicate_weights)
+    end
+end
