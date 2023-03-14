@@ -10,6 +10,7 @@
     pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
 function jackknifeweights(design::SurveyDesign)
+    sort!(design.data, [design.strata, design.cluster])
     df = design.data
 
     # Find number of psus (nh) in each strata, used inside loop
