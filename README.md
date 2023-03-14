@@ -1,5 +1,6 @@
 # Survey
 
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://xKDR.github.io/Survey.jl/stable)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://xKDR.github.io/Survey.jl/dev)
 ![Build Status](https://github.com/xKDR/Survey.jl/actions/workflows/ci.yml/badge.svg)
 ![Build Status](https://github.com/xKDR/Survey.jl/actions/workflows/documentation.yml/badge.svg)
@@ -98,7 +99,8 @@ cluster: none
 popsize: [6190.0, 6190.0, 6190.0  …  6190.0]
 sampsize: [200, 200, 200  …  200]
 weights: [31.0, 31.0, 31.0  …  31.0]
-probs: [0.0323, 0.0323, 0.0323  …  0.0323]
+allprobs: [0.0323, 0.0323, 0.0323  …  0.0323]
+type: bootstrap
 replicates: 1000
 
 julia> mean(:api00, bootsrs)
