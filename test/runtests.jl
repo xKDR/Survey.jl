@@ -20,7 +20,6 @@ bsrs_regex = ReplicateDesign(bsrs.data, REPLICATES_REGEX, weights = :pw)  # usin
 # Stratified sample
 apistrat = load_data("apistrat") # Load API dataset
 dstrat = SurveyDesign(apistrat, strata = :stype, weights = :pw) # Create SurveyDesign
-dstrat_boot = dstrat |> bootweights # Create replicate design
 unitrange = UnitRange((length(names(apistrat)) + 1):(TOTAL_REPLICATES + length(names(apistrat))))
 bstrat = dstrat |> bootweights # Create replicate design
 bstrat_direct = ReplicateDesign(bstrat.data, REPLICATES_VECTOR, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
