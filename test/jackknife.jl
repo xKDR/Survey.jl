@@ -1,6 +1,7 @@
 @testset "jackknife" begin
-    dclus1_jack = dnhanes |> jackknifeweights
-    dclus1_jk1 = dclus1 |> jk1weights # Create replicate design
+    dstrat_jk = jackknifeweights(dstrat)
+    mean(:api00,dstrat_jk)
+    mean(:api99,dstrat_jk)
+    # dnhanes_jk = jackknifeweights(dnhanes)
+    # dclus1_jk = jackknifeweights(dclus1)
 end
-dclus1_jk1 = dclus1 |> jk1weights
-dclus1_jack = dnhanes |> jackknifeweights
