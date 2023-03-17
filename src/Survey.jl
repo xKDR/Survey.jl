@@ -36,6 +36,6 @@ export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
 export ratio
-export jackknifeweights
+export jackknifeweights, jackknife_variance
 
 end

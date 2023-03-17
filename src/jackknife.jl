@@ -13,33 +13,28 @@ function jackknifeweights(design::SurveyDesign)
     sort!(design.data, [design.strata, design.cluster])
     df = design.data
 
-    # Find number of psus (nh) in each strata, used inside loop
     stratified_gdf = groupby(df, design.strata)
-    nh = Dict{String, Int}()
+    replicate_index = 0
     for (key, subgroup) in pairs(stratified_gdf)
-        nh[key[design.strata]] = length(unique(subgroup[!, design.cluster]))
-    end
+        stratum = key[design.strata]    # current stratum
+        psus_in_stratum = unique(subgroup[!, design.cluster])
+        nh = length(psus_in_stratum)
 
-    # iterating over each unique combinations of strata and cluster
-    unique_strata_cols_df = unique(select(df, design.strata, design.cluster))
-    replicate_index = 1
-    for row in eachrow(unique_strata_cols_df)
-        stratum = row[design.strata]
-        psu = row[design.cluster]
-        colname = "replicate_"*string(replicate_index)
+        for psu in psus_in_stratum
+            replicate_index += 1
+            colname = "replicate_"*string(replicate_index)
 
-        # Initialise replicate_i with original sampling weights
-        df[!, colname] = Vector(df[!, design.weights])
+            # Initialise replicate_i with original sampling weights
+            df[!, colname] = Vector(df[!, design.weights])
 
-        # getting indexes
-        same_psu = (df[!, design.strata] .== stratum) .&& (df[!, design.cluster] .== psu)
-        different_psu = (df[!, design.strata] .== stratum) .&& (df[!, design.cluster] .!== psu)
+            # getting indexes
+            same_psu = (df[!, design.strata] .== stratum) .&& (df[!, design.cluster] .== psu)
+            different_psu = (df[!, design.strata] .== stratum) .&& (df[!, design.cluster] .!== psu)
 
-        # scaling weights appropriately
-        df[same_psu, colname] .*= 0
-        df[different_psu, colname] .*= nh[stratum]/(nh[stratum] - 1)
-
-        replicate_index += 1
+            # scaling weights appropriately
+            df[same_psu, colname] .*= 0
+            df[different_psu, colname] .*= nh/(nh - 1)
+        end
     end
 
     return ReplicateDesign(
@@ -52,7 +47,38 @@ function jackknifeweights(design::SurveyDesign)
         design.allprobs,
         design.pps,
         "jackknife",
-        UInt(DataFrames.nrow(unique_strata_cols_df)),
-        [Symbol("replicate_"*string(index)) for index in 1:DataFrames.nrow(unique_strata_cols_df)]
+        UInt(replicate_index),
+        [Symbol("replicate_"*string(index)) for index in 1:replicate_index]
     )
 end
+
+function jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
+    df = design.data
+    # sort!(df, [design.strata, design.cluster])
+    stratified_gdf = groupby(df, design.strata)
+
+    # estimator from original weights
+    θ = func(df[!, x], df[!, design.weights])
+
+    variance = 0
+    replicate_index = 1
+    for subgroup in stratified_gdf
+        psus_in_stratum = unique(subgroup[!, design.cluster])
+        nh = length(psus_in_stratum)
+        cluster_variance = 0
+        for psu in psus_in_stratum
+            # get replicate weights corresponding to current stratum and psu
+            rep_weights = design.data[!, "replicate_"*string(replicate_index)]
+
+            # estimator from replicate weights
+            θhj = func(design.data[!, x], rep_weights)
+
+            cluster_variance += ((nh - 1)/nh)*(θhj - θ)^2
+            replicate_index += 1
+        end
+        variance += cluster_variance
+    end
+
+    return DataFrame(estimator = θ, SE = sqrt(variance))
+end
+
