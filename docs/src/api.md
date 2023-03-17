@@ -14,6 +14,8 @@ SurveyDesign
 ReplicateDesign
 load_data
 bootweights
+jackknifeweights
+jackknife_variance
 mean
 total
 quantile
