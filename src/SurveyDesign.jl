@@ -30,11 +30,10 @@ individuals in one cluster are sampled. The clusters are considered disjoint and
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, strata=:stype, weights=:pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
 data: 183×43 DataFrame
-strata: stype
-    [H, E, E  …  E]
+strata: none
 cluster: dnum
     [637, 637, 637  …  448]
 popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
