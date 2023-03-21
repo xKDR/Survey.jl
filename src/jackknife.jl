@@ -9,10 +9,31 @@ w_{i(hj)} =
 \\begin{cases}
     w_i\\quad\\quad &\\text{if observation unit }i\\text{ is not in stratum }h\\\\
     0\\quad\\quad &\\text{if observation unit }i\\text{ is in psu }j\\text{of stratum }h\\\\
-    \\dfrac{n_h}{n_h - 1}w_i &\\quad\\quad\\text{if observation unit }i\\text{ is in stratum }h\\text{ but not in psu }j\\\\
+    \\dfrac{n_h}{n_h - 1}w_i \\quad\\quad &\\text{if observation unit }i\\text{ is in stratum }h\\text{ but not in psu }j\\\\
 \\end{cases}
 ```
-The replicate weight columns have names of the form `replicate_i`, where `i` ranges from 1 to the number of replicate weight columns. These are added to the underlying `design.data` `DataFrame`.
+In the above formula, ``w_i`` represent the original weights, ``w_{i(hj)}`` represent the replicate weights when the ``j``th PSU from cluster ``h`` is removed, and ``n_h`` represents the number of unique PSUs within cluster ``h``. Replicate weights are added as columns to `design.data`, and these columns have names of the form `replicate_i`, where `i` ranges from 1 to the number of replicate weight columns.
+
+# Examples
+```jldoctest setup = :(using Survey)
+julia> apistrat = load_data("apistrat");
+
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+
+julia> rstrat = jackknifeweights(dstrat)
+ReplicateDesign:
+data: 200×244 DataFrame
+strata: stype
+    [E, E, E  …  M]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  1018.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  20.36]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0491]
+type: jackknife
+replicates: 200
+
+```
 
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
