@@ -32,7 +32,7 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
-data: 183×43 DataFrame
+data: 183×44 DataFrame
 strata: none
 cluster: dnum
     [637, 637, 637  …  448]
