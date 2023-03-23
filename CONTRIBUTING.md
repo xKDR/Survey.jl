@@ -27,9 +27,9 @@ Reading through the ColPrac guide for collaborative practices is highly recommen
   (`Pkg.add(name="Survey", rev="main")`) is a good gut check and can streamline the process,
   along with including the first two lines of output from `versioninfo()`
 
-## Recommended workflow setup
+## Setting up development workflow
 
-This tutorial assumes you will be using Windows Subsystem for Linux (WSL) and VSCode, which is recommended. 
+Below tutorial uses Windows Subsystem for Linux (WSL) and VSCode. Linux/MacOS/BSD can ignore WSL specific steps.
 
 1. Install Ubuntu on WSL from the [Ubuntu website](https://ubuntu.com/wsl) or the Microsoft Store
 2. Create a fork of the [Survey.jl repository](https://github.com/xKDR/Survey.jl). You will only be ever working on this fork, and submitting Pull Requests to the main repo. 
@@ -48,7 +48,7 @@ This tutorial assumes you will be using Windows Subsystem for Linux (WSL) and VS
     - WSL 
     - Julia
 5. Go back to your WSL terminal, navigate to the folder of your repo, and run `code .` to open VSCode in that folder
-6. Create a `dev` folder, and a `test.jl` file. Paste this block of code and save :
+6. Create a `dev` folder (only if you want, it is gitignored by default), and a `test.jl` file in the file. Paste this block of code and save :
 
 ```julia
 using Revise, Survey, Test
@@ -145,7 +145,7 @@ This way you are modifying as little as possible of previously written code, and
 * If you want to propose a new functionality it is strongly recommended to open an issue first and reach a decision on the final design.
   Then a pull request serves an implementation of the agreed way how things should work.
 * If you are a new contributor and would like to get a guidance on what area
-  you could focus your first PR please do not hesitate to ask and JuliaData members
+  you could focus your first PR please do not hesitate to ask community members
   will help you with picking a topic matching your experience.
 * Feel free to open, or comment on, an issue and solicit feedback early on,
   especially if you're unsure about aligning with design goals and direction,
@@ -155,8 +155,8 @@ This way you are modifying as little as possible of previously written code, and
 * Aim for atomic commits, if possible, e.g. `change 'foo' behavior like so` &
   `'bar' handles such and such corner case`,
   rather than `update 'foo' and 'bar'` & `fix typo` & `fix 'bar' better`.
-* Pull requests are tested against release and development branches of Julia,
-  so using `Pkg.test("DataFrames")` as you develop can be helpful.
+* Pull requests are tested against release branches of Julia,
+  so using `Pkg.test("Survey")` as you develop can be helpful.
 * The style guidelines outlined below are not the personal style of most contributors,
   but for consistency throughout the project, we've adopted them.
 * It is recommended to disable GitHub Actions on your fork; check Settings > Actions.
