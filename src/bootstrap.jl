@@ -18,6 +18,7 @@ popsize: [757, 757, 757  …  757]
 sampsize: [15, 15, 15  …  15]
 weights: [50.4667, 50.4667, 50.4667  …  50.4667]
 allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
+type: bootstrap
 replicates: 1000
 ```
 """
@@ -54,6 +55,8 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         design.weights,
         design.allprobs,
         design.pps,
-        replicates,
+        "bootstrap",
+        UInt(replicates),
+        [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates]
     )
 end

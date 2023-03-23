@@ -159,18 +159,11 @@ This way you are modifying as little as possible of previously written code, and
   so using `Pkg.test("Survey")` as you develop can be helpful.
 * The style guidelines outlined below are not the personal style of most contributors,
   but for consistency throughout the project, we've adopted them.
-* It is recommended to disable GitHub Actions on your fork; check Settings > Actions.
 * If a PR adds a new exported name then make sure to add a docstring for it and
   add a reference to it in the documentation.
 * A PR with breaking changes should have `[BREAKING]` as a first part of its name.
-* If a PR changes or adds functionality please update NEWS.md file accordingly as
-  a part of the PR (along with the link to the PR); please do not add entries
-  to NEWS.md for changes that are bug fixes or are not user visible, such as
-  adding tests, updating documentation or improving code layout.
-* If you make a PR please try to avoid pushing many small commits to GitHub in
-  a sequence as each such commit triggers a separate CI job, which takes over
-  an hour. This has a consequence of making other PRs in packages from the JuliaData
-  ecosystem wait for such CI jobs to finish as hey share a common pool of CI resources.
+* A PR which is still draft or work in progress should have `WIP:` as a first part of its name.
+* If you make a PR please try to avoid pushing many small commits to GitHub in a sequence as each such commit triggers a separate CI job, which takes compuational time, and not a good use of the small pool of CI resources.
 
 ## Style Guidelines
 
