@@ -13,8 +13,11 @@
     @test mean_strat_jk.SE[1] ≈ 9.5361 atol = 1e-3
     @test mean_strat_jk.SE[2] ≈ 10.097 atol = 1e-3
     
-    # mean(:api00,dclus2_jk)
-    # mean(,dnhanes_jk)
+    mean_clus2_jk = mean([:api00,:api99],dclus2_jk)
+    # @test mean_clus2_jk.SE[1] ≈ XXXXX atol = 1e-3
+    # @test mean_clus2_jk.SE[2] ≈ XXXXX atol = 1e-3
+    
+    # Tests using for NHANES
 end
 
 # # R code for correctness above
