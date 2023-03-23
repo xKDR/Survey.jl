@@ -53,44 +53,12 @@ function mean(x::Symbol, design::ReplicateDesign)
             i = 1:design.replicates
         ]
         variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
-    
+        return DataFrame(mean = θ̂, SE = sqrt(variance))
+    # Jackknife integration
     elseif design.type == "jackknife"
-        
-        # The estimate based on original sampling weight vector
-        θ̂ = mean(design.data[!, x], weights(design.data[!, design.weights]))
-        
-        # Find number of psus (nh) in each strata, used inside loop
-        stratified_gdf = groupby(design.data, design.strata)
-        nh = Dict{String, Int}()
-        for (key, subgroup) in pairs(stratified_gdf)
-            nh[key[design.strata]] = length(unique(subgroup[!, design.cluster]))
-        end
-        
-        # iterating over each unique combinations of strata and cluster
-        unique_strata_cols_df = unique(select(design.data, design.strata, design.cluster))
-        variance = 0
-        replicate_index = 1
-        SSE_θ̂hj = 0
-        previous_strata = first(unique_strata_cols_df[!,design.strata])
-        for row in eachrow(unique_strata_cols_df)
-            stratum = row[design.strata]
-            # psu = row[design.cluster]
-            colname = "replicate_"*string(replicate_index)
-            
-            if stratum != previous_strata
-                variance += ((nh[stratum] - 1) / nh[stratum]) * SSE_θ̂hj
-                previous_strata = stratum
-
-                θ̂j = mean(design.data[!, x], weights(design.data[!, colname]))
-                SSE_θ̂hj = (θ̂j - θ̂)^2 
-            else
-                θ̂j = mean(design.data[!, x], weights(design.data[!, colname]))
-                SSE_θ̂hj += (θ̂j - θ̂)^2 
-            end
-            replicate_index += 1
-        end
+        weightedmean(x, y) = mean(x, weights(y))
+        return jackknife_variance(x, weightedmean, design)
     end
-    DataFrame(mean = θ̂, SE = sqrt(variance))
 end
 
 """
