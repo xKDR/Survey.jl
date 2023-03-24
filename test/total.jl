@@ -168,4 +168,13 @@ end
     # equivalent R code (results cause clutter):
     # > svyby(~api00, ~cname, clus1rep, svytotal)
     # > svyby(~api00, ~cname, clus1rep, svymean)
+    
+    # Test that column specifiers from DataFrames make it through this pipeline
+    # These tests replicate what you see above...just with a different syntax.
+    tot = total(:api00, Cols(==(:cname)), dclus1)
+    @test size(tot)[1] == apiclus1.cname |> unique |> length
+    @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 489980.87 rtol = STAT_TOL
+    @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 430469.28 rtol = SE_TOL
+    @test filter(:cname => ==("San Diego"), tot).total[1] ≈ 1830375.53 rtol = STAT_TOL
+    @test filter(:cname => ==("San Diego"), tot).SE[1] ≈ 1298696.64 rtol = SE_TOL
 end
