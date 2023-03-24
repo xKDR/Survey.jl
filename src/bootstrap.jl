@@ -24,27 +24,17 @@ replicates: 1000
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
     H = length(keys(stratified))
-    substrata_dfs = DataFrame[]
+    substrata_dfs = Vector{DataFrame}(undef, H)
     for h = 1:H
         substrata = DataFrame(stratified[h])
         cluster_sorted = sort(substrata, design.cluster)
-        psus = unique(cluster_sorted[!, design.cluster])
-        npsus = [(count(==(i), cluster_sorted[!, design.cluster])) for i in psus]
-        nh = length(psus)
+        cluster_sorted_designcluster = cluster_sorted[!, design.cluster]
         cluster_weights = cluster_sorted[!, design.weights]
-        for replicate = 1:replicates
-            randinds = rand(rng, 1:(nh), (nh - 1))
-            cluster_sorted[!, "replicate_"*string(replicate)] =
-                vcat(
-                    [
-                        fill((count(==(i), randinds)) * (nh / (nh - 1)), npsus[i]) for
-                        i = 1:nh
-                    ]...,
-                ) .* cluster_weights
-        end
-        push!(substrata_dfs, cluster_sorted)
+        _bootweights_cluster_sorted!(cluster_sorted, cluster_weights,
+            cluster_sorted_designcluster, replicates, rng)
+        substrata_dfs[h] = cluster_sorted
     end
-    df = vcat(substrata_dfs...)
+    df = reduce(vcat, substrata_dfs)
     return ReplicateDesign(
         df,
         design.cluster,
@@ -56,4 +46,23 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         design.pps,
         replicates,
     )
+end
+
+function _bootweights_cluster_sorted!(cluster_sorted,
+        cluster_weights, cluster_sorted_designcluster, replicates, rng)
+
+    psus = unique(cluster_sorted_designcluster)
+    npsus = [count(==(i), cluster_sorted_designcluster) for i in psus]
+    nh = length(psus)
+    for replicate = 1:replicates
+        randinds = rand(rng, 1:(nh), (nh - 1))
+        cluster_sorted[!, "replicate_"*string(replicate)] =
+            reduce(vcat,
+                [
+                    fill((count(==(i), randinds)) * (nh / (nh - 1)), npsus[i]) for
+                    i = 1:nh
+                ]
+            ) .* cluster_weights
+    end
+    cluster_sorted
 end
