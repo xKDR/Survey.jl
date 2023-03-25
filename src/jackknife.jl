@@ -15,7 +15,9 @@ w_{i(hj)} =
 In the above formula, ``w_i`` represent the original weights, ``w_{i(hj)}`` represent the replicate weights when the ``j``th PSU from cluster ``h`` is removed, and ``n_h`` represents the number of unique PSUs within cluster ``h``. Replicate weights are added as columns to `design.data`, and these columns have names of the form `replicate_i`, where `i` ranges from 1 to the number of replicate weight columns.
 
 # Examples
-```jldoctest setup = :(using Survey)
+```jldoctest
+julia> using Survey;
+
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
@@ -86,11 +88,47 @@ end
 jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
 ```
 
-Compute variance for the given `func` using the Jackknife method. The formula to compute this variance is the following.
+Compute variance of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
 
 ```math
 \\hat{V}_{\\text{JK}}(\\hat{\\theta}) = \\sum_{h = 1}^H \\dfrac{n_h - 1}{n_h}\\sum_{j = 1}^{n_h}(\\hat{\\theta}_{(hj)} - \\hat{\\theta})^2
 ```
+
+Above, ``\\hat{\\theta}`` represents the estimator computed using the original weights, and ``\\hat{\\theta_{(hj)}}`` represents the estimator computed from the replicate weights obtained when PSU ``j`` from cluster ``h`` is removed.
+
+# Examples
+```jldoctest
+julia> using Survey, StatsBase
+
+julia> apistrat = load_data("apistrat");
+
+julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
+
+julia> rstrat = jackknifeweights(dstrat)
+ReplicateDesign:
+data: 200×244 DataFrame
+strata: stype
+    [E, E, E  …  M]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  1018.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  20.36]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0491]
+type: jackknife
+replicates: 200
+
+julia> weightedmean(x, y) = mean(x, weights(y));
+
+julia> jackknife_variance(:api00, weightedmean, rstrat)
+1×2 DataFrame
+ Row │ estimator  SE
+     │ Float64    Float64
+─────┼────────────────────
+   1 │   662.287  9.53613
+
+```
+# Reference
+pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
 function jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
     df = design.data
