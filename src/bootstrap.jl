@@ -30,6 +30,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         cluster_sorted = sort(substrata, design.cluster)
         cluster_sorted_designcluster = cluster_sorted[!, design.cluster]
         cluster_weights = cluster_sorted[!, design.weights]
+        # Perform the inner loop in a type-stable function to improve runtime.
         _bootweights_cluster_sorted!(cluster_sorted, cluster_weights,
             cluster_sorted_designcluster, replicates, rng)
         substrata_dfs[h] = cluster_sorted
