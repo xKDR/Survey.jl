@@ -43,6 +43,8 @@ dclus2_boot = dclus2 |> bootweights # Create replicate design
 
 # NHANES
 nhanes = load_data("nhanes")
+nhanes.seq1 = collect(1.0:5.0:42955.0)
+nhanes.seq2 = collect(1.0:9.0:77319.0) # [9k for k in 0:8590.0]
 dnhanes = SurveyDesign(nhanes; clusters = :SDMVPSU, strata = :SDMVSTRA, weights = :WTMEC2YR)
 dnhanes_boot = dnhanes |> bootweights
 

@@ -14,16 +14,22 @@
     @test mean_strat_jk.SE[2] ≈ 10.097 atol = 1e-3
     
     mean_clus2_jk = mean([:api00,:api99],dclus2_jk)
-    # @test mean_clus2_jk.SE[1] ≈ XXXXX atol = 1e-3
-    # @test mean_clus2_jk.SE[2] ≈ XXXXX atol = 1e-3
+    @test mean_clus2_jk.SE[1] ≈ 34.9388 atol = 1e-3 # R gives 34.928
+    @test mean_clus2_jk.SE[2] ≈ 34.6565 atol = 1e-3 # R gives 34.645
     
     # Tests using for NHANES
+    mean_nhanes_jk = mean([:seq1, :seq2],dnhanes_jk)
+    @test mean_nhanes_jk.estimator[1] ≈ 21393.96 atol = 1e-3
+    @test mean_nhanes_jk.SE[1] ≈ 143.371 atol = 1e-3 # R is slightly diff in 2nd decimal place
+    @test mean_nhanes_jk.estimator[2] ≈ 38508.328 atol = 1e-3
+    @test mean_nhanes_jk.SE[2] ≈ 258.068 atol = 1e-3 # R is slightly diff in 2nd decimal place
 end
 
 # # R code for correctness above
 # library(survey) 
 # data(api)
 # apiclus1$pw = rep(757/15,nrow(apiclus1))
+# No corrections needed for apiclus2, it has correct weights by default
 
 # #############
 # ###### 23.03.22 PR#260
@@ -57,3 +63,26 @@ end
 # #         mean     SE
 # # api00 662.29  9.5361
 # # api99 629.39 10.0970
+
+#### apiclus2
+# > # clus2 without fpc (doesnt match Julia)
+# > dclus2 <- svydesign(id=~dnum+snum, weights=~pw, data=apiclus2)
+# > dclus2_jk <- as.svrepdesign(dclus2, type="JK1", compress=FALSE)
+# > svymean(~api00+api99,dclus2)
+#         mean     SE
+# api00 670.81 30.712
+# api99 645.03 30.308
+# > svymean(~api00+api99,dclus2_jk)
+#         mean     SE
+# api00 670.81 34.928
+# api99 645.03 34.645
+
+# NHANES test
+# > data("nhanes")
+# > nhanes$seq1 = seq(1.0, 5*8591.0, by = 5)
+# > nhanes$seq2 = seq(1.0, 9*8591.0, by = 9)#,  length.out=8591)
+# > dnhanes <- svydesign(id=~SDMVPSU, strata=~SDMVSTRA, weights=~WTMEC2YR, nest=TRUE, data=nhanes)
+# > svymean(~seq1+seq2,dnhanes)
+#       mean     SE
+# seq1 21394 143.34
+# seq2 38508 258.01
