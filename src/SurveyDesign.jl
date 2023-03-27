@@ -30,11 +30,10 @@ individuals in one cluster are sampled. The clusters are considered disjoint and
 ```jldoctest
 julia> apiclus1 = load_data("apiclus1");
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, strata=:stype, weights=:pw)
+julia> dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw)
 SurveyDesign:
-data: 183×43 DataFrame
-strata: stype
-    [H, E, E  …  E]
+data: 183×44 DataFrame
+strata: none
 cluster: dnum
     [637, 637, 637  …  448]
 popsize: [507.7049, 507.7049, 507.7049  …  507.7049]
@@ -127,14 +126,61 @@ end
 """
     ReplicateDesign <: AbstractSurveyDesign
 
-Survey design obtained by replicating an original design using [`bootweights`](@ref).
+Survey design obtained by replicating an original design using [`bootweights`](@ref). If
+replicate weights are available, then they can be used to directly create a `ReplicateDesign`.
 
-```jldoctest
+# Constructors
+
+```julia
+ReplicateDesign(
+    data::AbstractDataFrame,
+    replicate_weights::Vector{Symbol};
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+    strata::Union{Nothing,Symbol} = nothing,
+    popsize::Union{Nothing,Symbol} = nothing,
+    weights::Union{Nothing,Symbol} = nothing
+)
+
+ReplicateDesign(
+    data::AbstractDataFrame,
+    replicate_weights::UnitIndex{Int};
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+    strata::Union{Nothing,Symbol} = nothing,
+    popsize::Union{Nothing,Symbol} = nothing,
+    weights::Union{Nothing,Symbol} = nothing
+)
+
+ReplicateDesign(
+    data::AbstractDataFrame,
+    replicate_weights::Regex;
+    clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+    strata::Union{Nothing,Symbol} = nothing,
+    popsize::Union{Nothing,Symbol} = nothing,
+    weights::Union{Nothing,Symbol} = nothing
+)
+```
+
+# Arguments
+
+The constructor has the same arguments as [`SurveyDesign`](@ref). The only additional argument is `replicate_weights`, which can
+be of one of the following types.
+
+- `Vector{Symbol}`: In this case, each `Symbol` in the vector should represent a column of `data` containing the replicate weights.
+- `UnitIndex{Int}`: For instance, this could be UnitRange(5:10). This will mean that the replicate weights are contained in columns 5 through 10.
+- `Regex`: In this case, all the columns of `data` which match this `Regex` will be treated as the columns containing the replicate weights.
+
+All the columns containing the replicate weights will be renamed to the form `replicate_i`, where `i` ranges from 1 to the number of columns containing the replicate weights.
+
+# Examples
+
+Here is an example where the [`bootweights`](@ref) function is used to create a `ReplicateDesign`.
+
+```jldoctest replicate-design; setup = :(using Survey, CSV, DataFrames)
 julia> apistrat = load_data("apistrat");
 
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
-julia> bootstrat = bootweights(dstrat; replicates=1000)
+julia> bootstrat = bootweights(dstrat; replicates=1000)     # creating a ReplicateDesign using bootweights
 ReplicateDesign:
 data: 200×1044 DataFrame
 strata: stype
@@ -144,8 +190,67 @@ popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
 sampsize: [100, 100, 100  …  50]
 weights: [44.21, 44.21, 44.21  …  15.1]
 allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
 replicates: 1000
+
 ```
+
+If the replicate weights are given to us already, then we can directly pass them to the `ReplicateDesign` constructor. For instance, in
+the above example, suppose we had the `bootstrat` data as a CSV file (for this example, we also rename the columns containing the replicate weights to the form `r_i`).
+
+```jldoctest replicate-design
+julia> using CSV;
+
+julia> DataFrames.rename!(bootstrat.data, ["replicate_"*string(index) => "r_"*string(index) for index in 1:1000]);
+
+julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
+
+```
+
+We can now pass the replicate weights directly to the `ReplicateDesign` constructor, either as a `Vector{Symbol}`, a `UnitRange` or a `Regex`.
+
+```jldoctest replicate-design
+julia> bootstrat_direct = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), [Symbol("r_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
+replicates: 1000
+
+julia> bootstrat_unitrange = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), UnitRange(45:1044);strata=:stype, weights=:pw)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
+replicates: 1000
+
+julia> bootstrat_regex = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), r"r_\\d";strata=:stype, weights=:pw)
+ReplicateDesign:
+data: 200×1044 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
+replicates: 1000
+
+```
+
 """
 struct ReplicateDesign <: AbstractSurveyDesign
     data::AbstractDataFrame
@@ -156,5 +261,96 @@ struct ReplicateDesign <: AbstractSurveyDesign
     weights::Symbol # Effective weights in case of singlestage approx supported
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool
+    type::String
     replicates::UInt
+    replicate_weights::Vector{Symbol}
+
+    # default constructor
+    function ReplicateDesign(
+        data::DataFrame,
+        cluster::Symbol,
+        popsize::Symbol,
+        sampsize::Symbol,
+        strata::Symbol,
+        weights::Symbol,
+        allprobs::Symbol,
+        pps::Bool,
+        type::String,
+        replicates::UInt,
+        replicate_weights::Vector{Symbol}
+    )
+        new(data, cluster, popsize, sampsize, strata, weights, allprobs,
+           pps, type, replicates, replicate_weights)
+    end
+
+    # constructor with given replicate_weights
+    function ReplicateDesign(
+        data::AbstractDataFrame,
+        replicate_weights::Vector{Symbol};
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing
+    )
+        # rename the replicate weights if needed
+        rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
+
+        # call the SurveyDesign constructor
+        base_design = SurveyDesign(
+                        data;
+                        clusters=clusters,
+                        strata=strata,
+                        popsize=popsize,
+                        weights=weights
+                      )
+        new(
+            base_design.data,
+            base_design.cluster,
+            base_design.popsize,
+            base_design.sampsize,
+            base_design.strata,
+            base_design.weights,
+            base_design.allprobs,
+            base_design.pps,
+            "bootstrap",
+            length(replicate_weights),
+            replicate_weights
+        )
+    end
+
+    # replicate weights given as a range of columns
+    ReplicateDesign(
+        data::AbstractDataFrame,
+        replicate_weights::UnitRange{Int};
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing
+    ) =
+        ReplicateDesign(
+            data,
+            Symbol.(names(data)[replicate_weights]);
+            clusters=clusters,
+            strata=strata,
+            popsize=popsize,
+            weights=weights
+        )
+
+    # replicate weights given as regular expression
+    ReplicateDesign(
+        data::AbstractDataFrame,
+        replicate_weights::Regex;
+        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
+        strata::Union{Nothing,Symbol} = nothing,
+        popsize::Union{Nothing,Symbol} = nothing,
+        weights::Union{Nothing,Symbol} = nothing
+    ) =
+        ReplicateDesign(
+            data,
+            Symbol.(names(data)[findall(name -> occursin(replicate_weights, name), names(data))]);
+            clusters=clusters,
+            strata=strata,
+            popsize=popsize,
+            weights=weights
+        )
 end
