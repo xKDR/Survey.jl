@@ -84,9 +84,7 @@ function jackknifeweights(design::SurveyDesign)
 end
 
 """
-```julia
-jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
-```
+    jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
 
 Compute variance of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
 
