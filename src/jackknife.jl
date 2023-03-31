@@ -144,10 +144,10 @@ function jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
         cluster_variance = 0
         for psu in psus_in_stratum
             # get replicate weights corresponding to current stratum and psu
-            rep_weights = design.data[!, "replicate_"*string(replicate_index)]
+            rep_weights = df[!, "replicate_"*string(replicate_index)]
 
             # estimator from replicate weights
-            θhj = func(design.data[!, x], rep_weights)
+            θhj = func(df[!, x], rep_weights)
 
             cluster_variance += ((nh - 1)/nh)*(θhj - θ)^2
             replicate_index += 1
