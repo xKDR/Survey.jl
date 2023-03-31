@@ -1,7 +1,6 @@
 """
-```julia
-jackknifeweights(design::SurveyDesign)
-```
+    jackknifeweights(design::SurveyDesign)
+
 Delete-1 Jackknife algorithm for replication weights from sampling weights. The replicate weights are calculated using the following formula.
 
 ```math
