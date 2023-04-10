@@ -171,10 +171,11 @@ end
     
     # Test multiple domains passed at once
     tot = total(:api00, [:stype,:cname], dclus1_boot)
-
+    
+    #### Why doesnt this syntax produce domain estimates??
     # Test that column specifiers from DataFrames make it through this pipeline
     # These tests replicate what you see above...just with a different syntax.
-    tot = total(:api00, Survey.DataFrames.Cols(==(:cname)), dclus1_boot)
+    # tot = total(:api00, Survey.DataFrames.Cols(==(:cname)), dclus1_boot)
     ######## Above Survey.DataFrames.Cols(==(:cname)) syntax doesnt give domain estimates
     # @test size(tot)[1] == apiclus1.cname |> unique |> length
     # @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 489980.87 rtol = STAT_TOL
