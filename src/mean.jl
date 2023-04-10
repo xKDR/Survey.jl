@@ -136,7 +136,7 @@ julia> mean(:api00, :cname, bclus1)
   11 │ Mendocino    623.25    1.09545e-13
 ```
 """
-function mean(x::Symbol, domain::Symbol, design::AbstractSurveyDesign)
+function mean(x::Symbol, domain, design::AbstractSurveyDesign)
     weighted_mean(x, w) = mean(x, StatsBase.weights(w))
     df = bydomain(x, domain, design, weighted_mean)
     rename!(df, :statistic => :mean)
