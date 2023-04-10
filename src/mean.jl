@@ -46,13 +46,19 @@ julia> mean(:api00, bclus1)
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
-    X = mean(design.data[!, x], weights(design.data[!, design.weights]))
-    Xt = [
-        mean(design.data[!, x], weights(design.data[!, "replicate_"*string(i)])) for
-        i = 1:design.replicates
-    ]
-    variance = sum((Xt .- X) .^ 2) / design.replicates
-    DataFrame(mean = X, SE = sqrt(variance))
+    if design.type == "bootstrap"
+        θ̂ = mean(design.data[!, x], weights(design.data[!, design.weights]))
+        θ̂t = [
+            mean(design.data[!, x], weights(design.data[!, "replicate_"*string(i)])) for
+            i = 1:design.replicates
+        ]
+        variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
+        return DataFrame(mean = θ̂, SE = sqrt(variance))
+    # Jackknife integration
+    elseif design.type == "jackknife"
+        weightedmean(x, y) = mean(x, weights(y))
+        return jackknife_variance(x, weightedmean, design)
+    end
 end
 
 """
@@ -130,7 +136,7 @@ julia> mean(:api00, :cname, bclus1)
   11 │ Mendocino    623.25    1.09545e-13
 ```
 """
-function mean(x::Symbol, domain::Symbol, design::AbstractSurveyDesign)
+function mean(x::Symbol, domain, design::AbstractSurveyDesign)
     weighted_mean(x, w) = mean(x, StatsBase.weights(w))
     df = bydomain(x, domain, design, weighted_mean)
     rename!(df, :statistic => :mean)
