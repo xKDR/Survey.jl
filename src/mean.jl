@@ -142,3 +142,59 @@ function mean(x::Symbol, domain, design::AbstractSurveyDesign)
     rename!(df, :statistic => :mean)
     return df
 end
+
+"""
+    mean(x, design, ci_type; kwargs)
+    mean(x, domain, design, ci_type; kwargs)
+
+Confidence intervals for `mean`. Three options for ci_type:
+```julia
+ci_type="normal"    # use Normal distribution critical values
+ci_type="t"         # use Student t distribution critical values
+ci_type="margin"    # use margin of error
+```
+
+Mathematically, the confidence interval is the range
+```math
+\\left[\\bar{x} - critical value * SE , \\bar{x} + critical value * SE  \\right]
+```
+
+Keyword arguments for each type of CI
+```julia
+alpha         # Significance level. Confidence level is 100*(1 - alpha)%
+dof           # Degrees of freedom when ci_type="t"
+margin        # Margin of error when ci_type="margin"
+```
+Also works when `Vector{Symbol}` and `domain` are specified.
+```julia
+# TODO example
+```
+## External links
+[Confidence intervals on Wikipedia](https://en.wikipedia.org/wiki/Confidence_interval)
+"""
+function mean(x::Symbol, design::ReplicateDesign, ci_type::String;
+    alpha::Float64=0.05, dof::Int64=nrow(design.data)-1, margin::Float64=2.0)
+    df_mean = mean(x, design)
+    ci_lower, ci_upper = _ci(df_mean[!,1], df_mean[!,2], ci_type, alpha, dof, margin)
+    df_mean[!,:ci_lower] = ci_lower
+    df_mean[!,:ci_upper] = ci_upper
+    return df_mean
+end
+
+function mean(x::Vector{Symbol}, design::ReplicateDesign, ci_type::String;
+    alpha::Float64=0.05, dof::Int64=nrow(design.data)-1, margin::Float64=2.0)
+    df_mean = mean(x, design)
+    ci_lower, ci_upper = _ci(df_mean[!,2], df_mean[!,3], ci_type, alpha, dof, margin) # mean and SE are in 2nd and 3rd columns
+    df_mean[!,:ci_lower] = ci_lower
+    df_mean[!,:ci_upper] = ci_upper
+    return df_mean
+end
+
+function mean(x::Symbol, domain::Symbol, design::ReplicateDesign, ci_type::String; 
+    alpha::Float64=0.05, dof::Int64=nrow(design.data)-1, margin::Float64=2.0)
+    df_mean = mean(x, domain, design)
+    ci_lower, ci_upper = _ci(df_mean[!,2], df_mean[!,3], ci_type, alpha, dof, margin) # domain mean and SE are in 2nd and 3rd columns
+    df_mean[!,:ci_lower] = ci_lower
+    df_mean[!,:ci_upper] = ci_upper
+    return df_mean
+end

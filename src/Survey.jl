@@ -4,6 +4,7 @@ using DataFrames
 using Statistics
 import Statistics: quantile
 using StatsBase
+using Distributions
 import StatsBase: mean, quantile
 using CSV
 using LinearAlgebra
@@ -26,6 +27,7 @@ include("show.jl")
 include("ratio.jl")
 include("by.jl")
 include("jackknife.jl")
+include("ci.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
