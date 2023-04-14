@@ -168,4 +168,59 @@ end
     # equivalent R code (results cause clutter):
     # > svyby(~api00, ~cname, clus1rep, svytotal)
     # > svyby(~api00, ~cname, clus1rep, svymean)
+    
+    # Test multiple domains passed at once
+    tot = total(:api00, [:stype,:cname], dclus1_boot)
+    @test filter(row -> row[:cname] == "Los Angeles" && row[:stype] == "E", tot).SE[1] ≈ 343365 rtol = STAT_TOL
+    @test filter(row -> row[:cname] == "Merced" && row[:stype] == "H", tot).SE[1] ≈ 27090.33 rtol = STAT_TOL
+
+    #### Why doesnt this syntax produce domain estimates??
+    # Test that column specifiers from DataFrames make it through this pipeline
+    # These tests replicate what you see above...just with a different syntax.
+    # tot = total(:api00, Survey.DataFrames.Cols(==(:cname)), dclus1_boot)
+    ######## Above Survey.DataFrames.Cols(==(:cname)) syntax doesnt give domain estimates
+    # @test size(tot)[1] == apiclus1.cname |> unique |> length
+    # @test filter(:cname => ==("Los Angeles"), tot).total[1] ≈ 489980.87 rtol = STAT_TOL
+    # @test filter(:cname => ==("Los Angeles"), tot).SE[1] ≈ 430469.28 rtol = SE_TOL
+    # @test filter(:cname => ==("San Diego"), tot).total[1] ≈ 1830375.53 rtol = STAT_TOL
+    # @test filter(:cname => ==("San Diego"), tot).SE[1] ≈ 1298696.64 rtol = SE_TOL
 end
+
+#### R code for vector{Symbol} domain estimation
+# > data(api)
+# > apiclus1$pw = rep(757/15,nrow(apiclus1))
+# > ### 9.04.23
+# > dclus1<-svydesign(id=~dnum, weights=~pw, data=apiclus1);
+# > rclus1<-as.svrepdesign(dclus1, type="subbootstrap", compress=FALSE, replicates = 4000)
+# > svyby(~api00, ~stype+cname, rclus1, svytotal)
+#               stype       cname      api00         se
+# E.Alameda         E     Alameda  273428.40  275423.33
+# H.Alameda         H     Alameda   30683.73   30907.60
+# M.Alameda         M     Alameda   67272.07   67762.88
+# E.Fresno          E      Fresno   48599.40   47484.67
+# H.Fresno          H      Fresno   22356.73   21843.93
+# M.Fresno          M      Fresno   24324.93   23766.99
+# E.Kern            E        Kern   24930.53   24847.76
+# M.Kern            M        Kern   20741.80   20672.93
+# E.Los Angeles     E Los Angeles  395154.00  341692.92
+# M.Los Angeles     M Los Angeles   94826.87   95416.42
+# E.Mendocino       E   Mendocino   58844.13   57711.15
+# H.Mendocino       H   Mendocino   35124.80   34448.51
+# M.Mendocino       M   Mendocino   31844.47   31231.33
+# E.Merced          E      Merced   50517.13   51424.65
+# H.Merced          H      Merced   26696.87   27176.47
+# M.Merced          M      Merced   27605.27   28101.18
+# E.Orange          E      Orange  463536.33  465047.76
+# M.Orange          M      Orange  110219.20  110578.59
+# E.Plumas          E      Plumas  144284.20  146672.86
+# H.Plumas          H      Plumas  143729.07  146108.54
+# M.Plumas          M      Plumas   34266.87   34834.16
+# E.San Diego       E   San Diego 1670497.13 1233144.04
+# H.San Diego       H   San Diego   63386.13   63693.54
+# M.San Diego       M   San Diego   96492.27   96960.22
+# E.San Joaquin     E San Joaquin  848243.73  848605.33
+# H.San Joaquin     H San Joaquin   79585.93   79619.86
+# M.San Joaquin     M San Joaquin  101387.53  101430.75
+# E.Santa Clara     E Santa Clara  737418.93  484164.71
+# H.Santa Clara     H Santa Clara   35478.07   35311.28
+# M.Santa Clara     M Santa Clara  187685.53  131278.63

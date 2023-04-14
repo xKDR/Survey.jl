@@ -29,4 +29,4 @@ makedocs(;
     checkdocs = :exports,
 )
 
-deploydocs(; repo = "github.com/xKDR/Survey.jl", target = "build", devbranch = "main")
+deploydocs(; repo = "github.com/xKDR/Survey.jl", target = "build", devbranch = "main", push_preview = true)
