@@ -26,6 +26,7 @@ include("show.jl")
 include("ratio.jl")
 include("by.jl")
 include("jackknife.jl")
+include("raking.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
@@ -37,5 +38,6 @@ export boxplot
 export bootweights
 export ratio
 export jackknifeweights, jackknife_variance
+export raking
 
 end
