@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Replicate weights · Survey.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link rel="canonical" href="https://xKDR.github.io/Survey.jl/man/replicate/"/><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">Survey.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../getting_started/">Getting Started</a></li><li><span class="tocitem">Manual</span><ul><li><a class="tocitem" href="../dataframes/">DataFrames in Survey</a></li><li class="is-active"><a class="tocitem" href>Replicate weights</a><ul class="internal"><li><a class="tocitem" href="#References"><span>References</span></a></li></ul></li><li><a class="tocitem" href="../plotting/">Plotting</a></li><li><a class="tocitem" href="../comparisons/">Comparison with other survey analysis tools</a></li></ul></li><li><a class="tocitem" href="../../api/">API reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href>Replicate weights</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Replicate weights</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/xKDR/Survey.jl/blob/main/docs/src/man/replicate.md#" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Replicate-weights"><a class="docs-heading-anchor" href="#Replicate-weights">Replicate weights</a><a id="Replicate-weights-1"></a><a class="docs-heading-anchor-permalink" href="#Replicate-weights" title="Permalink"></a></h1><p>Replicate weights are a method for estimating the standard errors of survey statistics in complex sample designs.</p><p>The basic idea behind replicate weights is to create multiple versions of the original sample weights, each with small, randomly generated perturbations. The multiple versions of the sample weights are then used to calculate the survey statistic of interest, such as the mean or total, on multiple replicate samples. The variance of the survey statistic is then estimated by computing the variance across the replicate samples.</p><p>Currently, the Rao-Wu bootstrap<sup class="footnote-reference"><a id="citeref-1" href="#footnote-1">[1]</a></sup> is the only method in the package for generating replicate weights. </p><p>The <code>bootweights</code> function of the package can be used to generate a <code>ReplicateDesign</code> from a <code>SurveyDesign</code> For example: </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using Survey</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; apistrat = load_data(&quot;apistrat&quot;)</code><code class="nohighlight hljs ansi" style="display:block;">200×40 DataFrame
+ Row │ Column1  cds             stype    name             sname                ⋯
+     │ Int64    Int64           String1  String15         String               ⋯
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │       1  19647336097927  E        Open Magnet: Ce  Open Magnet: Center  ⋯
+   2 │       2  19647336016018  E        Belvedere Eleme  Belvedere Elementary
+   3 │       3  19648816021505  E        Altadena Elemen  Altadena Elementary
+   4 │       4  19647336019285  E        Soto Street Ele  Soto Street Elementa
+   5 │       5  56739406115430  E        Walnut Canyon E  Walnut Canyon Elemen ⋯
+   6 │       6  56726036084917  E        Atherwood Eleme  Atherwood Elementary
+   7 │       7  56726036055800  E        Township Elemen  Township Elementary
+   8 │       8  15633216109078  E        Thorner (Dr. Ju  Thorner (Dr. Juliet)
+  ⋮  │    ⋮           ⋮            ⋮            ⋮                         ⋮    ⋱
+ 194 │     194  19650526022933  E        Emperor Element  Emperor Elementary   ⋯
+ 195 │     195   1612426001572  E        Alvarado Elemen  Alvarado Elementary
+ 196 │     196  19647336018568  E        One Hundred Twe  One Hundred Twelfth
+ 197 │     197  33670333331600  H        Corona Senior H  Corona Senior High
+ 198 │     198   4755076003164  M        Sycamore Middle  Sycamore Middle      ⋯
+ 199 │     199  56724626055016  E        Larsen (Ansgar)  Larsen (Ansgar) Elem
+ 200 │     200  31669513134657  H        Lincoln High (C  Lincoln High (Char)
+                                                 36 columns and 185 rows omitted</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw)</code><code class="nohighlight hljs ansi" style="display:block;">SurveyDesign:
+data: 200×44 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]</code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; bstrat = bootweights(dstrat; replicates = 10)</code><code class="nohighlight hljs ansi" style="display:block;">ReplicateDesign:
+data: 200×54 DataFrame
+strata: stype
+    [E, E, E  …  H]
+cluster: none
+popsize: [4420.9999, 4420.9999, 4420.9999  …  755.0]
+sampsize: [100, 100, 100  …  50]
+weights: [44.21, 44.21, 44.21  …  15.1]
+allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
+type: bootstrap
+replicates: 10</code></pre><p>For each replicate, the <code>DataFrame</code> of <code>ReplicateDesign</code> has an additional column. The of the column is <code>replicate_</code> followed by the replicate number.  </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; names(bstrat.data)</code><code class="nohighlight hljs ansi" style="display:block;">54-element Vector{String}:
+ &quot;Column1&quot;
+ &quot;cds&quot;
+ &quot;stype&quot;
+ &quot;name&quot;
+ &quot;sname&quot;
+ &quot;snum&quot;
+ &quot;dname&quot;
+ &quot;dnum&quot;
+ &quot;cname&quot;
+ &quot;cnum&quot;
+ ⋮
+ &quot;replicate_2&quot;
+ &quot;replicate_3&quot;
+ &quot;replicate_4&quot;
+ &quot;replicate_5&quot;
+ &quot;replicate_6&quot;
+ &quot;replicate_7&quot;
+ &quot;replicate_8&quot;
+ &quot;replicate_9&quot;
+ &quot;replicate_10&quot;</code></pre><p><code>replicate_1</code>, <code>replicate_2</code>, <code>replicate_3</code>, <code>replicate_4</code>, <code>replicate_5</code>, <code>replicate_6</code>, <code>replicate_7</code>, <code>replicate_8</code>, <code>replicate_9</code>, <code>replicate_10</code>, are the replicate weight columns. </p><p>While a <code>SurveyDesign</code> can be used to estimate a statistics. For example: </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; mean(:api00, dstrat)</code><code class="nohighlight hljs ansi" style="display:block;">1×1 DataFrame
+ Row │ mean
+     │ Float64
+─────┼─────────
+   1 │ 662.287</code></pre><p>The <code>ReplicateDesign</code> can be used to compute the standard error of the statistic. For example: </p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; mean(:api00, bstrat)</code><code class="nohighlight hljs ansi" style="display:block;">1×2 DataFrame
+ Row │ mean     SE
+     │ Float64  Float64
+─────┼──────────────────
+   1 │ 662.287  11.2546</code></pre><p>For each replicate weight, the statistic is calculated using it instead of the weight. The standard deviation of those statistics is the standard error of the estimate.  </p><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><section class="footnotes is-size-7"><ul><li class="footnote" id="footnote-1"><a class="tag is-link" href="#citeref-1">1</a><a href="https://journals.sagepub.com/doi/abs/10.1177/096228029600500305?journalCode=smma">Rust, Keith F., and J. N. K. Rao. &quot;Variance estimation for complex surveys using replication techniques.&quot; Statistical methods in medical research 5.3 (1996): 283-310.</a></li></ul></section></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../dataframes/">« DataFrames in Survey</a><a class="docs-footer-nextpage" href="../plotting/">Plotting »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Friday 14 April 2023 10:15">Friday 14 April 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
