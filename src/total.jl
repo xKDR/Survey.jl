@@ -121,7 +121,7 @@ julia> total(:api00, :cname, bclus1)
   11 │ Mendocino     84380.6        80215.9
 ```
 """
-function total(x::Symbol, domain::Symbol, design::AbstractSurveyDesign)
+function total(x::Symbol, domain, design::AbstractSurveyDesign)
     df = bydomain(x, domain, design, wsum)
     rename!(df, :statistic => :total)
 end
