@@ -38,9 +38,15 @@ dclus1_boot_regex = ReplicateDesign(dclus1_boot.data, REPLICATES_REGEX, clusters
 
 # Two-stage cluster sample
 apiclus2 = load_data("apiclus2") # Load API dataset
-apiclus2[!, :pw] = fill(757 / 15, (size(apiclus2, 1),)) # Correct api mistake for pw column
 dclus2 = SurveyDesign(apiclus2; clusters = :dnum, weights = :pw) # Create SurveyDesign
 dclus2_boot = dclus2 |> bootweights # Create replicate design
+
+# NHANES
+nhanes = load_data("nhanes")
+nhanes.seq1 = collect(1.0:5.0:42955.0)
+nhanes.seq2 = collect(1.0:9.0:77319.0) # [9k for k in 0:8590.0]
+dnhanes = SurveyDesign(nhanes; clusters = :SDMVPSU, strata = :SDMVSTRA, weights = :WTMEC2YR)
+dnhanes_boot = dnhanes |> bootweights
 
 @testset "Survey.jl" begin
     @test size(load_data("apiclus1")) == (183, 40)
@@ -57,4 +63,5 @@ include("hist.jl")
 include("boxplot.jl")
 include("ratio.jl")
 include("show.jl")
+include("jackknife.jl")
 include("reg.jl")

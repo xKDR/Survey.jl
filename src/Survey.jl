@@ -27,6 +27,7 @@ include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
 include("by.jl")
+include("jackknife.jl")
 include("reg.jl")
 
 export load_data
@@ -38,6 +39,7 @@ export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
 export ratio
+export jackknifeweights, jackknife_variance
 export @formula, glm
 
 end

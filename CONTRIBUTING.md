@@ -2,6 +2,17 @@
 
 # Contributing to Survey.jl
 
+  * [Overview](#overview)
+  * [Reporting Issues](#reporting-issues)
+  * [Recommended workflow setup](#recommended-workflow-setup)
+  * [Modifying an existing docstring in `src/`](#modifying-an-existing-docstring-in--src--)
+  * [Adding a new docstring to `src/`](#adding-a-new-docstring-to--src--)
+  * [Doctests](#doctests)
+  * [Integration with exisiting API](#integration-with-exisiting-api)
+  * [Contributing](#contributing)
+  * [Style Guidelines](#style-guidelines)
+  * [Git Recommendations For Pull Requests](#git-recommendations-for-pull-requests)
+
 ## Overview
 Thank you for thinking about making contributions to Survey.jl!  
 We aim to keep consistency in contribution guidelines to DataFrames.jl, which is the main upstream dependency for the project. 
@@ -15,6 +26,46 @@ Reading through the ColPrac guide for collaborative practices is highly recommen
 * If it's a bug, or unexpected behaviour, reproducing on the latest development version
   (`Pkg.add(name="Survey", rev="main")`) is a good gut check and can streamline the process,
   along with including the first two lines of output from `versioninfo()`
+
+## Setting up development workflow
+
+Below tutorial uses Windows Subsystem for Linux (WSL) and VSCode. Linux/MacOS/BSD can ignore WSL specific steps.
+
+1. Install Ubuntu on WSL from the [Ubuntu website](https://ubuntu.com/wsl) or the Microsoft Store
+2. Create a fork of the [Survey.jl repository](https://github.com/xKDR/Survey.jl). You will only be ever working on this fork, and submitting Pull Requests to the main repo. 
+3. Copy the SSH link from your fork by clicking the green `<> Code` icon and then `SSH`. 
+    - You must already have SSH setup for this to work. If you don't, look up a tutorial on how to clone a github repository using SSH.
+4. Open a WSL terminal, and run :
+    - `curl -fsSL https://install.julialang.org | sh`
+    - `git clone git@github.com:your_username/Survey.jl.git` -- replace "*your_username**"
+    - `julia`
+3. You are now in the Julia REPL, run :
+    - `import Pkg; Pkg.add("Revise")`
+    - `import Pkg; Pkg.add("Survey")`
+    - `import Pkg; Pkg.add("Test")`
+    - `] dev .`
+4. Open VSCode and install the following extensions :
+    - WSL 
+    - Julia
+5. Go back to your WSL terminal, navigate to the folder of your repo, and run `code .` to open VSCode in that folder
+6. Create a `dev` folder (only if you want, it is gitignored by default), and a `test.jl` file in the file. Paste this block of code and save :
+
+```julia
+using Revise, Survey, Test
+
+@testset "ratio.jl" begin
+    apiclus1 = load_data("apiclus1")
+    dclus1 = SurveyDesign(apiclus1; clusters=:dnum, strata=:stype, weights=:pw)
+    @test ratio(:api00, :enroll, dclus1).ratio[1] ≈ 1.17182 atol = 1e-4
+end
+```
+
+9. In the WSL terminal (not Julia REPL), run `julia dev/test.jl`  
+✅ If you get no errors, your setup is now complete !
+
+You can keep working in the `dev` folder, which is .gitignored.  
+Once you have working code and tests, you can move them to the appropriate folders, commit, push, and submit a Pull Request.  
+Make sure to read the rest of this document so you can learn the best practices and guidelines for this project.  
 
 ## Modifying an existing docstring in `src/`
 
@@ -93,7 +144,9 @@ This way you are modifying as little as possible of previously written code, and
 * Codedev coverage has reached 100%. So please make sure to add testing cases of contributed code to keep it at 100%.
 * If you want to propose a new functionality it is strongly recommended to open an issue first and reach a decision on the final design.
   Then a pull request serves an implementation of the agreed way how things should work.
-* If you are a new contributor and would like to get a guidance on what area you could focus your first PR please do not hesitate to ask and JuliaData members will help you with picking a topic matching your experience.
+* If you are a new contributor and would like to get a guidance on what area
+  you could focus your first PR please do not hesitate to ask community members
+  will help you with picking a topic matching your experience.
 * Feel free to open, or comment on, an issue and solicit feedback early on,
   especially if you're unsure about aligning with design goals and direction,
   or if relevant historical comments are ambiguous.
@@ -102,7 +155,8 @@ This way you are modifying as little as possible of previously written code, and
 * Aim for atomic commits, if possible, e.g. `change 'foo' behavior like so` &
   `'bar' handles such and such corner case`,
   rather than `update 'foo' and 'bar'` & `fix typo` & `fix 'bar' better`.
-* Pull requests are tested against release branches of Julia, so using `Pkg.test("Survey")` as you develop can be helpful.
+* Pull requests are tested against release branches of Julia,
+  so using `Pkg.test("Survey")` as you develop can be helpful.
 * The style guidelines outlined below are not the personal style of most contributors,
   but for consistency throughout the project, we've adopted them.
 * If a PR adds a new exported name then make sure to add a docstring for it and
