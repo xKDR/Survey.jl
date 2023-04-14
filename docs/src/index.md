@@ -21,6 +21,8 @@ Presently, summary statistics such as `mean`, `total`, `ratio`, and `quantile` c
 
 The package is built on top of [DataFrames.jl](https://dataframes.juliadata.org/stable/) and supports a variety of features for data manipulation. Plots are generated using [AlgebraOfGraphics](https://github.com/MakieOrg/AlgebraOfGraphics.jl).
 
+Discourse [post](https://discourse.julialang.org/t/ann-announcing-survey-jl-for-analysis-of-complex-surveys/94667) announcing the package.
+
 ## Plans
 We plan for efficient implementations of all the methods in R `survey`. Features for future releases will include:
 

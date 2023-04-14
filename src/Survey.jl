@@ -12,6 +12,8 @@ using AlgebraOfGraphics
 using CategoricalArrays
 using Random
 using Missings
+using RData
+using Downloads
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
@@ -26,6 +28,8 @@ include("show.jl")
 include("ratio.jl")
 include("by.jl")
 include("jackknife.jl")
+include("ht.jl")
+include("analytical.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
@@ -37,5 +41,6 @@ export boxplot
 export bootweights
 export ratio
 export jackknifeweights, jackknife_variance
+export HartleyRao
 
 end

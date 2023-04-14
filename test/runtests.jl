@@ -41,6 +41,9 @@ apiclus2 = load_data("apiclus2") # Load API dataset
 dclus2 = SurveyDesign(apiclus2; clusters = :dnum, weights = :pw) # Create SurveyDesign
 dclus2_boot = dclus2 |> bootweights # Create replicate design
 
+# download and test using popular multistage stratified surveys
+## TODO
+
 # NHANES
 nhanes = load_data("nhanes")
 nhanes.seq1 = collect(1.0:5.0:42955.0)
@@ -64,3 +67,5 @@ include("boxplot.jl")
 include("ratio.jl")
 include("show.jl")
 include("jackknife.jl")
+include("analytical.jl")
+include("ht.jl")
