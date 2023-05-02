@@ -67,7 +67,7 @@ function jackknifeweights(design::SurveyDesign)
         end
     end
 
-    return ReplicateDesign(
+    return ReplicateDesign{JackknifeReplicates}(
         df,
         design.cluster,
         design.popsize,
