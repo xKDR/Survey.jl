@@ -12,6 +12,8 @@ Private = false
 AbstractSurveyDesign
 SurveyDesign
 ReplicateDesign
+BootstrapReplicates
+JackknifeReplicates
 load_data
 bootweights
 jackknifeweights
