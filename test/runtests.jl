@@ -13,18 +13,18 @@ apisrs = load_data("apisrs") # Load API dataset
 srs = SurveyDesign(apisrs, weights = :pw)
 unitrange = UnitRange((length(names(apisrs)) + 1):(TOTAL_REPLICATES + length(names(apisrs))))
 bsrs = srs |> bootweights # Create replicate design
-bsrs_direct = ReplicateDesign(bsrs.data, REPLICATES_VECTOR, weights = :pw)  # using ReplicateDesign constructor
-bsrs_unitrange = ReplicateDesign(bsrs.data, unitrange, weights = :pw)  # using ReplicateDesign constructor
-bsrs_regex = ReplicateDesign(bsrs.data, REPLICATES_REGEX, weights = :pw)  # using ReplicateDesign constructor
+bsrs_direct = ReplicateDesign{BootstrapReplicates}(bsrs.data, REPLICATES_VECTOR, weights = :pw)  # using ReplicateDesign constructor
+bsrs_unitrange = ReplicateDesign{BootstrapReplicates}(bsrs.data, unitrange, weights = :pw)  # using ReplicateDesign constructor
+bsrs_regex = ReplicateDesign{BootstrapReplicates}(bsrs.data, REPLICATES_REGEX, weights = :pw)  # using ReplicateDesign constructor
 
 # Stratified sample
 apistrat = load_data("apistrat") # Load API dataset
 dstrat = SurveyDesign(apistrat, strata = :stype, weights = :pw) # Create SurveyDesign
 unitrange = UnitRange((length(names(apistrat)) + 1):(TOTAL_REPLICATES + length(names(apistrat))))
 bstrat = dstrat |> bootweights # Create replicate design
-bstrat_direct = ReplicateDesign(bstrat.data, REPLICATES_VECTOR, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
-bstrat_unitrange = ReplicateDesign(bstrat.data, unitrange, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
-bstrat_regex = ReplicateDesign(bstrat.data, REPLICATES_REGEX, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
+bstrat_direct = ReplicateDesign{BootstrapReplicates}(bstrat.data, REPLICATES_VECTOR, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
+bstrat_unitrange = ReplicateDesign{BootstrapReplicates}(bstrat.data, unitrange, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
+bstrat_regex = ReplicateDesign{BootstrapReplicates}(bstrat.data, REPLICATES_REGEX, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
 
 # One-stage cluster sample
 apiclus1 = load_data("apiclus1") # Load API dataset
@@ -32,9 +32,9 @@ apiclus1[!, :pw] = fill(757 / 15, (size(apiclus1, 1),)) # Correct api mistake fo
 dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) # Create SurveyDesign
 unitrange = UnitRange((length(names(apiclus1)) + 1):(TOTAL_REPLICATES + length(names(apiclus1))))
 dclus1_boot = dclus1 |> bootweights # Create replicate design
-dclus1_boot_direct = ReplicateDesign(dclus1_boot.data, REPLICATES_VECTOR, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
-dclus1_boot_unitrange = ReplicateDesign(dclus1_boot.data, unitrange, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
-dclus1_boot_regex = ReplicateDesign(dclus1_boot.data, REPLICATES_REGEX, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
+dclus1_boot_direct = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, REPLICATES_VECTOR, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
+dclus1_boot_unitrange = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, unitrange, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
+dclus1_boot_regex = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, REPLICATES_REGEX, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
 
 # Two-stage cluster sample
 apiclus2 = load_data("apiclus2") # Load API dataset
