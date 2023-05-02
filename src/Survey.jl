@@ -29,6 +29,7 @@ include("jackknife.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
+export BootstrapReplicates, JackknifeReplicates
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot

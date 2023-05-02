@@ -123,6 +123,15 @@ struct SurveyDesign <: AbstractSurveyDesign
     end
 end
 
+
+struct BootstrapReplicates
+    replicates::UInt
+end
+
+struct JackknifeReplicates
+    replicates::UInt
+end
+
 """
     ReplicateDesign <: AbstractSurveyDesign
 
