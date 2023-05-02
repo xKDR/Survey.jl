@@ -123,12 +123,27 @@ struct SurveyDesign <: AbstractSurveyDesign
     end
 end
 
+"""
+    InferenceMethod
+
+Abstract type for inference methods.
+"""
 abstract type InferenceMethod end
 
+"""
+    BootstrapReplicates <: InferenceMethod
+
+Type for the bootstrap replicates method. For more details, see [`bootweights`](@ref).
+"""
 struct BootstrapReplicates <: InferenceMethod
     replicates::UInt
 end
 
+"""
+    JackknifeReplicates <: InferenceMethod
+
+Type for the Jackknife replicates method. For more details, see [`jackknifeweights`](@ref).
+"""
 struct JackknifeReplicates <: InferenceMethod
     replicates::UInt
 end
