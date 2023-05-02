@@ -1,5 +1,5 @@
 """
-Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign` which has additional columns for replicate weights. 
+Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.
 
 ```jldoctest
 julia> using Random
@@ -37,7 +37,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         substrata_dfs[h] = cluster_sorted
     end
     df = reduce(vcat, substrata_dfs)
-    return ReplicateDesign(
+    return ReplicateDesign{BootstrapReplicates}(
         df,
         design.cluster,
         design.popsize,
@@ -48,7 +48,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         design.pps,
         "bootstrap",
         UInt(replicates),
-        [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates]
+        [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates],
     )
 end
 
