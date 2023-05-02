@@ -289,7 +289,7 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
         type::String,
         replicates::UInt,
         replicate_weights::Vector{Symbol},
-    ) where {ReplicateType}
+    ) where {ReplicateType <: InferenceMethod}
         new{ReplicateType}(data, cluster, popsize, sampsize, strata, weights, allprobs,
            pps, type, replicates, replicate_weights, ReplicateType(replicates))
     end
@@ -302,7 +302,7 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) where {ReplicateType}
+    ) where {ReplicateType <: InferenceMethod}
         # rename the replicate weights if needed
         rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
 
@@ -338,7 +338,7 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) where {ReplicateType} =
+    ) where {ReplicateType <: InferenceMethod} =
         ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[replicate_weights]);
@@ -356,7 +356,7 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) where {ReplicateType} =
+    ) where {ReplicateType <: InferenceMethod} =
         ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[findall(name -> occursin(replicate_weights, name), names(data))]);
