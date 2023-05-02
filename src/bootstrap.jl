@@ -9,7 +9,7 @@ julia> apiclus1 = load_data("apiclus1");
 julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
 
 julia> bootweights(dclus1; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
-ReplicateDesign:
+ReplicateDesign{BootstrapReplicates}:
 data: 183×1044 DataFrame
 strata: none
 cluster: dnum
@@ -20,6 +20,7 @@ weights: [50.4667, 50.4667, 50.4667  …  50.4667]
 allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
 type: bootstrap
 replicates: 1000
+
 ```
 """
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
