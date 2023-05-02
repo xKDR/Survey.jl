@@ -123,12 +123,13 @@ struct SurveyDesign <: AbstractSurveyDesign
     end
 end
 
+abstract type InferenceMethod end
 
-struct BootstrapReplicates
+struct BootstrapReplicates <: InferenceMethod
     replicates::UInt
 end
 
-struct JackknifeReplicates
+struct JackknifeReplicates <: InferenceMethod
     replicates::UInt
 end
 
@@ -261,7 +262,7 @@ replicates: 1000
 ```
 
 """
-struct ReplicateDesign <: AbstractSurveyDesign
+struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
     data::AbstractDataFrame
     cluster::Symbol
     popsize::Symbol
@@ -273,9 +274,10 @@ struct ReplicateDesign <: AbstractSurveyDesign
     type::String
     replicates::UInt
     replicate_weights::Vector{Symbol}
+    inference_method::ReplicateType
 
     # default constructor
-    function ReplicateDesign(
+    function ReplicateDesign{ReplicateType}(
         data::DataFrame,
         cluster::Symbol,
         popsize::Symbol,
@@ -286,21 +288,21 @@ struct ReplicateDesign <: AbstractSurveyDesign
         pps::Bool,
         type::String,
         replicates::UInt,
-        replicate_weights::Vector{Symbol}
-    )
-        new(data, cluster, popsize, sampsize, strata, weights, allprobs,
-           pps, type, replicates, replicate_weights)
+        replicate_weights::Vector{Symbol},
+    ) where {ReplicateType}
+        new{ReplicateType}(data, cluster, popsize, sampsize, strata, weights, allprobs,
+           pps, type, replicates, replicate_weights, ReplicateType(replicates))
     end
 
     # constructor with given replicate_weights
-    function ReplicateDesign(
+    function ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::Vector{Symbol};
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    )
+    ) where {ReplicateType}
         # rename the replicate weights if needed
         rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
 
@@ -312,7 +314,7 @@ struct ReplicateDesign <: AbstractSurveyDesign
                         popsize=popsize,
                         weights=weights
                       )
-        new(
+        new{ReplicateType}(
             base_design.data,
             base_design.cluster,
             base_design.popsize,
@@ -323,20 +325,21 @@ struct ReplicateDesign <: AbstractSurveyDesign
             base_design.pps,
             "bootstrap",
             length(replicate_weights),
-            replicate_weights
+            replicate_weights,
+            ReplicateType(length(replicate_weights))
         )
     end
 
     # replicate weights given as a range of columns
-    ReplicateDesign(
+    ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::UnitRange{Int};
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) =
-        ReplicateDesign(
+    ) where {ReplicateType} =
+        ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[replicate_weights]);
             clusters=clusters,
@@ -346,15 +349,15 @@ struct ReplicateDesign <: AbstractSurveyDesign
         )
 
     # replicate weights given as regular expression
-    ReplicateDesign(
+    ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::Regex;
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) =
-        ReplicateDesign(
+    ) where {ReplicateType} =
+        ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[findall(name -> occursin(replicate_weights, name), names(data))]);
             clusters=clusters,
