@@ -57,7 +57,7 @@ function mean(x::Symbol, design::ReplicateDesign)
     # Jackknife integration
     elseif design.type == "jackknife"
         weightedmean(x, y) = mean(x, weights(y))
-        return variance(x, weightedmean, design)
+        return Survey.variance(x, weightedmean, design)
     end
 end
 

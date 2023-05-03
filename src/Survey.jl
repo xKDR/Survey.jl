@@ -15,6 +15,7 @@ using Missings
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
+include("jackknife.jl")
 include("mean.jl")
 include("quantile.jl")
 include("total.jl")
@@ -25,7 +26,6 @@ include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
 include("by.jl")
-include("jackknife.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
