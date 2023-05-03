@@ -17,7 +17,7 @@ JackknifeReplicates
 load_data
 bootweights
 jackknifeweights
-jackknife_variance
+variance
 mean
 total
 quantile

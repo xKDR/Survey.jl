@@ -83,7 +83,7 @@ function jackknifeweights(design::SurveyDesign)
 end
 
 """
-    jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
+    variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
 
 Compute variance of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
 
@@ -116,7 +116,7 @@ replicates: 200
 
 julia> weightedmean(x, y) = mean(x, weights(y));
 
-julia> jackknife_variance(:api00, weightedmean, rstrat)
+julia> variance(:api00, weightedmean, rstrat)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
@@ -127,7 +127,7 @@ julia> jackknife_variance(:api00, weightedmean, rstrat)
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
-function jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
+function variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
     df = design.data
     # sort!(df, [design.strata, design.cluster])
     stratified_gdf = groupby(df, design.strata)
