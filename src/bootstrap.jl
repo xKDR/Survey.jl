@@ -78,11 +78,11 @@ julia> weightedmean(x, y) = mean(x, weights(y));
 
 julia> variance(:api00, weightedmean, bclus1)
 1×2 DataFrame
- Row │ mean     SE
-     │ Float64  Float64
-─────┼──────────────────
-   1 │ 644.169  23.4107
-```
+ Row │ estimator  SE
+     │ Float64    Float64
+─────┼────────────────────
+   1 │   644.169  23.4107
+
 """
 function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
     θ̂ = func(design.data[!, x], design.data[!, design.weights])
@@ -91,7 +91,7 @@ function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapRe
         i = 1:design.replicates
     ]
     variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
-    return DataFrame(mean = θ̂, SE = sqrt(variance))
+    return DataFrame(estimator = θ̂, SE = sqrt(variance))
 end
 
 function _bootweights_cluster_sorted!(cluster_sorted,
