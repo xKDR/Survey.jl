@@ -53,6 +53,47 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
     )
 end
 
+"""
+    variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
+
+
+Use replicate weights to compute the standard error of the estimated mean using the bootstrap method. The variance is calculated using the formula
+
+```math
+\\hat{V}(\\hat{\\theta}) = \\dfrac{1}{R}\\sum_{i = 1}^R(\\theta_i - \\hat{\\theta})^2
+```
+
+where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estimated mean using the ``i``th set of replicate weights, and ``\\hat{\\theta}`` is the estimated mean using the original weights.
+
+```jldoctest;
+julia> using Survey, StatsBase;
+
+julia> apiclus1 = load_data("apiclus1");
+
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
+
+julia> bclus1 = dclus1 |> bootweights;
+
+julia> weightedmean(x, y) = mean(x, weights(y));
+
+julia> variance(:api00, weightedmean, bclus1)
+1×2 DataFrame
+ Row │ mean     SE
+     │ Float64  Float64
+─────┼──────────────────
+   1 │ 644.169  23.4107
+```
+"""
+function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
+    θ̂ = func(design.data[!, x], design.data[!, design.weights])
+    θ̂t = [
+        func(design.data[!, x], design.data[!, "replicate_"*string(i)]) for
+        i = 1:design.replicates
+    ]
+    variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
+    return DataFrame(mean = θ̂, SE = sqrt(variance))
+end
+
 function _bootweights_cluster_sorted!(cluster_sorted,
         cluster_weights, cluster_sorted_designcluster, replicates, rng)
 
