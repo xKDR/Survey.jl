@@ -63,9 +63,9 @@ Use replicate weights to compute the standard error of the estimated mean using 
 \\hat{V}(\\hat{\\theta}) = \\dfrac{1}{R}\\sum_{i = 1}^R(\\theta_i - \\hat{\\theta})^2
 ```
 
-where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estimated mean using the ``i``th set of replicate weights, and ``\\hat{\\theta}`` is the estimated mean using the original weights.
+where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estimator computed using the ``i``th set of replicate weights, and ``\\hat{\\theta}`` is the estimator computed using the original weights.
 
-```jldoctest;
+```jldoctest
 julia> using Survey, StatsBase;
 
 julia> apiclus1 = load_data("apiclus1");
@@ -83,6 +83,7 @@ julia> variance(:api00, weightedmean, bclus1)
 ─────┼────────────────────
    1 │   644.169  23.4107
 
+```
 """
 function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
     θ̂ = func(design.data[!, x], design.data[!, design.weights])
