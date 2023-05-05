@@ -50,7 +50,9 @@ julia> mean(:api00, bclus1)
 """
 function mean(x::Symbol, design::ReplicateDesign)
 	weightedmean(x, y) = mean(x, weights(y))
-	Survey.variance(x, weightedmean, design)
+	df = Survey.variance(x, weightedmean, design)
+    rename!(df, :estimator => :mean)
+    return df
 end
 
 """
