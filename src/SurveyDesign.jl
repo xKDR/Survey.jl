@@ -164,7 +164,7 @@ ReplicateDesign{ReplicateType}(
     strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
-) where {ReplicateType <: InferenceType}
+) where {ReplicateType <: InferenceMethod}
 
 ReplicateDesign{ReplicateType}(
     data::AbstractDataFrame,
@@ -173,7 +173,7 @@ ReplicateDesign{ReplicateType}(
     strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
-) where {ReplicateType <: InferenceType}
+) where {ReplicateType <: InferenceMethod}
 
 ReplicateDesign{ReplicateType}(
     data::AbstractDataFrame,
@@ -182,7 +182,7 @@ ReplicateDesign{ReplicateType}(
     strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
-) where {ReplicateType <: InferenceType}
+) where {ReplicateType <: InferenceMethod}
 ```
 
 # Arguments
