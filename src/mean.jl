@@ -31,6 +31,29 @@ function mean(x::Symbol, design::SurveyDesign)
 end
 
 """
+	mean(x::Symbol, design::ReplicateDesign)
+
+Use replicate weights to compute the standard error of the estimated mean.
+
+# Examples
+
+```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
+julia> bclus1 = dclus1 |> bootweights;
+
+julia> mean(:api00, bclus1)
+1×2 DataFrame
+ Row │ mean     SE
+     │ Float64  Float64
+─────┼──────────────────
+   1 │ 644.169  23.4107
+```
+"""
+function mean(x::Symbol, design::ReplicateDesign)
+	weightedmean(x, y) = mean(x, weights(y))
+	Survey.variance(x, weightedmean, design)
+end
+
+"""
 Estimate the mean of a list of variables.
 
 ```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
