@@ -47,19 +47,9 @@ julia> quantile(:api00, bsrs, 0.5)
 ```
 """
 function quantile(var::Symbol, design::ReplicateDesign, p::Real; kwargs...)
-    v = design.data[!, var]
-    probs = design.data[!, design.allprobs]
-    X = Statistics.quantile(v, ProbabilityWeights(probs), p)
-    Xt = [
-        Statistics.quantile(
-            v,
-            ProbabilityWeights(design.data[!, "replicate_"*string(i)]),
-            p,
-        ) for i = 1:design.replicates
-    ]
-    variance = sum((Xt .- X) .^ 2) / design.replicates
-    df = DataFrame(percentile = X, SE = sqrt(variance))
-    rename!(df, :percentile => string(p) * "th percentile")
+    quantile_func(v, weights) = Statistics.quantile(v, ProbabilityWeights(weights), p)
+    df = Survey.variance(var, quantile_func, design)
+    rename!(df, :estimator => string(p) * "th percentile")
     return df
 end
 
