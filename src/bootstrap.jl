@@ -1,5 +1,5 @@
 """
-Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign` which has additional columns for replicate weights. 
+Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.
 
 ```jldoctest
 julia> using Random
@@ -9,7 +9,7 @@ julia> apiclus1 = load_data("apiclus1");
 julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, popsize=:fpc);
 
 julia> bootweights(dclus1; replicates=1000, rng=MersenneTwister(111)) # choose a seed for deterministic results
-ReplicateDesign:
+ReplicateDesign{BootstrapReplicates}:
 data: 183×1044 DataFrame
 strata: none
 cluster: dnum
@@ -20,6 +20,7 @@ weights: [50.4667, 50.4667, 50.4667  …  50.4667]
 allprobs: [0.0198, 0.0198, 0.0198  …  0.0198]
 type: bootstrap
 replicates: 1000
+
 ```
 """
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
@@ -37,7 +38,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         substrata_dfs[h] = cluster_sorted
     end
     df = reduce(vcat, substrata_dfs)
-    return ReplicateDesign(
+    return ReplicateDesign{BootstrapReplicates}(
         df,
         design.cluster,
         design.popsize,
@@ -48,8 +49,50 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
         design.pps,
         "bootstrap",
         UInt(replicates),
-        [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates]
+        [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates],
     )
+end
+
+"""
+    variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
+
+
+Use replicate weights to compute the standard error of the estimated mean using the bootstrap method. The variance is calculated using the formula
+
+```math
+\\hat{V}(\\hat{\\theta}) = \\dfrac{1}{R}\\sum_{i = 1}^R(\\theta_i - \\hat{\\theta})^2
+```
+
+where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estimator computed using the ``i``th set of replicate weights, and ``\\hat{\\theta}`` is the estimator computed using the original weights.
+
+```jldoctest
+julia> using Survey, StatsBase;
+
+julia> apiclus1 = load_data("apiclus1");
+
+julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
+
+julia> bclus1 = dclus1 |> bootweights;
+
+julia> weightedmean(x, y) = mean(x, weights(y));
+
+julia> variance(:api00, weightedmean, bclus1)
+1×2 DataFrame
+ Row │ estimator  SE
+     │ Float64    Float64
+─────┼────────────────────
+   1 │   644.169  23.4107
+
+```
+"""
+function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
+    θ̂ = func(design.data[!, x], design.data[!, design.weights])
+    θ̂t = [
+        func(design.data[!, x], design.data[!, "replicate_"*string(i)]) for
+        i = 1:design.replicates
+    ]
+    variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
+    return DataFrame(estimator = θ̂, SE = sqrt(variance))
 end
 
 function _bootweights_cluster_sorted!(cluster_sorted,
