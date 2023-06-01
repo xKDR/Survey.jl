@@ -1,7 +1,7 @@
 name = "Survey"
 uuid = "c1a98b4d-6cd2-47ec-b9e9-69b59c35373c"
 authors = ["Ayush Patnaik <ayushpatnaik@gmail.com>"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 AlgebraOfGraphics = "cbdf2221-f076-402e-a563-3d30da359d67"
