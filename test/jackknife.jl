@@ -19,9 +19,9 @@
     
     # Tests using for NHANES
     mean_nhanes_jk = mean([:seq1, :seq2],dnhanes_jk)
-    @test mean_nhanes_jk.estimator[1] ≈ 21393.96 atol = 1e-3
+    @test mean_nhanes_jk.mean[1] ≈ 21393.96 atol = 1e-3
     @test mean_nhanes_jk.SE[1] ≈ 143.371 atol = 1e-3 # R is slightly diff in 2nd decimal place
-    @test mean_nhanes_jk.estimator[2] ≈ 38508.328 atol = 1e-3
+    @test mean_nhanes_jk.mean[2] ≈ 38508.328 atol = 1e-3
     @test mean_nhanes_jk.SE[2] ≈ 258.068 atol = 1e-3 # R is slightly diff in 2nd decimal place
 end
 

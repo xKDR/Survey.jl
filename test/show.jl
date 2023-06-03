@@ -15,7 +15,7 @@
     @test str == refstr
 
     refstrb = """
-    ReplicateDesign:
+    ReplicateDesign{BootstrapReplicates}:
     data: 200×4045 DataFrame
     strata: none
     cluster: none
@@ -50,7 +50,7 @@ end
     @test str == refstr
 
     refstrb = """
-    ReplicateDesign:
+    ReplicateDesign{BootstrapReplicates}:
     data: 200×4044 DataFrame
     strata: stype
         [E, E, E  …  H]
@@ -86,7 +86,7 @@ end
     @test str == refstr
 
     refstrb = """
-    ReplicateDesign:
+    ReplicateDesign{BootstrapReplicates}:
     data: 183×4044 DataFrame
     strata: none
     cluster: dnum

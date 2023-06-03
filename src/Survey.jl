@@ -15,6 +15,7 @@ using Missings
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
+include("jackknife.jl")
 include("mean.jl")
 include("quantile.jl")
 include("total.jl")
@@ -25,10 +26,10 @@ include("boxplot.jl")
 include("show.jl")
 include("ratio.jl")
 include("by.jl")
-include("jackknife.jl")
 
 export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
+export BootstrapReplicates, JackknifeReplicates
 export dim, colnames, dimnames
 export mean, total, quantile
 export plot
@@ -36,6 +37,6 @@ export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
 export ratio
-export jackknifeweights, jackknife_variance
+export jackknifeweights, variance
 
 end
