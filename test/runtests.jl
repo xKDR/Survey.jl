@@ -1,6 +1,7 @@
 using Survey
 using Test
 using CategoricalArrays
+using GLM
 
 const STAT_TOL = 1e-5
 const SE_TOL = 1e-1

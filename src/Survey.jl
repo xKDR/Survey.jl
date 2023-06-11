@@ -2,7 +2,7 @@ module Survey
 
 using DataFrames
 using Statistics
-import Statistics: quantile
+import Statistics: std, quantile
 using StatsBase
 import StatsBase: mean, quantile
 using CSV
@@ -13,6 +13,7 @@ using CategoricalArrays
 using Random
 using Missings
 using GLM
+import GLM: @formula, glm
 
 include("SurveyDesign.jl")
 include("bootstrap.jl")
@@ -33,13 +34,13 @@ export load_data
 export AbstractSurveyDesign, SurveyDesign, ReplicateDesign
 export BootstrapReplicates, JackknifeReplicates
 export dim, colnames, dimnames
-export mean, total, quantile
+export mean, total, quantile, std
 export plot
 export hist, sturges, freedman_diaconis
 export boxplot
 export bootweights
 export ratio
 export jackknifeweights, variance
-export svyglm
+export @formula, glm, svyglm
 
 end
