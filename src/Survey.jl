@@ -1,6 +1,7 @@
 module Survey
 
 using DataFrames
+import DataFrames: rename!
 using Statistics
 import Statistics: std, quantile
 using StatsBase
