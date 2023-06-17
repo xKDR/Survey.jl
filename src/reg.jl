@@ -17,7 +17,7 @@ A `DataFrame` containing the estimates for model coefficients and their standard
 apisrs = load_data("apisrs")
 srs = SurveyDesign(apisrs)
 bsrs = bootweights(srs, replicates = 2000)
-result = svyglm(@formula(api00 ~ api99), bsrs, Normal(), LogitLink())
+result = svyglm(@formula(api00 ~ api99), bsrs, Normal())
 ```
 """
 
