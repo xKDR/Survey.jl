@@ -136,3 +136,7 @@ function mean(x::Symbol, domain, design::AbstractSurveyDesign)
     rename!(df, :statistic => :mean)
     return df
 end
+
+function mean(df::DataFrame, column, weights)
+    return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]))
+end

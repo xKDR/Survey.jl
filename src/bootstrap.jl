@@ -54,7 +54,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
 end
 
 """
-    variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
+    variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
 
 
 Use replicate weights to compute the standard error of the estimated mean using the bootstrap method. The variance is calculated using the formula
@@ -74,42 +74,43 @@ julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
 
 julia> bclus1 = dclus1 |> bootweights;
 
-julia> weightedmean(x, y) = mean(x, weights(y));
+julia> function mean(df::DataFrame, column, weights)
+           return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]))
+       end
+mean (generic function with 114 methods)
 
-julia> variance(:api00, weightedmean, bclus1)
+julia> variance(:api00, mean, bclus1)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
-─────┼────────────────────
-   1 │   644.169  23.4107
+─────┼───────────────────────
+   1 │   644.169  0.00504125
 
 ```
 """
-function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
-    θ̂ = func(design.data[!, x], design.data[!, design.weights])
-    θ̂t = [
-        func(design.data[!, x], design.data[!, "replicate_"*string(i)]) for
-        i = 1:design.replicates
+function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
+
+    # Compute the estimators
+    θs = func(design.data, x, design.weights, args...; kwargs...)
+    
+    # Compute the estimators for each replicate
+    θts = [
+        func(design.data, x, "replicate_" * string(i), args...; kwargs...) for i in 1:design.replicates
     ]
-    variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
-    return DataFrame(estimator = θ̂, SE = sqrt(variance))
-end
 
-function _bootweights_cluster_sorted!(cluster_sorted,
-        cluster_weights, cluster_sorted_designcluster, replicates, rng)
+    # Convert θs to a vector if it's not already
+    θs = (θs isa Vector) ? θs : [θs]  
 
-    psus = unique(cluster_sorted_designcluster)
-    npsus = [count(==(i), cluster_sorted_designcluster) for i in psus]
-    nh = length(psus)
-    for replicate = 1:replicates
-        randinds = rand(rng, 1:(nh), (nh - 1))
-        cluster_sorted[!, "replicate_"*string(replicate)] =
-            reduce(vcat,
-                [
-                    fill((count(==(i), randinds)) * (nh / (nh - 1)), npsus[i]) for
-                    i = 1:nh
-                ]
-            ) .* cluster_weights
+    # Calculate variances for each estimator
+    variance = Float64[]
+
+    for i in 1:length(θs)
+        θ = θs[i]
+        θt = θts[i]
+
+        num = sum((θt .- θ) .^ 2) / design.replicates 
+        push!(variance, num)
     end
-    cluster_sorted
+
+    return DataFrame(estimator = θs, SE = sqrt.(variance))
 end

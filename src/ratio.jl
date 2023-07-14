@@ -40,18 +40,15 @@ julia> ratio(:api00, :enroll, bclus1)
 ```
 """
 function ratio(variable_num::Symbol, variable_den::Symbol, design::ReplicateDesign)
-    X =
-        wsum(design.data[!, variable_num], design.data[!, design.weights]) /
-        wsum(design.data[!, variable_den], design.data[!, design.weights])
-    Xt = [
-        (wsum(
-            design.data[!, variable_num],
-            weights(design.data[!, "replicate_"*string(i)]),
-        )) / (wsum(
-            design.data[!, variable_den],
-            weights(design.data[!, "replicate_"*string(i)]),
-        )) for i = 1:design.replicates
-    ]
-    variance = sum((Xt .- X) .^ 2) / design.replicates
+    function ratio(df::DataFrame, columns, weights)
+        return sum(df[!, columns[1]], StatsBase.weights(df[!, weights])) / sum(df[!, columns[2]], StatsBase.weights(df[!, weights]))
+    end
+
+    variance = variance([variable_num, variable_den], ratio, design)
+    X = ratio(design.data, [variable_num, variable_den], design.weights)
     DataFrame(ratio = X, SE = sqrt(variance))
+end
+
+function ratio(df::DataFrame, columns, weights)
+    return sum(df[!, columns[1]], StatsBase.weights(df[!, weights])) / sum(df[!, columns[2]], StatsBase.weights(df[!, weights]))
 end
