@@ -114,3 +114,22 @@ function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::Repl
 
     return DataFrame(estimator = θs, SE = sqrt.(variance))
 end
+
+function _bootweights_cluster_sorted!(cluster_sorted,
+        cluster_weights, cluster_sorted_designcluster, replicates, rng)
+
+    psus = unique(cluster_sorted_designcluster)
+    npsus = [count(==(i), cluster_sorted_designcluster) for i in psus]
+    nh = length(psus)
+    for replicate = 1:replicates
+        randinds = rand(rng, 1:(nh), (nh - 1))
+        cluster_sorted[!, "replicate_"*string(replicate)] =
+            reduce(vcat,
+                [
+                    fill((count(==(i), randinds)) * (nh / (nh - 1)), npsus[i]) for
+                    i = 1:nh
+                ]
+            ) .* cluster_weights
+    end
+    cluster_sorted
+end
