@@ -24,7 +24,7 @@ end
 """
 Use replicate weights to compute the standard error of the estimated total. 
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
+```; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
 julia> bclus1 = dclus1 |> bootweights;
 
 julia> total(:api00, bclus1)
