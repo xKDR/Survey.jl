@@ -22,10 +22,20 @@ function total(x::Symbol, design::SurveyDesign)
 end
 
 """
-Use replicate weights to compute the standard error of the estimated total. 
+    total(x::Symbol, design::ReplicateDesign)
 
-```; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> bclus1 = dclus1 |> bootweights;
+Compute the standard error of the estimated total using replicate weights.
+
+# Arguments
+- `x::Symbol`: Symbol representing the variable for which the total is estimated.
+- `design::ReplicateDesign`: Replicate design object.
+
+# Returns
+- `df`: DataFrame containing the estimated total and its standard error.
+
+# Examples
+
+```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 
 julia> total(:api00, bclus1)
 1×2 DataFrame
@@ -36,9 +46,17 @@ julia> total(:api00, bclus1)
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
-    total_func(x, y) = wsum(x, weights(y))
-    df = variance(x, total_func, design)
+
+    # Define an inner function to calculate the total
+    function compute_total(df::DataFrame, column, weights)
+        return StatsBase.wsum(df[!, column], StatsBase.weights(df[!, weights]))
+    end
+
+    # Calculate the total and variance
+    df = variance(x, compute_total, design)
+
     rename!(df, :estimator => :total)
+    
     return df
 end
 

@@ -33,12 +33,18 @@ end
 """
 	mean(x::Symbol, design::ReplicateDesign)
 
-Use replicate weights to compute the standard error of the estimated mean.
+Compute the standard error of the estimated mean using replicate weights.
+
+# Arguments
+- `x::Symbol`: Symbol representing the variable for which the mean is estimated.
+- `design::ReplicateDesign`: Replicate design object.
+
+# Returns
+- `df`: DataFrame containing the estimated mean and its standard error.
 
 # Examples
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> bclus1 = dclus1 |> bootweights;
+```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 
 julia> mean(:api00, bclus1)
 1×2 DataFrame
@@ -49,9 +55,17 @@ julia> mean(:api00, bclus1)
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
-	weightedmean(x, y) = mean(x, weights(y))
-	df = Survey.variance(x, weightedmean, design)
+    
+    # Define an inner function to calculate the mean
+    function compute_mean(df::DataFrame, column, weights_column)
+        return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights_column]))
+    end
+
+    # Calculate the mean and variance
+    df = Survey.variance(x, compute_mean, design)
+    
     rename!(df, :estimator => :mean)
+    
     return df
 end
 
@@ -135,8 +149,4 @@ function mean(x::Symbol, domain, design::AbstractSurveyDesign)
     df = bydomain(x, domain, design, weighted_mean)
     rename!(df, :statistic => :mean)
     return df
-end
-
-function mean(df::DataFrame, column, weights)
-    return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]))
 end

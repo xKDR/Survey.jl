@@ -33,10 +33,22 @@ function quantile(var::Symbol, design::SurveyDesign, p::Real; kwargs...)
 end
 
 """
-Use replicate weights to compute the standard error of the estimated quantile. 
+    quantile(x::Symbol, design::ReplicateDesign, p; kwargs...)
+    
+Compute the standard error of the estimated quantile using replicate weights.
 
-```jldoctest; setup = :(apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw))
-julia> bsrs = srs |> bootweights; 
+# Arguments
+- `x::Symbol`: Symbol representing the variable for which the quantile is estimated.
+- `design::ReplicateDesign`: Replicate design object.
+- `p::Real`: Quantile value to estimate, ranging from 0 to 1.
+- `kwargs...`: Additional keyword arguments.
+
+# Returns
+- `df`: DataFrame containing the estimated quantile and its standard error.
+
+# Examples
+
+```jldoctest; setup = :(apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights;)
 
 julia> quantile(:api00, bsrs, 0.5)
 1×2 DataFrame
@@ -46,10 +58,18 @@ julia> quantile(:api00, bsrs, 0.5)
    1 │            659.0  14.9764
 ```
 """
-function quantile(var::Symbol, design::ReplicateDesign, p::Real; kwargs...)
-    quantile_func(v, weights) = Statistics.quantile(v, ProbabilityWeights(weights), p)
-    df = Survey.variance(var, quantile_func, design)
+function quantile(x::Symbol, design::ReplicateDesign, p::Real; kwargs...)
+
+    # Define an inner function to calculate the quantile
+    function compute_quantile(df::DataFrame, column, weights_column)
+        return Statistics.quantile(df[!, column], ProbabilityWeights(df[!, weights_column]), p)
+    end
+
+    # Calculate the quantile and variance
+    df = variance(x, compute_quantile, design)
+
     rename!(df, :estimator => string(p) * "th percentile")
+    
     return df
 end
 
