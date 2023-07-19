@@ -96,10 +96,7 @@ Above, ``\\hat{\\theta}`` represents the estimator computed using the original w
 # Examples
 ```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apistrat = load_data("apistrat"); dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw); rstrat = jackknifeweights(dstrat);)
 
-julia> function mean(df::DataFrame, column, weights)
-                  return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]))
-              end
-mean (generic function with 1 method)
+julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
 julia> variance(:api00, mean, rstrat)
 1×2 DataFrame
@@ -107,7 +104,6 @@ julia> variance(:api00, mean, rstrat)
      │ Float64    Float64
 ─────┼────────────────────
    1 │   662.287  9.53613
-
 ```
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)

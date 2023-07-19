@@ -48,7 +48,7 @@ Compute the standard error of the estimated quantile using replicate weights.
 
 # Examples
 
-```jldoctest; setup = :(apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights;)
+```jldoctest; setup = :(using Survey, StatsBase; apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights;)
 
 julia> quantile(:api00, bsrs, 0.5)
 1×2 DataFrame

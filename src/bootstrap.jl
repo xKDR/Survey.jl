@@ -80,10 +80,7 @@ where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estim
 
 ```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 
-julia> function mean(df::DataFrame, column, weights)
-                  return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]))
-              end
-mean (generic function with 1 method)
+julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
 julia> variance(:api00, mean, bclus1)
 1×2 DataFrame
@@ -91,7 +88,6 @@ julia> variance(:api00, mean, bclus1)
      │ Float64    Float64
 ─────┼────────────────────
    1 │   644.169  23.4107
-
 ```
 """
 function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)

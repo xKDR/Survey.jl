@@ -39,7 +39,7 @@ Compute the standard error of the ratio using replicate weights.
 
 # Examples
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = bootweights(dclus1);)
+```jldoctest; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = bootweights(dclus1);)
 
 julia> ratio(:api00, :enroll, bclus1)
 1×2 DataFrame
