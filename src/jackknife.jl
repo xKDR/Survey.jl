@@ -22,7 +22,7 @@ julia> apistrat = load_data("apistrat");
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
 julia> rstrat = jackknifeweights(dstrat)
-ReplicateDesign:
+ReplicateDesign{JackknifeReplicates}:
 data: 200×244 DataFrame
 strata: stype
     [E, E, E  …  M]
@@ -67,7 +67,7 @@ function jackknifeweights(design::SurveyDesign)
         end
     end
 
-    return ReplicateDesign(
+    return ReplicateDesign{JackknifeReplicates}(
         df,
         design.cluster,
         design.popsize,
@@ -83,7 +83,7 @@ function jackknifeweights(design::SurveyDesign)
 end
 
 """
-    jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
+    variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
 
 Compute variance of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
 
@@ -102,7 +102,7 @@ julia> apistrat = load_data("apistrat");
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
 julia> rstrat = jackknifeweights(dstrat)
-ReplicateDesign:
+ReplicateDesign{JackknifeReplicates}:
 data: 200×244 DataFrame
 strata: stype
     [E, E, E  …  M]
@@ -116,7 +116,7 @@ replicates: 200
 
 julia> weightedmean(x, y) = mean(x, weights(y));
 
-julia> jackknife_variance(:api00, weightedmean, rstrat)
+julia> variance(:api00, weightedmean, rstrat)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
@@ -127,7 +127,7 @@ julia> jackknife_variance(:api00, weightedmean, rstrat)
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
-function jackknife_variance(x::Symbol, func::Function, design::ReplicateDesign)
+function variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
     df = design.data
     # sort!(df, [design.strata, design.cluster])
     stratified_gdf = groupby(df, design.strata)

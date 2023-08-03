@@ -36,13 +36,10 @@ julia> total(:api00, bclus1)
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
-    X = wsum(design.data[!, x], weights(design.data[!, design.weights]))
-    Xt = [
-        wsum(design.data[!, x], weights(design.data[!, "replicate_"*string(i)])) for
-        i = 1:design.replicates
-    ]
-    variance = sum((Xt .- X) .^ 2) / design.replicates
-    DataFrame(total = X, SE = sqrt(variance))
+    total_func(x, y) = wsum(x, weights(y))
+    df = variance(x, total_func, design)
+    rename!(df, :estimator => :total)
+    return df
 end
 
 """

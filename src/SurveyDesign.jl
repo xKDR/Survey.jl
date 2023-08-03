@@ -124,45 +124,70 @@ struct SurveyDesign <: AbstractSurveyDesign
 end
 
 """
+    InferenceMethod
+
+Abstract type for inference methods.
+"""
+abstract type InferenceMethod end
+
+"""
+    BootstrapReplicates <: InferenceMethod
+
+Type for the bootstrap replicates method. For more details, see [`bootweights`](@ref).
+"""
+struct BootstrapReplicates <: InferenceMethod
+    replicates::UInt
+end
+
+"""
+    JackknifeReplicates <: InferenceMethod
+
+Type for the Jackknife replicates method. For more details, see [`jackknifeweights`](@ref).
+"""
+struct JackknifeReplicates <: InferenceMethod
+    replicates::UInt
+end
+
+"""
     ReplicateDesign <: AbstractSurveyDesign
 
-Survey design obtained by replicating an original design using [`bootweights`](@ref). If
-replicate weights are available, then they can be used to directly create a `ReplicateDesign`.
+Survey design obtained by replicating an original design using an inference method like [`bootweights`](@ref) or [`jackknifeweights`](@ref). If
+replicate weights are available, then they can be used to directly create a `ReplicateDesign` object.
 
 # Constructors
 
 ```julia
-ReplicateDesign(
+ReplicateDesign{ReplicateType}(
     data::AbstractDataFrame,
     replicate_weights::Vector{Symbol};
     clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
     strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
-)
+) where {ReplicateType <: InferenceMethod}
 
-ReplicateDesign(
+ReplicateDesign{ReplicateType}(
     data::AbstractDataFrame,
     replicate_weights::UnitIndex{Int};
     clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
     strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
-)
+) where {ReplicateType <: InferenceMethod}
 
-ReplicateDesign(
+ReplicateDesign{ReplicateType}(
     data::AbstractDataFrame,
     replicate_weights::Regex;
     clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
     strata::Union{Nothing,Symbol} = nothing,
     popsize::Union{Nothing,Symbol} = nothing,
     weights::Union{Nothing,Symbol} = nothing
-)
+) where {ReplicateType <: InferenceMethod}
 ```
 
 # Arguments
 
-The constructor has the same arguments as [`SurveyDesign`](@ref). The only additional argument is `replicate_weights`, which can
+`ReplicateType` must be one of the supported inference types; currently the package supports [`BootstrapReplicates`](@ref) and [`JackknifeReplicates`](@ref). The constructor has the same arguments as [`SurveyDesign`](@ref). The only additional argument is `replicate_weights`, which can
 be of one of the following types.
 
 - `Vector{Symbol}`: In this case, each `Symbol` in the vector should represent a column of `data` containing the replicate weights.
@@ -173,7 +198,7 @@ All the columns containing the replicate weights will be renamed to the form `re
 
 # Examples
 
-Here is an example where the [`bootweights`](@ref) function is used to create a `ReplicateDesign`.
+Here is an example where the [`bootweights`](@ref) function is used to create a `ReplicateDesign{BootstrapReplicates}`.
 
 ```jldoctest replicate-design; setup = :(using Survey, CSV, DataFrames)
 julia> apistrat = load_data("apistrat");
@@ -181,7 +206,7 @@ julia> apistrat = load_data("apistrat");
 julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
 
 julia> bootstrat = bootweights(dstrat; replicates=1000)     # creating a ReplicateDesign using bootweights
-ReplicateDesign:
+ReplicateDesign{BootstrapReplicates}:
 data: 200×1044 DataFrame
 strata: stype
     [E, E, E  …  H]
@@ -210,8 +235,8 @@ julia> CSV.write("apistrat_withreplicates.csv", bootstrat.data);
 We can now pass the replicate weights directly to the `ReplicateDesign` constructor, either as a `Vector{Symbol}`, a `UnitRange` or a `Regex`.
 
 ```jldoctest replicate-design
-julia> bootstrat_direct = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), [Symbol("r_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
-ReplicateDesign:
+julia> bootstrat_direct = ReplicateDesign{BootstrapReplicates}(CSV.read("apistrat_withreplicates.csv", DataFrame), [Symbol("r_"*string(replicate)) for replicate in 1:1000]; strata=:stype, weights=:pw)
+ReplicateDesign{BootstrapReplicates}:
 data: 200×1044 DataFrame
 strata: stype
     [E, E, E  …  H]
@@ -223,8 +248,8 @@ allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 type: bootstrap
 replicates: 1000
 
-julia> bootstrat_unitrange = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), UnitRange(45:1044);strata=:stype, weights=:pw)
-ReplicateDesign:
+julia> bootstrat_unitrange = ReplicateDesign{BootstrapReplicates}(CSV.read("apistrat_withreplicates.csv", DataFrame), UnitRange(45:1044);strata=:stype, weights=:pw)
+ReplicateDesign{BootstrapReplicates}:
 data: 200×1044 DataFrame
 strata: stype
     [E, E, E  …  H]
@@ -236,8 +261,8 @@ allprobs: [0.0226, 0.0226, 0.0226  …  0.0662]
 type: bootstrap
 replicates: 1000
 
-julia> bootstrat_regex = ReplicateDesign(CSV.read("apistrat_withreplicates.csv", DataFrame), r"r_\\d";strata=:stype, weights=:pw)
-ReplicateDesign:
+julia> bootstrat_regex = ReplicateDesign{BootstrapReplicates}(CSV.read("apistrat_withreplicates.csv", DataFrame), r"r_\\d";strata=:stype, weights=:pw)
+ReplicateDesign{BootstrapReplicates}:
 data: 200×1044 DataFrame
 strata: stype
     [E, E, E  …  H]
@@ -252,7 +277,7 @@ replicates: 1000
 ```
 
 """
-struct ReplicateDesign <: AbstractSurveyDesign
+struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
     data::AbstractDataFrame
     cluster::Symbol
     popsize::Symbol
@@ -264,9 +289,10 @@ struct ReplicateDesign <: AbstractSurveyDesign
     type::String
     replicates::UInt
     replicate_weights::Vector{Symbol}
+    inference_method::ReplicateType
 
     # default constructor
-    function ReplicateDesign(
+    function ReplicateDesign{ReplicateType}(
         data::DataFrame,
         cluster::Symbol,
         popsize::Symbol,
@@ -277,21 +303,21 @@ struct ReplicateDesign <: AbstractSurveyDesign
         pps::Bool,
         type::String,
         replicates::UInt,
-        replicate_weights::Vector{Symbol}
-    )
-        new(data, cluster, popsize, sampsize, strata, weights, allprobs,
-           pps, type, replicates, replicate_weights)
+        replicate_weights::Vector{Symbol},
+    ) where {ReplicateType <: InferenceMethod}
+        new{ReplicateType}(data, cluster, popsize, sampsize, strata, weights, allprobs,
+           pps, type, replicates, replicate_weights, ReplicateType(replicates))
     end
 
     # constructor with given replicate_weights
-    function ReplicateDesign(
+    function ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::Vector{Symbol};
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    )
+    ) where {ReplicateType <: InferenceMethod}
         # rename the replicate weights if needed
         rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
 
@@ -303,7 +329,7 @@ struct ReplicateDesign <: AbstractSurveyDesign
                         popsize=popsize,
                         weights=weights
                       )
-        new(
+        new{ReplicateType}(
             base_design.data,
             base_design.cluster,
             base_design.popsize,
@@ -314,20 +340,21 @@ struct ReplicateDesign <: AbstractSurveyDesign
             base_design.pps,
             "bootstrap",
             length(replicate_weights),
-            replicate_weights
+            replicate_weights,
+            ReplicateType(length(replicate_weights))
         )
     end
 
     # replicate weights given as a range of columns
-    ReplicateDesign(
+    ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::UnitRange{Int};
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) =
-        ReplicateDesign(
+    ) where {ReplicateType <: InferenceMethod} =
+        ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[replicate_weights]);
             clusters=clusters,
@@ -337,15 +364,15 @@ struct ReplicateDesign <: AbstractSurveyDesign
         )
 
     # replicate weights given as regular expression
-    ReplicateDesign(
+    ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::Regex;
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing
-    ) =
-        ReplicateDesign(
+    ) where {ReplicateType <: InferenceMethod} =
+        ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[findall(name -> occursin(replicate_weights, name), names(data))]);
             clusters=clusters,
