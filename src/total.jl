@@ -136,6 +136,6 @@ julia> total(:api00, :cname, bclus1)
 ```
 """
 function total(x::Symbol, domain, design::AbstractSurveyDesign)
-    df = bydomain(x, domain, design, wsum)
-    rename!(df, :statistic => :total)
+    df = bydomain(x, domain, design, total)
+    return df
 end

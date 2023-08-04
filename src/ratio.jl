@@ -17,7 +17,10 @@ julia> ratio(:api00, :enroll, dclus1)
 
 ```
 """
-function ratio(variable_num::Symbol, variable_den::Symbol, design::SurveyDesign)
+function ratio(x::Vector{Symbol}, design::SurveyDesign)
+
+    variable_num, variable_den = x[1], x[2]
+    
     X =
         wsum(design.data[!, variable_num], design.data[!, design.weights]) /
         wsum(design.data[!, variable_den], design.data[!, design.weights])
@@ -49,8 +52,10 @@ julia> ratio(:api00, :enroll, bclus1)
    1 │   1.17182  0.131518
 ```
 """
-function ratio(variable_num::Symbol, variable_den::Symbol, design::ReplicateDesign)
+function ratio(x::Vector{Symbol}, design::ReplicateDesign)
     
+    variable_num, variable_den = x[1], x[2]
+
     # Define an inner function to calculate the ratio
     function inner_ratio(df::DataFrame, columns, weights_column)
         return sum(df[!, columns[1]], StatsBase.weights(df[!, weights_column])) / sum(df[!, columns[2]], StatsBase.weights(df[!, weights_column]))
@@ -59,4 +64,12 @@ function ratio(variable_num::Symbol, variable_den::Symbol, design::ReplicateDesi
     # Calculate the variance using the `variance` function with the inner function
     var = variance([variable_num, variable_den], inner_ratio, design)
     return var
+end
+
+"""
+add docstring
+"""
+function ratio(x::Vector{Symbol}, domain, design::AbstractSurveyDesign)
+    df = bydomain(x, domain, design, ratio)
+    return df
 end
