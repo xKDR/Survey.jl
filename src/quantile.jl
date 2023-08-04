@@ -61,12 +61,12 @@ julia> quantile(:api00, bsrs, 0.5)
 function quantile(x::Symbol, design::ReplicateDesign, p::Real; kwargs...)
 
     # Define an inner function to calculate the quantile
-    function compute_quantile(df::DataFrame, column, weights_column)
+    function inner_quantile(df::DataFrame, column, weights_column)
         return Statistics.quantile(df[!, column], ProbabilityWeights(df[!, weights_column]), p)
     end
 
     # Calculate the quantile and variance
-    df = variance(x, compute_quantile, design)
+    df = variance(x, inner_quantile, design)
 
     rename!(df, :estimator => string(p) * "th percentile")
     

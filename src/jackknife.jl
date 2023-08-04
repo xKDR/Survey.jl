@@ -108,13 +108,13 @@ julia> variance(:api00, mean, rstrat)
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
-function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates})
+function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates}, args...; kwargs...)
     
     df = design.data
     stratified_gdf = groupby(df, design.strata)
 
     # estimator from original weights
-    θs = func(design.data, x, design.weights)
+    θs = func(design.data, x, design.weights, args...; kwargs...)
 
     # ensure that θs is a vector
     θs = (θs isa Vector) ? θs : [θs]  
@@ -131,7 +131,7 @@ function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::Repl
         for psu in psus_in_stratum
 
             # estimator from replicate weights
-            θhjs = func(design.data, x, "replicate_" * string(replicate_index))
+            θhjs = func(design.data, x, "replicate_" * string(replicate_index), args...; kwargs...)
             
             # update the cluster variance for each estimator
             for i in 1:length(θs)

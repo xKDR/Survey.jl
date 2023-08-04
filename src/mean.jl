@@ -57,12 +57,12 @@ julia> mean(:api00, bclus1)
 function mean(x::Symbol, design::ReplicateDesign)
     
     # Define an inner function to calculate the mean
-    function compute_mean(df::DataFrame, column, weights_column)
+    function inner_mean(df::DataFrame, column, weights_column)
         return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights_column]))
     end
 
     # Calculate the mean and variance
-    df = Survey.variance(x, compute_mean, design)
+    df = Survey.variance(x, inner_mean, design)
     
     rename!(df, :estimator => :mean)
     

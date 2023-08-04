@@ -52,11 +52,11 @@ julia> ratio(:api00, :enroll, bclus1)
 function ratio(variable_num::Symbol, variable_den::Symbol, design::ReplicateDesign)
     
     # Define an inner function to calculate the ratio
-    function compute_ratio(df::DataFrame, columns, weights_column)
+    function inner_ratio(df::DataFrame, columns, weights_column)
         return sum(df[!, columns[1]], StatsBase.weights(df[!, weights_column])) / sum(df[!, columns[2]], StatsBase.weights(df[!, weights_column]))
     end
 
     # Calculate the variance using the `variance` function with the inner function
-    var = variance([variable_num, variable_den], compute_ratio, design)
+    var = variance([variable_num, variable_den], inner_ratio, design)
     return var
 end

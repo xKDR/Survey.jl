@@ -48,12 +48,12 @@ julia> total(:api00, bclus1)
 function total(x::Symbol, design::ReplicateDesign)
 
     # Define an inner function to calculate the total
-    function compute_total(df::DataFrame, column, weights)
+    function inner_total(df::DataFrame, column, weights)
         return StatsBase.wsum(df[!, column], StatsBase.weights(df[!, weights]))
     end
 
     # Calculate the total and variance
-    df = variance(x, compute_total, design)
+    df = variance(x, inner_total, design)
 
     rename!(df, :estimator => :total)
     
