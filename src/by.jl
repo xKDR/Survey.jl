@@ -4,25 +4,13 @@ function bydomain(x::Symbol, domain, design::SurveyDesign, func::Function)
     return X
 end
 
-function bydomain(x::Symbol, domain, design::ReplicateDesign, func::Function)
+function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::ReplicateDesign{BootstrapReplicates}, func::Function, args...; kwargs...)
     gdf = groupby(design.data, domain)
-    nd = length(gdf)
-    X = combine(gdf, [x, design.weights] => ((a, b) -> func(a, weights(b))) => :statistic)
-    Xt_mat = Array{Float64,2}(undef, (nd, design.replicates))
-    for i = 1:design.replicates
-        Xt_mat[:, i] =
-            combine(
-                gdf,
-                [x, Symbol("replicate_" * string(i))] =>
-                    ((a, c) -> func(a, weights(c))) => :statistic,
-            ).statistic
+    vars = []
+    for group in gdf
+        rep_domain = ReplicateDesign{typeof(design.inference_method)}(DataFrame(group), design.replicate_weights;clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
+        push!(vars, func(x, rep_domain))
+        # push!(vars, variance(x, func, rep_domain , args...; kwargs...))
     end
-    ses = Float64[]
-    for i = 1:nd
-        filtered_dx = filter(!isnan, Xt_mat[i, :] .- X.statistic[i])
-        push!(ses, sqrt(sum(filtered_dx .^ 2) / length(filtered_dx)))
-    end
-    replace!(ses, NaN => 0)
-    X.SE = ses
-    return X
+    return vcat(vars...)
 end
