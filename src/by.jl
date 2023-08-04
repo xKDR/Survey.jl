@@ -1,19 +1,16 @@
-function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::SurveyDesign, func::Function, args...; kwargs...)
-    gdf = groupby(design.data, domain)
-    vars = DataFrame[]
-    for group in gdf
-        rep_domain = SurveyDesign(DataFrame(group);clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
-        push!(vars, func(x, rep_domain, args...; kwargs...))
-    end
-    return vcat(vars...)
+function subset(group, design::SurveyDesign)
+    return SurveyDesign(DataFrame(group);clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
 end
 
-function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::ReplicateDesign{BootstrapReplicates}, func::Function, args...; kwargs...)
+function subset(group, design::ReplicateDesign)
+    return ReplicateDesign{typeof(design.inference_method)}(DataFrame(group), design.replicate_weights;clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
+end
+
+function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::AbstractSurveyDesign, func::Function, args...; kwargs...)
     gdf = groupby(design.data, domain)
     vars = DataFrame[]
     for group in gdf
-        rep_domain = ReplicateDesign{typeof(design.inference_method)}(DataFrame(group), design.replicate_weights;clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
-        push!(vars, func(x, rep_domain, args...; kwargs...))
+        push!(vars, func(x, subset(group, design), args...; kwargs...))
     end
     return vcat(vars...)
 end
