@@ -132,3 +132,11 @@ function quantile(
     df.percentile = string.(probs)
     return df[!, [:percentile, :statistic, :SE]]
 end
+
+"""
+add docstring
+"""
+function quantile(x::Symbol, domain, design::AbstractSurveyDesign, p::Real)
+    df = bydomain(x, domain, design, quantile, p)
+    return df
+end
