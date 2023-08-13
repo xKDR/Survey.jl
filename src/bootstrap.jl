@@ -1,5 +1,17 @@
 """
-Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.
+Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.  
+
+The sampling weight for a phase II unit in stratum `h` is :
+
+```math
+w_i^{(2)} = Z_i \sum_{h=1}^H \frac{x_{ih} n_h}{m_h}
+```
+
+In the formula above: 
+- ``Z_i`` is an indicator variable (1 if unit ``i`` is in the phase I sample, 0 if not)  
+- ``x_{ih}`` is an indicator variable (1 if unit ``i`` is in stratum ``h``, 0 if not)  
+- ``n_h`` is the number of units in the phase I sample that belong to stratum ``h``, ``n_h = \sum_{i=1}^N Z_i x_{ih}``
+- ``m_h`` is the size of the random subsample taken in stratum ``h``
 
 ```jldoctest
 julia> using Random
@@ -22,6 +34,9 @@ type: bootstrap
 replicates: 1000
 
 ```
+
+# Reference
+pg 384-385, Section 12.1.3 Two-Phase Sampling for Stratification - Sharon Lohr, Sampling Design and Analysis (2010)
 """
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
