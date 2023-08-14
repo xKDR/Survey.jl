@@ -7,10 +7,14 @@ function subset(group, design::ReplicateDesign{BootstrapReplicates})
 end
 
 function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::Union{SurveyDesign, ReplicateDesign{BootstrapReplicates}}, func::Function, args...; kwargs...)
+    domain_names = unique(design.data[!, domain])
     gdf = groupby(design.data, domain)
     vars = DataFrame[]
     for group in gdf
+        @show unique(group[!, domain])
         push!(vars, func(x, subset(group, design), args...; kwargs...))
     end
-    return vcat(vars...)
+    estimates = vcat(vars...)
+    estimates[!, domain] = domain_names
+    return estimates
 end
