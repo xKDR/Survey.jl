@@ -28,7 +28,7 @@ replicates: 1000
 ```
 
 # Reference
-pg 384-385, Section 12.1.3 Two-Phase Sampling for Stratification - Sharon Lohr, Sampling Design and Analysis (2010)
+pg 385, Section 9.3.3 Bootstrap - Sharon Lohr, Sampling Design and Analysis (2010)
 """
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
