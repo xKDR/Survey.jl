@@ -11,7 +11,6 @@ function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::Union{SurveyD
     gdf = groupby(design.data, domain)
     vars = DataFrame[]
     for group in gdf
-        @show unique(group[!, domain])
         push!(vars, func(x, subset(group, design), args...; kwargs...))
     end
     estimates = vcat(vars...)
