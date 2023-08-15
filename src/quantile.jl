@@ -48,7 +48,7 @@ Compute the standard error of the estimated quantile using replicate weights.
 
 # Examples
 
-```jldoctest; setup = :(using Survey, StatsBase; apisrs = load_data("apisrs");srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights;)
+```jldoctest; setup = :(using Survey, StatsBase; apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights;)
 
 julia> quantile(:api00, bsrs, 0.5)
 1×2 DataFrame
@@ -134,7 +134,28 @@ function quantile(
 end
 
 """
-add docstring
+quantile(var, domain, design)
+
+Estimate a quantile of domains.
+
+```jldoctest meanlabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
+julia> quantile(:api00, :cname, dclus1, 0.5)
+11×2 DataFrame
+ Row │ 0.5th percentile  cname       
+     │ Float64           String15    
+─────┼───────────────────────────────
+   1 │            669.0  Alameda
+   2 │            474.5  Fresno
+   3 │            452.5  Kern
+   4 │            628.0  Los Angeles
+   5 │            616.5  Mendocino
+   6 │            519.5  Merced
+   7 │            717.5  Orange
+   8 │            699.0  Plumas
+   9 │            657.0  San Diego
+  10 │            542.0  San Joaquin
+  11 │            718.0  Santa Clara
+```
 """
 function quantile(x::Symbol, domain, design::AbstractSurveyDesign, p::Real)
     df = bydomain(x, domain, design, quantile, p)
