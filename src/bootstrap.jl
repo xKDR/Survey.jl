@@ -1,6 +1,10 @@
 """
-Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.
+Use bootweights to create replicate weights using Rao-Wu bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.  
 
+The replicate weight for replicate ``r`` is computed using the formula ``w_{i}(r) = w_i \\times \\frac{n_h}{n_h - 1} m_{hj}(r)`` for observation ``i`` in psu ``j`` of stratum ``h``. 
+
+In the formula above, ``w_i`` is the original weight for observation ``i``, ``n_h`` is the number of psus in stratum ``h``, and ``m_{hj}(r)`` is the number of psus in stratum ``h`` that are selected in replicate ``r``.
+    
 ```jldoctest
 julia> using Random
 
@@ -22,6 +26,9 @@ type: bootstrap
 replicates: 1000
 
 ```
+
+# Reference
+pg 385, Section 9.3.3 Bootstrap - Sharon Lohr, Sampling Design and Analysis (2010)
 """
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
