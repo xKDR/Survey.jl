@@ -84,10 +84,8 @@ struct SurveyDesign <: AbstractSurveyDesign
         else
             data[!, sampsize_labels] = fill(length(unique(data[!, cluster])), (nrow(data),))
         end
-        if isa(popsize, Symbol)
-            weights_labels = :_weights
-            data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
-        elseif isa(weights, Symbol)
+
+        if isa(weights, Symbol)
             if !(typeof(data[!, weights]) <: Vector{<:Real})
                 throw(
                     ArgumentError(
@@ -100,6 +98,9 @@ struct SurveyDesign <: AbstractSurveyDesign
                 popsize = :_popsize
                 data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
             end
+        elseif isa(popsize, Symbol)
+                weights_labels = :_weights
+                data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         else
             # neither popsize nor weights given
             weights_labels = :_weights
