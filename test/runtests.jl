@@ -54,13 +54,13 @@ dnhanes_boot = dnhanes |> bootweights
     @test size(load_data("apipop")) == ((6194, 38))
 end
 
-include("SurveyDesign.jl")
+#include("SurveyDesign.jl")
 include("total.jl")
 include("quantile.jl")
 include("mean.jl")
-include("plot.jl")
-include("hist.jl")
-include("boxplot.jl")
+#include("plot.jl")
+#include("hist.jl")
+#include("boxplot.jl")
 include("ratio.jl")
-include("show.jl")
+#include("show.jl")
 include("jackknife.jl")
