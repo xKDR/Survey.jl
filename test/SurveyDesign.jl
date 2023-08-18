@@ -36,6 +36,18 @@
     ### Weights as non-numeric error
     apisrs = copy(apisrs_original)
     @test_throws ArgumentError SurveyDesign(apisrs, weights = :stype)
+
+    ### popsize and weights as symbols
+
+    apisrs = copy(apisrs_original)
+    srs_pop_weights = SurveyDesign(apisrs, weights =:pw, popsize = :fpc)
+    @test srs_pop_weights.data[!, srs_pop_weights.weights][1] ≈ 30.97 atol = 1e-4
+    @test srs_pop_weights.data[!, srs_pop_weights.weights] == 1 ./ srs_pop_weights.data[!, srs_pop_weights.allprobs]
+    @test srs_pop_weights.data[!, srs_pop_weights.allprobs] ≈ srs_pop_weights.data[!, :derived_probs] atol = 1e-4
+    @test srs_pop_weights.data[!, srs_pop_weights.sampsize] ≈ srs_pop_weights.data[!, :derived_sampsize] atol = 1e-4
+    ### Both ways should achieve same weights and allprobs!
+    @test srs_pop_weights.data[!, srs_pop_weights.weights] == srs_weights.data[!, srs_weights.weights]
+
 end
 
 @testset "SurveyDesign_strat" begin
