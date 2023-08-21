@@ -33,12 +33,18 @@ end
 """
 	mean(x::Symbol, design::ReplicateDesign)
 
-Use replicate weights to compute the standard error of the estimated mean.
+Compute the standard error of the estimated mean using replicate weights.
+
+# Arguments
+- `x::Symbol`: Symbol representing the variable for which the mean is estimated.
+- `design::ReplicateDesign`: Replicate design object.
+
+# Returns
+- `df`: DataFrame containing the estimated mean and its standard error.
 
 # Examples
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> bclus1 = dclus1 |> bootweights;
+```jldoctest; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 
 julia> mean(:api00, bclus1)
 1×2 DataFrame
@@ -49,16 +55,24 @@ julia> mean(:api00, bclus1)
 ```
 """
 function mean(x::Symbol, design::ReplicateDesign)
-	weightedmean(x, y) = mean(x, weights(y))
-	df = Survey.variance(x, weightedmean, design)
+    
+    # Define an inner function to calculate the mean
+    function inner_mean(df::DataFrame, column, weights_column)
+        return StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights_column]))
+    end
+
+    # Calculate the mean and variance
+    df = Survey.variance(x, inner_mean, design)
+    
     rename!(df, :estimator => :mean)
+    
     return df
 end
 
 """
 Estimate the mean of a list of variables.
 
-```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
+```jldoctest meanlabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> mean([:api00, :enroll], dclus1)
 2×2 DataFrame
  Row │ names   mean
@@ -94,45 +108,43 @@ Estimate means of domains.
 ```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> mean(:api00, :cname, dclus1)
 11×2 DataFrame
- Row │ cname        mean
-     │ String15     Float64
+ Row │ mean     cname       
+     │ Float64  String15    
 ─────┼──────────────────────
-   1 │ Alameda      669.0
-   2 │ Fresno       472.0
-   3 │ Kern         452.5
-   4 │ Los Angeles  647.267
-   5 │ Mendocino    623.25
-   6 │ Merced       519.25
-   7 │ Orange       710.563
-   8 │ Plumas       709.556
-   9 │ San Diego    659.436
-  10 │ San Joaquin  551.189
-  11 │ Santa Clara  732.077 
+   1 │ 669.0    Alameda
+   2 │ 472.0    Fresno
+   3 │ 452.5    Kern
+   4 │ 647.267  Los Angeles
+   5 │ 623.25   Mendocino
+   6 │ 519.25   Merced
+   7 │ 710.563  Orange
+   8 │ 709.556  Plumas
+   9 │ 659.436  San Diego
+  10 │ 551.189  San Joaquin
+  11 │ 732.077  Santa Clara
 ```
 Use the replicate design to compute standard errors of the estimated means. 
 
 ```jldoctest meanlabel
 julia> mean(:api00, :cname, bclus1)
 11×3 DataFrame
- Row │ cname        mean     SE
-     │ String15     Float64  Float64
-─────┼────────────────────────────────────
-   1 │ Santa Clara  732.077  58.2169
-   2 │ San Diego    659.436   2.66703
-   3 │ Merced       519.25    2.28936e-15
-   4 │ Los Angeles  647.267  47.6233
-   5 │ Orange       710.563   2.19826e-13
-   6 │ Fresno       472.0     1.13687e-13
-   7 │ Plumas       709.556   1.26058e-13
-   8 │ Alameda      669.0     1.27527e-13
-   9 │ San Joaquin  551.189   2.1791e-13
-  10 │ Kern         452.5     0.0
-  11 │ Mendocino    623.25    1.09545e-13
+ Row │ mean     SE       cname       
+     │ Float64  Float64  String15    
+─────┼───────────────────────────────
+   1 │ 732.077      NaN  Santa Clara
+   2 │ 659.436      NaN  San Diego
+   3 │ 519.25       NaN  Merced
+   4 │ 647.267      NaN  Los Angeles
+   5 │ 710.563      NaN  Orange
+   6 │ 472.0        NaN  Fresno
+   7 │ 709.556      NaN  Plumas
+   8 │ 669.0        NaN  Alameda
+   9 │ 551.189      NaN  San Joaquin
+  10 │ 452.5        NaN  Kern
+  11 │ 623.25       NaN  Mendocino
 ```
 """
 function mean(x::Symbol, domain, design::AbstractSurveyDesign)
-    weighted_mean(x, w) = mean(x, StatsBase.weights(w))
-    df = bydomain(x, domain, design, weighted_mean)
-    rename!(df, :statistic => :mean)
+    df = bydomain(x, domain, design, mean)
     return df
 end

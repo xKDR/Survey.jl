@@ -22,10 +22,20 @@ function total(x::Symbol, design::SurveyDesign)
 end
 
 """
-Use replicate weights to compute the standard error of the estimated total. 
+    total(x::Symbol, design::ReplicateDesign)
 
-```jldoctest; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw))
-julia> bclus1 = dclus1 |> bootweights;
+Compute the standard error of the estimated total using replicate weights.
+
+# Arguments
+- `x::Symbol`: Symbol representing the variable for which the total is estimated.
+- `design::ReplicateDesign`: Replicate design object.
+
+# Returns
+- `df`: DataFrame containing the estimated total and its standard error.
+
+# Examples
+
+```jldoctest; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 
 julia> total(:api00, bclus1)
 1×2 DataFrame
@@ -36,9 +46,17 @@ julia> total(:api00, bclus1)
 ```
 """
 function total(x::Symbol, design::ReplicateDesign)
-    total_func(x, y) = wsum(x, weights(y))
-    df = variance(x, total_func, design)
+
+    # Define an inner function to calculate the total
+    function inner_total(df::DataFrame, column, weights)
+        return StatsBase.wsum(df[!, column], StatsBase.weights(df[!, weights]))
+    end
+
+    # Calculate the total and variance
+    df = variance(x, inner_total, design)
+
     rename!(df, :estimator => :total)
+    
     return df
 end
 
@@ -78,46 +96,46 @@ end
 
 Estimate population totals of domains.
 
-```jldoctest totallabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
+```jldoctest totallabel; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 julia> total(:api00, :cname, dclus1)
 11×2 DataFrame
- Row │ cname        total
-     │ String15     Float64
+ Row │ total           cname       
+     │ Float64         String15    
 ─────┼─────────────────────────────
-   1 │ Alameda      249080.0
-   2 │ Fresno        63903.1
-   3 │ Kern          30631.5
-   4 │ Los Angeles       3.2862e5
-   5 │ Mendocino     84380.6
-   6 │ Merced        70300.2
-   7 │ Orange            3.84807e5
-   8 │ Plumas            2.16147e5
-   9 │ San Diego         1.2276e6
-  10 │ San Joaquin       6.90276e5
-  11 │ Santa Clara       6.44244e5 
+   1 │      3.7362e6   Alameda
+   2 │      9.58547e5  Fresno
+   3 │ 459473.0        Kern
+   4 │      2.46465e6  Los Angeles
+   5 │      1.26571e6  Mendocino
+   6 │      1.0545e6   Merced
+   7 │      5.7721e6   Orange
+   8 │      3.2422e6   Plumas
+   9 │      9.20698e6  San Diego
+  10 │      1.03541e7  San Joaquin
+  11 │      3.22122e6  Santa Clara
 ```
 Use the replicate design to compute standard errors of the estimated totals. 
 
 ```jldoctest totallabel
 julia> total(:api00, :cname, bclus1)
 11×3 DataFrame
- Row │ cname        total           SE
-     │ String15     Float64         Float64
-─────┼────────────────────────────────────────────
-   1 │ Santa Clara       6.44244e5      4.2273e5
-   2 │ San Diego         1.2276e6       8.62727e5
-   3 │ Merced        70300.2        71336.3
-   4 │ Los Angeles       3.2862e5       2.93936e5
-   5 │ Orange            3.84807e5      3.88014e5
-   6 │ Fresno        63903.1        64781.7
-   7 │ Plumas            2.16147e5      2.12089e5
-   8 │ Alameda      249080.0            2.49228e5
-   9 │ San Joaquin       6.90276e5      6.81604e5
-  10 │ Kern          30631.5        30870.3
-  11 │ Mendocino     84380.6        80215.9
+ Row │ total           SE         cname       
+     │ Float64         Float64    String15    
+─────┼────────────────────────────────────────
+   1 │      3.22122e6  2.6143e6   Santa Clara
+   2 │      9.20698e6  8.00251e6  San Diego
+   3 │      1.0545e6   9.85983e5  Merced
+   4 │      2.46465e6  2.15017e6  Los Angeles
+   5 │      5.7721e6   5.40929e6  Orange
+   6 │      9.58547e5  8.95488e5  Fresno
+   7 │      3.2422e6   3.03494e6  Plumas
+   8 │      3.7362e6   3.49184e6  Alameda
+   9 │      1.03541e7  9.69862e6  San Joaquin
+  10 │ 459473.0        4.30027e5  Kern
+  11 │      1.26571e6  1.18696e6  Mendocino
 ```
 """
 function total(x::Symbol, domain, design::AbstractSurveyDesign)
-    df = bydomain(x, domain, design, wsum)
-    rename!(df, :statistic => :total)
+    df = bydomain(x, domain, design, total)
+    return df
 end

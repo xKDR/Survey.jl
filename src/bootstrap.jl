@@ -54,10 +54,21 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
 end
 
 """
-    variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
+    variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
 
+Compute the standard error of the estimated mean using the bootstrap method.
 
-Use replicate weights to compute the standard error of the estimated mean using the bootstrap method. The variance is calculated using the formula
+# Arguments
+- `x::Union{Symbol, Vector{Symbol}}`: Symbol or vector of symbols representing the variable(s) for which the mean is estimated.
+- `func::Function`: Function used to calculate the mean.
+- `design::ReplicateDesign{BootstrapReplicates}`: Replicate design object.
+- `args...`: Additional arguments to be passed to the function.
+- `kwargs...`: Additional keyword arguments.
+
+# Returns
+- `df`: DataFrame containing the estimated mean and its standard error.
+
+The variance is calculated using the formula
 
 ```math
 \\hat{V}(\\hat{\\theta}) = \\dfrac{1}{R}\\sum_{i = 1}^R(\\theta_i - \\hat{\\theta})^2
@@ -65,34 +76,46 @@ Use replicate weights to compute the standard error of the estimated mean using 
 
 where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estimator computed using the ``i``th set of replicate weights, and ``\\hat{\\theta}`` is the estimator computed using the original weights.
 
-```jldoctest
-julia> using Survey, StatsBase;
+# Examples
 
-julia> apiclus1 = load_data("apiclus1");
+```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
 
-julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
+julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
-julia> bclus1 = dclus1 |> bootweights;
-
-julia> weightedmean(x, y) = mean(x, weights(y));
-
-julia> variance(:api00, weightedmean, bclus1)
+julia> variance(:api00, mean, bclus1)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
 ─────┼────────────────────
    1 │   644.169  23.4107
-
 ```
 """
-function variance(x::Symbol, func::Function, design::ReplicateDesign{BootstrapReplicates})
-    θ̂ = func(design.data[!, x], design.data[!, design.weights])
-    θ̂t = [
-        func(design.data[!, x], design.data[!, "replicate_"*string(i)]) for
-        i = 1:design.replicates
+function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
+
+    # Compute the estimators
+    θs = func(design.data, x, design.weights, args...; kwargs...)
+    
+    # Compute the estimators for each replicate
+    θts = [
+        func(design.data, x, "replicate_" * string(i), args...; kwargs...) for i in 1:design.replicates
     ]
-    variance = sum((θ̂t .- θ̂) .^ 2) / design.replicates
-    return DataFrame(estimator = θ̂, SE = sqrt(variance))
+
+    # Convert θs and θts to a vector if they are not already
+    θs = (θs isa Vector) ? θs : [θs]  
+    θts = (θts[1] isa Vector) ? θts : [θts]
+
+    # Calculate variances for each estimator
+    variance = Float64[]
+
+    for i in 1:length(θs)
+        θ = θs[i]
+        θt = θts[i]
+        θt = filter(!isnan, θt)
+        num = sum((θt .- θ) .^ 2) / length(θt)
+        push!(variance, num)
+    end
+    
+    return DataFrame(estimator = θs, SE = sqrt.(variance))
 end
 
 function _bootweights_cluster_sorted!(cluster_sorted,

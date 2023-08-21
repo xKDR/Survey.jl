@@ -94,66 +94,56 @@ Compute variance of column `x` for the given `func` using the Jackknife method. 
 Above, ``\\hat{\\theta}`` represents the estimator computed using the original weights, and ``\\hat{\\theta_{(hj)}}`` represents the estimator computed from the replicate weights obtained when PSU ``j`` from cluster ``h`` is removed.
 
 # Examples
-```jldoctest
-julia> using Survey, StatsBase
+```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apistrat = load_data("apistrat"); dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw); rstrat = jackknifeweights(dstrat);)
 
-julia> apistrat = load_data("apistrat");
+julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
-julia> dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw);
-
-julia> rstrat = jackknifeweights(dstrat)
-ReplicateDesign{JackknifeReplicates}:
-data: 200×244 DataFrame
-strata: stype
-    [E, E, E  …  M]
-cluster: none
-popsize: [4420.9999, 4420.9999, 4420.9999  …  1018.0]
-sampsize: [100, 100, 100  …  50]
-weights: [44.21, 44.21, 44.21  …  20.36]
-allprobs: [0.0226, 0.0226, 0.0226  …  0.0491]
-type: jackknife
-replicates: 200
-
-julia> weightedmean(x, y) = mean(x, weights(y));
-
-julia> variance(:api00, weightedmean, rstrat)
+julia> variance(:api00, mean, rstrat)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
 ─────┼────────────────────
    1 │   662.287  9.53613
-
 ```
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
-function variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
+function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates}, args...; kwargs...)
+    
     df = design.data
-    # sort!(df, [design.strata, design.cluster])
     stratified_gdf = groupby(df, design.strata)
 
     # estimator from original weights
-    θ = func(df[!, x], df[!, design.weights])
+    θs = func(design.data, x, design.weights, args...; kwargs...)
 
-    variance = 0
+    # ensure that θs is a vector
+    θs = (θs isa Vector) ? θs : [θs]  
+
+    variance = zeros(length(θs))
     replicate_index = 1
+
     for subgroup in stratified_gdf
+        
         psus_in_stratum = unique(subgroup[!, design.cluster])
         nh = length(psus_in_stratum)
-        cluster_variance = 0
+        cluster_variance = zeros(length(θs))
+
         for psu in psus_in_stratum
-            # get replicate weights corresponding to current stratum and psu
-            rep_weights = df[!, "replicate_"*string(replicate_index)]
 
             # estimator from replicate weights
-            θhj = func(df[!, x], rep_weights)
+            θhjs = func(design.data, x, "replicate_" * string(replicate_index), args...; kwargs...)
+            
+            # update the cluster variance for each estimator
+            for i in 1:length(θs)
+                cluster_variance[i] += ((nh - 1)/nh) * (θhjs[i] - θs[i])^2
+            end
 
-            cluster_variance += ((nh - 1)/nh)*(θhj - θ)^2
             replicate_index += 1
         end
-        variance += cluster_variance
+
+        # update the overall variance
+        variance .+= cluster_variance
     end
 
-    return DataFrame(estimator = θ, SE = sqrt(variance))
+    return DataFrame(estimator = θs, SE = sqrt.(variance))
 end
-
