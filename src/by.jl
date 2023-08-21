@@ -16,7 +16,7 @@ function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::Union{SurveyD
     end
     estimates = vcat(vars...)
     if isa(domain, Vector{Symbol})
-        domain = join(domain, "-")
+        domain = join(domain, "_")
     end
     estimates[!, domain] = domain_names
     return estimates
