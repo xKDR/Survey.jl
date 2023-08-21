@@ -110,7 +110,8 @@ function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::Repl
     for i in 1:length(θs)
         θ = θs[i]
         θt = θts[i]
-        num = sum((θt .- θ) .^ 2) / design.replicates 
+        θt = filter(!isnan, θt)
+        num = sum((θt .- θ) .^ 2) / length(θt)
         push!(variance, num)
     end
     
