@@ -1,5 +1,4 @@
 @testset "Binomial GLM in bsrs" begin
-    bsrs = bootweights(srs, replicates=10000)
     rename!(bsrs.data, Symbol("sch.wide") => :sch_wide)
     bsrs.data.sch_wide = ifelse.(bsrs.data.sch_wide .== "Yes", 1, 0)
     model = svyglm(@formula(sch_wide ~ meals + ell), bsrs, Binomial())
@@ -21,7 +20,6 @@
 end
 
 @testset "Gamma GLM in bsrs" begin
-    bsrs = bootweights(srs, replicates=500)
     model = svyglm(@formula(api00 ~ api99), bsrs, Gamma())
 
     @test model.estimator[1] ≈ 2.915479e-03 rtol=STAT_TOL
@@ -31,7 +29,6 @@ end
 end
 
 @testset "Normal GLM in bsrs" begin
-    bsrs = bootweights(srs, replicates=500)
     model = svyglm(@formula(api00 ~ api99), bsrs, Normal())
 
     @test model.estimator[1] ≈ 63.2830726 rtol=STAT_TOL
@@ -41,7 +38,6 @@ end
 end
 
 @testset "Poisson GLM in bsrs" begin
-    bsrs = bootweights(srs, replicates=500)
     rename!(bsrs.data, Symbol("api.stu") => :api_stu)
     model = svyglm(@formula(api_stu ~ meals + ell), bsrs, Poisson())
 

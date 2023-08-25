@@ -23,11 +23,13 @@ result = svyglm(@formula(api00 ~ api99), bsrs, Normal())
 
 function svyglm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs...)
 
-    columns = vcat(collect(Symbol.(formula.rhs)), Symbol.(formula.lhs))
+    rhs_symbols = typeof(formula.rhs) == Term ? Symbol.(formula.rhs) : collect(Symbol.(formula.rhs))
+    lhs_symbols = Symbol.(formula.lhs)
+    columns = vcat(rhs_symbols, lhs_symbols)
 
     function inner_svyglm(df::DataFrame, columns, weights_column, args...; kwargs...)
         matrix = hcat(ones(nrow(df)), Matrix(df[!, columns[1:(length(columns)-1)]]))
-        model = glm(matrix, (df[!, columns[end]]), args...; kwargs...)
+        model = glm(matrix, (df[!, columns[end]]), args...; wts=df[!, weights_column], kwargs...)
         return coef(model)
     end
 

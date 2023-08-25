@@ -94,7 +94,7 @@ function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::Repl
 
     # Compute the estimators
     θs = func(design.data, x, design.weights, args...; kwargs...)
-    
+
     # Compute the estimators for each replicate
     θts = [
         func(design.data, x, "replicate_" * string(i), args...; kwargs...) for i in 1:design.replicates
@@ -102,14 +102,21 @@ function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::Repl
 
     # Convert θs and θts to a vector if they are not already
     θs = (θs isa Vector) ? θs : [θs]  
-    θts = (θts[1] isa Vector) ? θts : [θts]
+    θts2 = Vector[]
+    if !(θts[1] isa Vector)
+        for θt in θts
+            push!(θts2, [θt])
+        end
+        θts = θts2
+    end
 
     # Calculate variances for each estimator
     variance = Float64[]
 
+    θts = hcat(θts...)
     for i in 1:length(θs)
         θ = θs[i]
-        θt = θts[i]
+        θt = θts[i, :]
         θt = filter(!isnan, θt)
         num = sum((θt .- θ) .^ 2) / length(θt)
         push!(variance, num)
