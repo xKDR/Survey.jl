@@ -1,6 +1,6 @@
 # [Generalized Linear Models in Survey](@id manual)
 
-The `svyglm()` function in the Julia Survey package is used to fit generalized linear models (GLMs) to survey data. It incorporates survey design information, such as sampling weights, stratification, and clustering, to produce valid estimates and standard errors that account for the type of survey design.
+The `glm()` function in the Julia Survey package is used to fit generalized linear models (GLMs) to survey data. It incorporates survey design information, such as sampling weights, stratification, and clustering, to produce valid estimates and standard errors that account for the type of survey design.
 
 As of June 2023, the [GLM.jl documentation](https://juliastats.org/GLM.jl/stable/) lists the supported distribution families and their link functions as:
 ```txt
@@ -17,7 +17,7 @@ Refer to the GLM.jl documentation for more information about the GLM package.
 
 ## Fitting a GLM to a Survey Design object
 
-You can fit a GLM to a Survey Design object the same way you would fit it to a regular data frame. The only difference is that you need to specify the survey design object as the second argument to the svyglm() function.
+You can fit a GLM to a Survey Design object the same way you would fit it to a regular data frame. The only difference is that you need to specify the survey design object as the second argument to the glm() function.
 
 ```julia
 using Survey
@@ -33,14 +33,14 @@ dstrat = SurveyDesign(apistrat, strata = :stype, weights = :pw)
 dclus1 = SurveyDesign(apiclus1, clusters = :dnum, weights = :pw) 
 ```
 
-Once you have the survey design object, you can fit a GLM using the svyglm() function. Specify the formula for the model and the distribution family. 
+Once you have the survey design object, you can fit a GLM using the glm() function. Specify the formula for the model and the distribution family. 
 
-The svyglm() function supports all distribution families supported by GLM.jl, i.e. Bernoulli, Binomial, Gamma, Geometric, InverseGaussian, NegativeBinomial, Normal, and Poisson. 
+The glm() function supports all distribution families supported by GLM.jl, i.e. Bernoulli, Binomial, Gamma, Geometric, InverseGaussian, NegativeBinomial, Normal, and Poisson. 
 
 For example, to fit a GLM with a Bernoulli distribution and a Logit link function to the `srs` survey design object we created above:
 ```julia
 formula = @formula(api00 ~ api99)
-my_glm = svyglm(formula, srs, family = Normal())
+my_glm = glm(formula, srs, family = Normal())
 
 # View the coefficients and standard errors
 my_glm.Coefficients
