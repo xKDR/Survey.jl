@@ -95,20 +95,20 @@ Use the replicate design to compute standard errors of the estimated means.
 ```jldoctest ratiolabel
 julia> ratio([:api00, :api99], :cname, bclus1)
 11×3 DataFrame
- Row │ estimator  SE       cname       
-     │ Float64    Float64  String15    
-─────┼─────────────────────────────────
-   1 │   1.05598      NaN  Santa Clara
-   2 │   1.06112      NaN  San Diego
-   3 │   1.08121      NaN  Merced
-   4 │   1.06307      NaN  Los Angeles
-   5 │   1.03628      NaN  Orange
-   6 │   1.17779      NaN  Fresno
-   7 │   1.02127      NaN  Plumas
-   8 │   1.09852      NaN  Alameda
-   9 │   1.07331      NaN  San Joaquin
-  10 │   1.11453      NaN  Kern
-  11 │   1.00565      NaN  Mendocino
+ Row │ estimator  SE           cname       
+     │ Float64    Float64      String      
+─────┼─────────────────────────────────────
+   1 │   1.05598  0.0189429    Santa Clara
+   2 │   1.06112  0.00979481   San Diego
+   3 │   1.08121  6.85453e-17  Merced
+   4 │   1.06307  0.0257137    Los Angeles
+   5 │   1.03628  0.0          Orange
+   6 │   1.17779  6.27535e-18  Fresno
+   7 │   1.02127  0.0          Plumas
+   8 │   1.09852  2.12683e-16  Alameda
+   9 │   1.07331  2.22045e-16  San Joaquin
+  10 │   1.11453  0.0          Kern
+  11 │   1.00565  0.0          Mendocino
 ```
 """
 function ratio(x::Vector{Symbol}, domain, design::AbstractSurveyDesign)

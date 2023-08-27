@@ -67,9 +67,9 @@ apisrs.awards = ifelse.(apisrs.awards .== "Yes", 1, 0)
 model = glm(@formula(awards ~ meals + ell), apisrs, Bernoulli(), LogitLink())
 ```
 
-### Binomial with Logit Link
+### Poisson with Log Link
 
-Let us assume that the number of students tested (`api_stu`) follows a Binomial distribution, which models the number of successes out of a fixed number of trials. Suppose we want to predict the number of students tested based on the percentage of students eligible for subsidized meals (`meals`) and the percentage of English Language Learners (`ell`). We can fit this GLM using the code below:
+Let us assume that the number of students tested (`api_stu`) follows a Poisson distribution, which models the number of successes out of a fixed number of trials. Suppose we want to predict the number of students tested based on the percentage of students eligible for subsidized meals (`meals`) and the percentage of English Language Learners (`ell`). We can fit this GLM using the code below:
 
 ```julia
 using Survey
@@ -79,11 +79,8 @@ srs = SurveyDesign(apisrs, weights = :pw)
 # Rename api.stu to api_stu
 rename!(apisrs, Symbol("api.stu") => :api_stu)
 
-# Normalize api_stu
-apisrs.api_stu = apisrs.api_stu ./ sum(apisrs.api_stu)
-
 # Fit the model
-model = glm(@formula(api_stu ~ meals + ell), apisrs, Binomial(), LogitLink())
+model = glm(@formula(api_stu ~ meals + ell), apisrs, Poisson(), LogLink())
 ```
 
 ### Gamma with Inverse Link
