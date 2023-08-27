@@ -53,7 +53,7 @@ The examples below use the `api` datasets, which contain survey data collected a
 
 ### Bernoulli with Logit Link
 
-Let us assume that the likelihood of receiving awards (`awards`) follows a Bernoulli distribution, which is characterized by modeling binary outcomes (0 or 1). Suppose we want to predict the likelihood of receiving awards based on the percentage of students eligible for subsidized meals (`meals`) and the percentage of English Language Learners (`ell`). We can fit this GLM using the code below:
+A school being eligible for the awards program (`awards`) is a binary outcome (0 or 1). Let's assume it follows a Bernoulli distribution. Suppose we want to predict `awards` based on the percentage of students eligible for subsidized meals (`meals`) and the percentage of English Language Learners (`ell`). We can fit this GLM using the code below:
 
 ```julia
 using Survey
