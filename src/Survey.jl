@@ -42,6 +42,6 @@ export boxplot
 export bootweights
 export ratio
 export jackknifeweights, variance
-export @formula, glm, glm
+export @formula, glm
 
 end
