@@ -17,11 +17,12 @@ JackknifeReplicates
 load_data
 bootweights
 jackknifeweights
-variance
+stderr
 mean
 total
 quantile
 ratio
+glm
 plot
 boxplot
 hist
