@@ -65,8 +65,8 @@ function quantile(x::Symbol, design::ReplicateDesign, p::Real; kwargs...)
         return Statistics.quantile(df[!, column], ProbabilityWeights(df[!, weights_column]), p)
     end
 
-    # Calculate the quantile and variance
-    df = variance(x, inner_quantile, design)
+    # Calculate the quantile and standard error
+    df = stderr(x, inner_quantile, design)
 
     rename!(df, :estimator => string(p) * "th percentile")
     

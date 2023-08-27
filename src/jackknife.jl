@@ -83,9 +83,9 @@ function jackknifeweights(design::SurveyDesign)
 end
 
 """
-    variance(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
+stderr(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
 
-Compute variance of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
+Compute standard error of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
 
 ```math
 \\hat{V}_{\\text{JK}}(\\hat{\\theta}) = \\sum_{h = 1}^H \\dfrac{n_h - 1}{n_h}\\sum_{j = 1}^{n_h}(\\hat{\\theta}_{(hj)} - \\hat{\\theta})^2
@@ -98,7 +98,7 @@ Above, ``\\hat{\\theta}`` represents the estimator computed using the original w
 
 julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
-julia> variance(:api00, mean, rstrat)
+julia> stderr(:api00, mean, rstrat)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
@@ -108,7 +108,7 @@ julia> variance(:api00, mean, rstrat)
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
-function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates}, args...; kwargs...)
+function stderr(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates}, args...; kwargs...)
     
     df = design.data
     stratified_gdf = groupby(df, design.strata)

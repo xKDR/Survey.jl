@@ -37,9 +37,6 @@ Compute the standard error of the ratio using replicate weights.
 - `variable_den::Symbol`: Symbol representing the denominator variable.
 - `design::ReplicateDesign`: Replicate design object.
 
-# Returns
-- `var`: Variance of the ratio.
-
 # Examples
 
 ```jldoctest; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = bootweights(dclus1);)
@@ -61,9 +58,8 @@ function ratio(x::Vector{Symbol}, design::ReplicateDesign)
         return sum(df[!, columns[1]], StatsBase.weights(df[!, weights_column])) / sum(df[!, columns[2]], StatsBase.weights(df[!, weights_column]))
     end
 
-    # Calculate the variance using the `variance` function with the inner function
-    var = variance([variable_num, variable_den], inner_ratio, design)
-    return var
+    # Calculate the standard error using the `stderr` function with the inner function
+    return stderr([variable_num, variable_den], inner_ratio, design)
 end
 
 """

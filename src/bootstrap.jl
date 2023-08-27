@@ -54,7 +54,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
 end
 
 """
-    variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
+stderr(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
 
 Compute the standard error of the estimated mean using the bootstrap method.
 
@@ -68,7 +68,7 @@ Compute the standard error of the estimated mean using the bootstrap method.
 # Returns
 - `df`: DataFrame containing the estimated mean and its standard error.
 
-The variance is calculated using the formula
+The standard error is calculated using the formula
 
 ```math
 \\hat{V}(\\hat{\\theta}) = \\dfrac{1}{R}\\sum_{i = 1}^R(\\theta_i - \\hat{\\theta})^2
@@ -82,7 +82,7 @@ where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estim
 
 julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
-julia> variance(:api00, mean, bclus1)
+julia> stderr(:api00, mean, bclus1)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
@@ -90,7 +90,7 @@ julia> variance(:api00, mean, bclus1)
    1 │   644.169  23.4107
 ```
 """
-function variance(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
+function stderr(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
 
     # Compute the estimators
     θs = func(design.data, x, design.weights, args...; kwargs...)

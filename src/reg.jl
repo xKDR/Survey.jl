@@ -19,6 +19,16 @@ srs = SurveyDesign(apisrs)
 bsrs = bootweights(srs, replicates = 2000)
 result = svyglm(@formula(api00 ~ api99), bsrs, Normal())
 ```
+
+```jldoctest; setup = :(using Survey, StatsBase, GLM; apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs); bsrs = bootweights(srs, replicates = 2000);)
+julia> svyglm(@formula(api00 ~ api99), bsrs, Normal())
+2×2 DataFrame
+ Row │ estimator  SE        
+     │ Float64    Float64   
+─────┼──────────────────────
+   1 │ 63.2831    9.41231
+   2 │  0.949762  0.0135488
+````
 """
 
 function svyglm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs...)
@@ -33,6 +43,6 @@ function svyglm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs..
         return coef(model)
     end
 
-    # Compute variance of coefficients
-    variance(columns, inner_svyglm, design, args...; kwargs...)
+    # Compute standard error of coefficients
+    stderr(columns, inner_svyglm, design, args...; kwargs...)
   end
