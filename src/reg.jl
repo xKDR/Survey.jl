@@ -1,5 +1,5 @@
 """
-glm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs...)
+    glm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs...)
 
 Perform generalized linear modeling (GLM) using the survey design with replicates.
 
@@ -28,9 +28,8 @@ julia> glm(@formula(api00 ~ api99), bsrs, Normal())
 ─────┼──────────────────────
    1 │ 63.2831    9.41231
    2 │  0.949762  0.0135488
-````
+```
 """
-
 function glm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs...)
 
     rhs_symbols = typeof(formula.rhs) == Term ? Symbol.(formula.rhs) : collect(Symbol.(formula.rhs))

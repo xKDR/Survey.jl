@@ -36,7 +36,6 @@ Compute the standard error of the estimated total using replicate weights.
 # Examples
 
 ```jldoctest; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
-
 julia> total(:api00, bclus1)
 1×2 DataFrame
  Row │ total      SE
