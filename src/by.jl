@@ -1,28 +1,23 @@
-function bydomain(x::Symbol, domain, design::SurveyDesign, func::Function)
-    gdf = groupby(design.data, domain)
-    X = combine(gdf, [x, design.weights] => ((a, b) -> func(a, weights(b))) => :statistic)
-    return X
+function subset(group, design::SurveyDesign)
+    return SurveyDesign(DataFrame(group);clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
+end 
+
+function subset(group, design::ReplicateDesign)
+    return ReplicateDesign{typeof(design.inference_method)}(DataFrame(group), design.replicate_weights;clusters = design.cluster, strata = design.strata, popsize = design.popsize, weights = design.weights)   
 end
 
-function bydomain(x::Symbol, domain, design::ReplicateDesign, func::Function)
+function bydomain(x::Union{Symbol, Vector{Symbol}}, domain,design::Union{SurveyDesign, ReplicateDesign}, func::Function, args...; kwargs...)
+    domain_names = unique(design.data[!, domain])
     gdf = groupby(design.data, domain)
-    nd = length(gdf)
-    X = combine(gdf, [x, design.weights] => ((a, b) -> func(a, weights(b))) => :statistic)
-    Xt_mat = Array{Float64,2}(undef, (nd, design.replicates))
-    for i = 1:design.replicates
-        Xt_mat[:, i] =
-            combine(
-                gdf,
-                [x, Symbol("replicate_" * string(i))] =>
-                    ((a, c) -> func(a, weights(c))) => :statistic,
-            ).statistic
+    domain_names = [join(collect(keys(gdf)[i]), "-") for i in 1:length(gdf)]
+    vars = DataFrame[]
+    for group in gdf
+        push!(vars, func(x, subset(group, design), args...; kwargs...))
     end
-    ses = Float64[]
-    for i = 1:nd
-        filtered_dx = filter(!isnan, Xt_mat[i, :] .- X.statistic[i])
-        push!(ses, sqrt(sum(filtered_dx .^ 2) / length(filtered_dx)))
+    estimates = vcat(vars...)
+    if isa(domain, Vector{Symbol})
+        domain = join(domain, "_")
     end
-    replace!(ses, NaN => 0)
-    X.SE = ses
-    return X
+    estimates[!, domain] = domain_names
+    return estimates
 end

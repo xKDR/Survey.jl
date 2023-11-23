@@ -23,6 +23,7 @@ makedocs(;
             "Replicate weights" => "man/replicate.md",
             "Plotting" => "man/plotting.md",
             "Comparison with other survey analysis tools" => "man/comparisons.md",
+            "Generalised linear models" => "man/glm.md",
         ],
         "API reference" => "api.md",
     ],

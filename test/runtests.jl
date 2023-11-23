@@ -1,6 +1,8 @@
 using Survey
 using Test
 using CategoricalArrays
+using GLM
+using DataFrames
 
 const STAT_TOL = 1e-5
 const SE_TOL = 1e-1
@@ -12,7 +14,8 @@ REPLICATES_REGEX = r"r*_\d"
 apisrs = load_data("apisrs") # Load API dataset
 srs = SurveyDesign(apisrs, weights = :pw)
 unitrange = UnitRange((length(names(apisrs)) + 1):(TOTAL_REPLICATES + length(names(apisrs))))
-bsrs = srs |> bootweights # Create replicate design
+bsrs = srs |> bootweights # Create bootstrap replicate design
+jsrs = srs |> jackknifeweights # Create jackknife replicate design
 bsrs_direct = ReplicateDesign{BootstrapReplicates}(bsrs.data, REPLICATES_VECTOR, weights = :pw)  # using ReplicateDesign constructor
 bsrs_unitrange = ReplicateDesign{BootstrapReplicates}(bsrs.data, unitrange, weights = :pw)  # using ReplicateDesign constructor
 bsrs_regex = ReplicateDesign{BootstrapReplicates}(bsrs.data, REPLICATES_REGEX, weights = :pw)  # using ReplicateDesign constructor
@@ -62,5 +65,6 @@ include("plot.jl")
 include("hist.jl")
 include("boxplot.jl")
 include("ratio.jl")
-include("show.jl")
+#include("show.jl")
 include("jackknife.jl")
+include("reg.jl")
