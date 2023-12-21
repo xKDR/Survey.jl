@@ -85,8 +85,7 @@ where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estim
 
 # Examples
 
-```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
-
+```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
 julia> stderr(:api00, mean, bclus1)

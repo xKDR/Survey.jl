@@ -40,7 +40,6 @@ Compute the standard error of the ratio using replicate weights.
 # Examples
 
 ```jldoctest; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = bootweights(dclus1);)
-
 julia> ratio([:api00, :api99], bclus1)
 1×2 DataFrame
  Row │ estimator  SE         
@@ -67,7 +66,7 @@ end
 
 Estimate ratios of domains.
 
-```jldoctest ratiolabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
+```jldoctest ratiolabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> ratio([:api00, :api99], :cname, dclus1)
 11×2 DataFrame
  Row │ ratio    cname       
