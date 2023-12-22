@@ -69,8 +69,8 @@ Estimate ratios of domains.
 ```jldoctest ratiolabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> ratio([:api00, :api99], :cname, dclus1)
 11×2 DataFrame
- Row │ ratio    cname       
-     │ Float64  String15    
+ Row │ ratio    cname
+     │ Float64  String
 ─────┼──────────────────────
    1 │ 1.09852  Alameda
    2 │ 1.17779  Fresno

@@ -107,40 +107,40 @@ Estimate means of domains.
 ```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> mean(:api00, :cname, dclus1)
 11×2 DataFrame
- Row │ cname        mean    
-     │ String15     Float64 
+ Row │ mean     cname
+     │ Float64  String
 ─────┼──────────────────────
-   1 │ Alameda      669.0
-   2 │ Fresno       472.0
-   3 │ Kern         452.5
-   4 │ Los Angeles  647.267
-   5 │ Mendocino    623.25
-   6 │ Merced       519.25
-   7 │ Orange       710.563
-   8 │ Plumas       709.556
-   9 │ San Diego    659.436
-  10 │ San Joaquin  551.189
-  11 │ Santa Clara  732.077
+   1 │ 669.0    Alameda
+   2 │ 472.0    Fresno
+   3 │ 452.5    Kern
+   4 │ 647.267  Los Angeles
+   5 │ 623.25   Mendocino
+   6 │ 519.25   Merced
+   7 │ 710.563  Orange
+   8 │ 709.556  Plumas
+   9 │ 659.436  San Diego
+  10 │ 551.189  San Joaquin
+  11 │ 732.077  Santa Clara
 ```
 Use the replicate design to compute standard errors of the estimated means. 
 
 ```jldoctest meanlabel
 julia> mean(:api00, :cname, bclus1)
 11×3 DataFrame
- Row │ cname        mean     SE           
-     │ String15     Float64  Float64      
+ Row │ mean     SE            cname
+     │ Float64  Float64       String
 ─────┼────────────────────────────────────
-   1 │ Santa Clara  732.077  58.2169
-   2 │ San Diego    659.436   2.66703
-   3 │ Merced       519.25    2.28936e-15
-   4 │ Los Angeles  647.267  47.6233
-   5 │ Orange       710.563   2.19826e-13
-   6 │ Fresno       472.0     1.13687e-13
-   7 │ Plumas       709.556   1.26058e-13
-   8 │ Alameda      669.0     1.27527e-13
-   9 │ San Joaquin  551.189   2.1791e-13
-  10 │ Kern         452.5     0.0
-  11 │ Mendocino    623.25    1.09545e-13
+   1 │ 732.077  58.2169       Santa Clara
+   2 │ 659.436   2.66703      San Diego
+   3 │ 519.25    2.28936e-15  Merced
+   4 │ 647.267  47.6233       Los Angeles
+   5 │ 710.563   2.19826e-13  Orange
+   6 │ 472.0     1.13687e-13  Fresno
+   7 │ 709.556   1.26058e-13  Plumas
+   8 │ 669.0     1.27527e-13  Alameda
+   9 │ 551.189   2.18162e-13  San Joaquin
+  10 │ 452.5     0.0          Kern
+  11 │ 623.25    1.09545e-13  Mendocino
 ```
 """
 function mean(x::Symbol, domain, design::AbstractSurveyDesign)

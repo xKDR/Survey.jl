@@ -140,8 +140,8 @@ Estimate a quantile of domains.
 ```jldoctest meanlabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> quantile(:api00, :cname, dclus1, 0.5)
 11×2 DataFrame
- Row │ 0.5th percentile  cname       
-     │ Float64           String15    
+ Row │ 0.5th percentile  cname
+     │ Float64           String
 ─────┼───────────────────────────────
    1 │            669.0  Alameda
    2 │            474.5  Fresno
