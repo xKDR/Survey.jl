@@ -8,7 +8,7 @@ julia> apiclus1 = load_data("apiclus1");
 
 julia> dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw);
 
-julia> ratio(:api00, :enroll, dclus1)
+julia> ratio([:api00, :enroll], dclus1)
 1×1 DataFrame
  Row │ ratio
      │ Float64
@@ -57,8 +57,8 @@ function ratio(x::Vector{Symbol}, design::ReplicateDesign)
         return sum(df[!, columns[1]], StatsBase.weights(df[!, weights_column])) / sum(df[!, columns[2]], StatsBase.weights(df[!, weights_column]))
     end
 
-    # Calculate the standard error using the `stderr` function with the inner function
-    return stderr([variable_num, variable_den], inner_ratio, design)
+    # Calculate the standard error using the `standarderror` function with the inner function
+    return standarderror([variable_num, variable_den], inner_ratio, design)
 end
 
 """

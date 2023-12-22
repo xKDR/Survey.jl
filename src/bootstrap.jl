@@ -61,7 +61,7 @@ function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwis
 end
 
 """
-stderr(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
+standarderror(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
 
 Compute the standard error of the estimated mean using the bootstrap method.
 
@@ -86,9 +86,9 @@ where above ``R`` is the number of replicate weights, ``\\theta_i`` is the estim
 # Examples
 
 ```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
-julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
+julia> my_mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
-julia> stderr(:api00, mean, bclus1)
+julia> Survey.standarderror(:api00, my_mean, bclus1)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
@@ -96,7 +96,7 @@ julia> stderr(:api00, mean, bclus1)
    1 │   644.169  23.4107
 ```
 """
-function stderr(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
+function standarderror(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)
 
     # Compute the estimators
     θs = func(design.data, x, design.weights, args...; kwargs...)

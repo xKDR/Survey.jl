@@ -17,7 +17,7 @@ JackknifeReplicates
 load_data
 bootweights
 jackknifeweights
-stderr
+standarderror
 mean
 total
 quantile

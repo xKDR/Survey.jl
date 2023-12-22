@@ -61,7 +61,7 @@ function mean(x::Symbol, design::ReplicateDesign)
     end
 
     # Calculate the mean and standard error
-    df = Survey.stderr(x, inner_mean, design)
+    df = Survey.standarderror(x, inner_mean, design)
     
     rename!(df, :estimator => :mean)
     

@@ -35,7 +35,7 @@ Compute the standard error of the estimated total using replicate weights.
 
 # Examples
 
-```jldoctest; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
+```jldoctest; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> total(:api00, bclus1)
 1×2 DataFrame
  Row │ total      SE
@@ -52,7 +52,7 @@ function total(x::Symbol, design::ReplicateDesign)
     end
 
     # Calculate the total and standard error
-    df = stderr(x, inner_total, design)
+    df = standarderror(x, inner_total, design)
 
     rename!(df, :estimator => :total)
     
@@ -95,7 +95,7 @@ end
 
 Estimate population totals of domains.
 
-```jldoctest totallabel; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
+```jldoctest totallabel; setup = :(using Survey; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> total(:api00, :cname, dclus1)
 11×2 DataFrame
  Row │ cname        total          

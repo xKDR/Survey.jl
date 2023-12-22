@@ -65,7 +65,7 @@ function quantile(x::Symbol, design::ReplicateDesign, p::Real; kwargs...)
     end
 
     # Calculate the quantile and standard error
-    df = stderr(x, inner_quantile, design)
+    df = standarderror(x, inner_quantile, design)
 
     rename!(df, :estimator => string(p) * "th percentile")
     
