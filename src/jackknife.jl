@@ -83,7 +83,7 @@ function jackknifeweights(design::SurveyDesign)
 end
 
 """
-stderr(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
+standarderror(x::Symbol, func::Function, design::ReplicateDesign{JackknifeReplicates})
 
 Compute standard error of column `x` for the given `func` using the Jackknife method. The formula to compute this variance is the following.
 
@@ -94,11 +94,10 @@ Compute standard error of column `x` for the given `func` using the Jackknife me
 Above, ``\\hat{\\theta}`` represents the estimator computed using the original weights, and ``\\hat{\\theta_{(hj)}}`` represents the estimator computed from the replicate weights obtained when PSU ``j`` from cluster ``h`` is removed.
 
 # Examples
-```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apistrat = load_data("apistrat"); dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw); rstrat = jackknifeweights(dstrat);)
+```jldoctest; setup = :(using Survey, StatsBase, DataFrames; apistrat = load_data("apistrat"); dstrat = SurveyDesign(apistrat; strata=:stype, weights=:pw); rstrat = jackknifeweights(dstrat))
+julia> my_mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
 
-julia> mean(df::DataFrame, column, weights) = StatsBase.mean(df[!, column], StatsBase.weights(df[!, weights]));
-
-julia> stderr(:api00, mean, rstrat)
+julia> Survey.standarderror(:api00, my_mean, rstrat)
 1×2 DataFrame
  Row │ estimator  SE
      │ Float64    Float64
@@ -108,7 +107,7 @@ julia> stderr(:api00, mean, rstrat)
 # Reference
 pg 380-382, Section 9.3.2 Jackknife - Sharon Lohr, Sampling Design and Analysis (2010)
 """
-function stderr(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates}, args...; kwargs...)
+function standarderror(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{JackknifeReplicates}, args...; kwargs...)
     
     df = design.data
     stratified_gdf = groupby(df, design.strata)

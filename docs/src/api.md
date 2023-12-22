@@ -17,7 +17,7 @@ JackknifeReplicates
 load_data
 bootweights
 jackknifeweights
-stderr
+Survey.standarderror
 mean
 total
 quantile
@@ -26,4 +26,6 @@ glm
 plot
 boxplot
 hist
+Survey.sturges
+Survey.freedman_diaconis
 ```

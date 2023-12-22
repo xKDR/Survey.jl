@@ -48,8 +48,7 @@ Compute the standard error of the estimated quantile using replicate weights.
 
 # Examples
 
-```jldoctest; setup = :(using Survey, StatsBase; apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights;)
-
+```jldoctest; setup = :(using Survey, StatsBase; apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs; weights=:pw); bsrs = srs |> bootweights)
 julia> quantile(:api00, bsrs, 0.5)
 1×2 DataFrame
  Row │ 0.5th percentile  SE
@@ -66,7 +65,7 @@ function quantile(x::Symbol, design::ReplicateDesign, p::Real; kwargs...)
     end
 
     # Calculate the quantile and standard error
-    df = stderr(x, inner_quantile, design)
+    df = standarderror(x, inner_quantile, design)
 
     rename!(df, :estimator => string(p) * "th percentile")
     
@@ -138,11 +137,11 @@ quantile(var, domain, design)
 
 Estimate a quantile of domains.
 
-```jldoctest meanlabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights;)
+```jldoctest meanlabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
 julia> quantile(:api00, :cname, dclus1, 0.5)
 11×2 DataFrame
- Row │ 0.5th percentile  cname       
-     │ Float64           String15    
+ Row │ 0.5th percentile  cname
+     │ Float64           String
 ─────┼───────────────────────────────
    1 │            669.0  Alameda
    2 │            474.5  Fresno

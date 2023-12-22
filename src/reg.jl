@@ -43,5 +43,5 @@ function glm(formula::FormulaTerm, design::ReplicateDesign, args...; kwargs...)
     end
 
     # Compute standard error of coefficients
-    stderr(columns, inner_glm, design, args...; kwargs...)
+    standarderror(columns, inner_glm, design, args...; kwargs...)
   end
