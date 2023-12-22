@@ -92,7 +92,7 @@ to compute the standard errors.
 
 ```julia
 julia> bootsrs = bootweights(srs; replicates=1000)
-ReplicateDesign:
+ReplicateDesign{BootstrapReplicates}:
 data: 200×1047 DataFrame
 strata: none
 cluster: none

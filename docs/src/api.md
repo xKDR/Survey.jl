@@ -17,12 +17,15 @@ JackknifeReplicates
 load_data
 bootweights
 jackknifeweights
-variance
+Survey.standarderror
 mean
 total
 quantile
 ratio
+glm
 plot
 boxplot
 hist
+Survey.sturges
+Survey.freedman_diaconis
 ```
