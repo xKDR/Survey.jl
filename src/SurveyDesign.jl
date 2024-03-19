@@ -52,7 +52,7 @@ struct SurveyDesign <: AbstractSurveyDesign
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool # TODO functionality
     # Single stage clusters sample, like apiclus1
-    function SurveyDesign(
+    function SurveyDesign!(
         data::AbstractDataFrame;
         clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
         strata::Union{Nothing,Symbol} = nothing,
@@ -323,7 +323,7 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
         rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
 
         # call the SurveyDesign constructor
-        base_design = SurveyDesign(
+        base_design = SurveyDesign!(
                         data;
                         clusters=clusters,
                         strata=strata,
