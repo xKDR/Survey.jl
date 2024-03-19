@@ -12,7 +12,7 @@ REPLICATES_REGEX = r"r*_\d"
 
 # Simple random sample
 apisrs = load_data("apisrs") # Load API dataset
-srs = SurveyDesign(apisrs, weights=:pw)
+srs = SurveyDesign!(apisrs, weights=:pw)
 unitrange = UnitRange((length(names(apisrs))+1):(TOTAL_REPLICATES+length(names(apisrs))))
 bsrs = srs |> bootweights # Create bootstrap replicate design
 jsrs = srs |> jackknifeweights # Create jackknife replicate design
@@ -22,7 +22,7 @@ bsrs_regex = ReplicateDesign{BootstrapReplicates}(bsrs.data, REPLICATES_REGEX, w
 
 # Stratified sample
 apistrat = load_data("apistrat") # Load API dataset
-dstrat = SurveyDesign(apistrat, strata=:stype, weights=:pw) # Create SurveyDesign
+dstrat = SurveyDesign!(apistrat, strata=:stype, weights=:pw) # Create SurveyDesign
 unitrange = UnitRange((length(names(apistrat))+1):(TOTAL_REPLICATES+length(names(apistrat))))
 bstrat = dstrat |> bootweights # Create replicate design
 bstrat_direct = ReplicateDesign{BootstrapReplicates}(bstrat.data, REPLICATES_VECTOR, strata=:stype, weights=:pw)  # using ReplicateDesign constructor
@@ -32,7 +32,7 @@ bstrat_regex = ReplicateDesign{BootstrapReplicates}(bstrat.data, REPLICATES_REGE
 # One-stage cluster sample
 apiclus1 = load_data("apiclus1") # Load API dataset
 apiclus1[!, :pw] = fill(757 / 15, (size(apiclus1, 1),)) # Correct api mistake for pw column
-dclus1 = SurveyDesign(apiclus1; clusters=:dnum, weights=:pw) # Create SurveyDesign
+dclus1 = SurveyDesign!(apiclus1; clusters=:dnum, weights=:pw) # Create SurveyDesign
 unitrange = UnitRange((length(names(apiclus1))+1):(TOTAL_REPLICATES+length(names(apiclus1))))
 dclus1_boot = dclus1 |> bootweights # Create replicate design
 dclus1_boot_direct = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, REPLICATES_VECTOR, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
@@ -41,14 +41,14 @@ dclus1_boot_regex = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, REPLI
 
 # Two-stage cluster sample
 apiclus2 = load_data("apiclus2") # Load API dataset
-dclus2 = SurveyDesign(apiclus2; clusters=:dnum, weights=:pw) # Create SurveyDesign
+dclus2 = SurveyDesign!(apiclus2; clusters=:dnum, weights=:pw) # Create SurveyDesign
 dclus2_boot = dclus2 |> bootweights # Create replicate design
 
 # NHANES
 nhanes = load_data("nhanes")
 nhanes.seq1 = collect(1.0:5.0:42955.0)
 nhanes.seq2 = collect(1.0:9.0:77319.0) # [9k for k in 0:8590.0]
-dnhanes = SurveyDesign(nhanes; clusters=:SDMVPSU, strata=:SDMVSTRA, weights=:WTMEC2YR)
+dnhanes = SurveyDesign!(nhanes; clusters=:SDMVPSU, strata=:SDMVSTRA, weights=:WTMEC2YR)
 dnhanes_boot = dnhanes |> bootweights
 
 @testset "Survey.jl" begin
