@@ -52,12 +52,12 @@ struct SurveyDesign <: AbstractSurveyDesign
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool # TODO functionality
     # Single stage clusters sample, like apiclus1
-    function SurveyDesign(
+    function SurveyDesign!(
         data::AbstractDataFrame;
-        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
-        strata::Union{Nothing,Symbol} = nothing,
-        popsize::Union{Nothing,Symbol} = nothing,
-        weights::Union{Nothing,Symbol} = nothing,
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing,
     )
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
         if typeof(strata) <: Nothing
@@ -99,8 +99,8 @@ struct SurveyDesign <: AbstractSurveyDesign
                 data[!, popsize] = data[!, sampsize_labels] .* data[!, weights_labels]
             end
         elseif isa(popsize, Symbol)
-                weights_labels = :_weights
-                data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
+            weights_labels = :_weights
+            data[!, weights_labels] = data[!, popsize] ./ data[!, sampsize_labels]
         else
             # neither popsize nor weights given
             weights_labels = :_weights
@@ -305,31 +305,31 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
         type::String,
         replicates::UInt,
         replicate_weights::Vector{Symbol},
-    ) where {ReplicateType <: InferenceMethod}
+    ) where {ReplicateType<:InferenceMethod}
         new{ReplicateType}(data, cluster, popsize, sampsize, strata, weights, allprobs,
-           pps, type, replicates, replicate_weights, ReplicateType(replicates))
+            pps, type, replicates, replicate_weights, ReplicateType(replicates))
     end
 
     # constructor with given replicate_weights
     function ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::Vector{Symbol};
-        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
-        strata::Union{Nothing,Symbol} = nothing,
-        popsize::Union{Nothing,Symbol} = nothing,
-        weights::Union{Nothing,Symbol} = nothing
-    ) where {ReplicateType <: InferenceMethod}
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing
+    ) where {ReplicateType<:InferenceMethod}
         # rename the replicate weights if needed
-        rename!(data, [replicate_weights[index] => "replicate_"*string(index) for index in 1:length(replicate_weights)])
+        rename!(data, [replicate_weights[index] => "replicate_" * string(index) for index in 1:length(replicate_weights)])
 
         # call the SurveyDesign constructor
         base_design = SurveyDesign(
-                        data;
-                        clusters=clusters,
-                        strata=strata,
-                        popsize=popsize,
-                        weights=weights
-                      )
+            data;
+            clusters=clusters,
+            strata=strata,
+            popsize=popsize,
+            weights=weights
+        )
         new{ReplicateType}(
             base_design.data,
             base_design.cluster,
@@ -350,11 +350,11 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
     ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::UnitRange{Int};
-        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
-        strata::Union{Nothing,Symbol} = nothing,
-        popsize::Union{Nothing,Symbol} = nothing,
-        weights::Union{Nothing,Symbol} = nothing
-    ) where {ReplicateType <: InferenceMethod} =
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing
+    ) where {ReplicateType<:InferenceMethod} =
         ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[replicate_weights]);
@@ -368,11 +368,11 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
     ReplicateDesign{ReplicateType}(
         data::AbstractDataFrame,
         replicate_weights::Regex;
-        clusters::Union{Nothing,Symbol,Vector{Symbol}} = nothing,
-        strata::Union{Nothing,Symbol} = nothing,
-        popsize::Union{Nothing,Symbol} = nothing,
-        weights::Union{Nothing,Symbol} = nothing
-    ) where {ReplicateType <: InferenceMethod} =
+        clusters::Union{Nothing,Symbol,Vector{Symbol}}=nothing,
+        strata::Union{Nothing,Symbol}=nothing,
+        popsize::Union{Nothing,Symbol}=nothing,
+        weights::Union{Nothing,Symbol}=nothing
+    ) where {ReplicateType<:InferenceMethod} =
         ReplicateDesign{ReplicateType}(
             data,
             Symbol.(names(data)[findall(name -> occursin(replicate_weights, name), names(data))]);
