@@ -1,0 +1,25 @@
+title: "Survey.jl - An Efficient Framework for Analysing Complex Surveys"
+keywords:
+  - Julia
+  - Survey
+  - Statistics
+  - Sampling
+authors:
+  - name: Ayush Patnaik
+    orcid: 0000-0001-9293-8845
+    affiliation: 1
+  - name: Nadia Enhaili
+    affiliation: 2
+  - name: Siddhant Chaudhary
+    affiliation: 3
+  - name: Shikhar Mishra
+    affiliation: 1
+affiliations:
+  - name: XKDR Forum
+    index: 1
+  - name: Simon Fraser University
+    index: 2
+  - name: Chennai Mathematical Institute
+    index: 3
+date: 27 May 2024
+bibliography: ref.bib

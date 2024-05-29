@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: paper.aux
+The style file: juliacon.bst
+Database file #1: ref.bib
+Warning--to sort, need author or key in SummarySurveyAnalysis
+You've used 3 entries,
+            2314 wiz_defined-function locations,
+            541 strings with 4508 characters,
+and the built_in function-call counts, 695 in all, are:
+= -- 68
+> -- 15
+< -- 0
++ -- 7
+- -- 4
+* -- 31
+:= -- 115
+add.period$ -- 8
+call.type$ -- 3
+change.case$ -- 10
+chr.to.int$ -- 0
+cite$ -- 4
+duplicate$ -- 32
+empty$ -- 76
+format.name$ -- 4
+if$ -- 153
+int.to.chr$ -- 0
+int.to.str$ -- 3
+missing$ -- 3
+newline$ -- 17
+num.names$ -- 4
+pop$ -- 20
+preamble$ -- 1
+purify$ -- 8
+quote$ -- 0
+skip$ -- 24
+stack$ -- 0
+substring$ -- 31
+swap$ -- 3
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 10
+warning$ -- 1
+while$ -- 6
+width$ -- 4
+write$ -- 30
+(There was 1 warning)
