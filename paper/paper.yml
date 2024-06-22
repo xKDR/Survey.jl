@@ -14,6 +14,8 @@ authors:
     affiliation: 3
   - name: Shikhar Mishra
     affiliation: 1
+  - name: Iulia Dumitru
+    affiliation: 4
 affiliations:
   - name: XKDR Forum
     index: 1
@@ -21,5 +23,7 @@ affiliations:
     index: 2
   - name: Chennai Mathematical Institute
     index: 3
+  - name: Politehnica University of Bucharest
+    index: 4 
 date: 27 May 2024
 bibliography: ref.bib

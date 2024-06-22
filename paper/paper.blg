@@ -6,7 +6,7 @@ Database file #1: ref.bib
 Warning--to sort, need author or key in SummarySurveyAnalysis
 You've used 3 entries,
             2314 wiz_defined-function locations,
-            541 strings with 4508 characters,
+            541 strings with 4490 characters,
 and the built_in function-call counts, 695 in all, are:
 = -- 68
 > -- 15
