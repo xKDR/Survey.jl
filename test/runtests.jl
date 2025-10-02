@@ -35,7 +35,8 @@ apiclus1 = load_data("apiclus1") # Load API dataset
 apiclus1[!, :pw] = fill(757 / 15, (size(apiclus1, 1),)) # Correct api mistake for pw column
 dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw) # Create SurveyDesign
 unitrange = UnitRange((length(names(apiclus1)) + 1):(TOTAL_REPLICATES + length(names(apiclus1))))
-dclus1_boot = dclus1 |> bootweights # Create replicate design
+Random.seed!(1234)  # Set seed for reproducible bootstrap results
+dclus1_boot = bootweights(dclus1; replicates=TOTAL_REPLICATES, rng=MersenneTwister(1234)) # Create replicate design
 dclus1_boot_direct = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, REPLICATES_VECTOR, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
 dclus1_boot_unitrange = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, unitrange, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
 dclus1_boot_regex = ReplicateDesign{BootstrapReplicates}(dclus1_boot.data, REPLICATES_REGEX, clusters=:dnum, weights=:pw)  # using ReplicateDesign constructor
@@ -70,3 +71,4 @@ include("ratio.jl")
 include("jackknife.jl")
 include("reg.jl")
 include("deff.jl")
+include("canty_davison_bootstrap.jl")

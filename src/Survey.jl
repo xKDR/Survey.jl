@@ -40,7 +40,7 @@ export mean, total, quantile, std
 export plot
 export hist, sturges, freedman_diaconis
 export boxplot
-export bootweights
+export bootweights, canty_davison_bootstrap
 export deff, var_srs
 export ratio
 export jackknifeweights, variance
