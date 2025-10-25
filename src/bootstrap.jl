@@ -30,6 +30,51 @@ replicates: 1000
 # Reference
 pg 385, Section 9.3.3 Bootstrap - Sharon Lohr, Sampling Design and Analysis (2010)
 """
+
+"""
+Use canty_davison_bootstrap to create replicate weights using Canty-Davison bootstrap. The function accepts a `SurveyDesign` and returns a `ReplicateDesign{BootstrapReplicates}` which has additional columns for replicate weights.  
+
+The replicate weight for replicate ``r`` is computed using the formula ``w_{i}(r) = w_i \\times m_{hj}(r)`` for observation ``i`` in psu ``j`` of stratum ``h``. 
+
+In the formula above, ``w_i`` is the original weight for observation ``i``, and ``m_{hj}(r)`` is the number of times psu ``j`` in stratum ``h`` is selected in replicate ``r`` when sampling ``n_h`` psus with replacement.
+
+This differs from the Rao-Wu bootstrap in that:
+1. It samples ``n_h`` psus with replacement (instead of ``n_h-1``)
+2. It does not apply the ``\\frac{n_h}{n_h-1}`` scaling factor
+
+# Reference
+Canty, A., & Davison, A. C. (1999). Resampling-based variance estimation for labour force surveys. Journal of the Royal Statistical Society: Series D (The Statistician), 48(3), 379-391.
+"""
+function canty_davison_bootstrap(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
+    stratified = groupby(design.data, design.strata)
+    H = length(keys(stratified))
+    substrata_dfs = Vector{DataFrame}(undef, H)
+    for h = 1:H
+        substrata = DataFrame(stratified[h])
+        cluster_sorted = sort(substrata, design.cluster)
+        cluster_sorted_designcluster = cluster_sorted[!, design.cluster]
+        cluster_weights = cluster_sorted[!, design.weights]
+        # Perform the inner loop in a type-stable function to improve runtime.
+        _canty_davison_cluster_sorted!(cluster_sorted, cluster_weights,
+            cluster_sorted_designcluster, replicates, rng)
+        substrata_dfs[h] = cluster_sorted
+    end
+    df = reduce(vcat, substrata_dfs)
+    return ReplicateDesign{BootstrapReplicates}(
+        df,
+        design.cluster,
+        design.popsize,
+        design.sampsize,
+        design.strata,
+        design.weights,
+        design.allprobs,
+        design.pps,
+        "canty_davison_bootstrap",
+        UInt(replicates),
+        [Symbol("replicate_"*string(replicate)) for replicate in 1:replicates],
+    )
+end
+
 function bootweights(design::SurveyDesign; replicates = 4000, rng = MersenneTwister(1234))
     stratified = groupby(design.data, design.strata)
     H = length(keys(stratified))
@@ -143,6 +188,25 @@ function _bootweights_cluster_sorted!(cluster_sorted,
             reduce(vcat,
                 [
                     fill((count(==(i), randinds)) * (nh / (nh - 1)), npsus[i]) for
+                    i = 1:nh
+                ]
+            ) .* cluster_weights
+    end
+    cluster_sorted
+end
+
+function _canty_davison_cluster_sorted!(cluster_sorted,
+        cluster_weights, cluster_sorted_designcluster, replicates, rng)
+
+    psus = unique(cluster_sorted_designcluster)
+    npsus = [count(==(i), cluster_sorted_designcluster) for i in psus]
+    nh = length(psus)
+    for replicate = 1:replicates
+        randinds = rand(rng, 1:(nh), nh)  # Sample nh units with replacement
+        cluster_sorted[!, "replicate_"*string(replicate)] =
+            reduce(vcat,
+                [
+                    fill(count(==(i), randinds), npsus[i]) for  # No scaling factor
                     i = 1:nh
                 ]
             ) .* cluster_weights

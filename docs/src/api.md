@@ -16,6 +16,7 @@ BootstrapReplicates
 JackknifeReplicates
 load_data
 bootweights
+canty_davison_bootstrap
 jackknifeweights
 Survey.standarderror
 mean
