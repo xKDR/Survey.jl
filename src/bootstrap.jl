@@ -93,7 +93,7 @@ julia> Survey.standarderror(:api00, my_mean, bclus1)
  Row │ estimator  SE
      │ Float64    Float64
 ─────┼────────────────────
-   1 │   644.169  23.4107
+   1 │   644.169  23.7845
 ```
 """
 function standarderror(x::Union{Symbol, Vector{Symbol}}, func::Function, design::ReplicateDesign{BootstrapReplicates}, args...; kwargs...)

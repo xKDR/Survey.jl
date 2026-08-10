@@ -96,3 +96,107 @@ julia> quantile(:api00, bsrs, [0.25, 0.5, 0.75])
 ```julia
 julia> mean(:api00, :cname, bsrs)
 ```
+
+#### Linearized (Taylor) standard errors and finite population correction
+
+Like `svydesign` objects in R, a `SurveyDesign` computes standard errors by
+Taylor linearization; constructing the design with `popsize` applies a finite
+population correction, like `fpc` in R.
+
+```R
+> clus1 = svydesign(id=~dnum, data=apiclus1, fpc=~fpc)
+> svymean(~api00, clus1)
+> svytotal(~api00, clus1)
+> svyratio(~api00, ~enroll, clus1)
+```
+
+```julia
+julia> clus1 = SurveyDesign(apiclus1; clusters=:dnum, popsize=:fpc)
+julia> mean(:api00, clus1)
+julia> total(:api00, clus1)
+julia> ratio([:api00, :enroll], clus1)
+```
+
+#### Proportions of a categorical variable
+
+```R
+> svymean(~stype, clus1)
+> svytotal(~stype, clus1)
+```
+
+```julia
+julia> mean(:stype, clus1)
+julia> total(:stype, clus1)
+```
+
+#### Population variance, degrees of freedom and confidence intervals
+
+```R
+> svyvar(~api00, clus1)
+> degf(clus1)
+> confint(svymean(~api00, clus1))
+> confint(svymean(~api00, clus1), df=degf(clus1))
+```
+
+```julia
+julia> var(:api00, clus1)
+julia> degf(clus1)
+julia> confint(mean(:api00, clus1))
+julia> confint(mean(:api00, clus1); dof=degf(clus1))
+```
+
+#### Contingency tables and tests
+
+```R
+> svytable(~stype+awards, dstrat)
+> svyttest(api00~comp.imp, dstrat)
+> svychisq(~stype+awards, dstrat)
+```
+
+```julia
+julia> svytable(dstrat, :stype, :awards)
+julia> svyttest(:api00, Symbol("comp.imp"), dstrat)
+julia> svychisq(dstrat, :stype, :awards)
+```
+
+#### Quantiles with Woodruff confidence intervals
+
+```R
+> oldsvyquantile(~api00, dstrat, 0.5, ci=TRUE, interval.type="Wald")
+```
+
+```julia
+julia> quantile(:api00, dstrat, 0.5; ci=true)
+```
+
+#### Post-stratification, raking and weight trimming
+
+```R
+> pop.types = data.frame(stype=c("E","H","M"), Freq=c(4421,755,1018))
+> pop.schwide = data.frame(sch.wide=c("No","Yes"), Freq=c(1072,5122))
+> postStratify(clus1, ~stype, pop.types)
+> rake(clus1, list(~stype,~sch.wide), list(pop.types, pop.schwide))
+> trimWeights(dstrat, upper=40)
+```
+
+```julia
+julia> pop_types = DataFrame(stype=["E","H","M"], Freq=[4421,755,1018])
+julia> pop_schwide = DataFrame(Symbol("sch.wide")=>["No","Yes"], :Freq=>[1072,5122])
+julia> poststratify(clus1, :stype, pop_types)
+julia> rake(clus1, [:stype, Symbol("sch.wide")], [pop_types, pop_schwide])
+julia> trimweights(dstrat; upper=40)
+```
+
+#### Balanced repeated replication (BRR) and Fay's method
+
+```R
+> scddes = svydesign(data=scd, id=~ambulance, strata=~ESA, nest=TRUE, weights=~w)
+> scdbrr = as.svrepdesign(scddes, type="BRR", mse=TRUE)
+> scdfay = as.svrepdesign(scddes, type="Fay", fay.rho=0.3, mse=TRUE)
+```
+
+```julia
+julia> scddes = SurveyDesign(scd; clusters=:ambulance, strata=:ESA, weights=:w)
+julia> scdbrr = brrweights(scddes)
+julia> scdfay = brrweights(scddes; fay_rho=0.3)
+```
