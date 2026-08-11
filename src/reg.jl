@@ -23,8 +23,8 @@ result = glm(@formula(api00 ~ api99), bsrs, Normal())
 ```jldoctest; setup = :(using Survey, StatsBase, GLM; apisrs = load_data("apisrs"); srs = SurveyDesign(apisrs); bsrs = bootweights(srs, replicates = 2000);)
 julia> glm(@formula(api00 ~ api99), bsrs, Normal())
 2×2 DataFrame
- Row │ estimator  SE        
-     │ Float64    Float64   
+ Row │ estimator  SE
+     │ Float64    Float64
 ─────┼──────────────────────
    1 │ 63.2831    9.75899
    2 │  0.949762  0.0138627

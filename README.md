@@ -86,9 +86,22 @@ probs: [0.0528, 0.0528, 0.0528  …  0.0528]
 ```
 
 Using these designs we can compute estimates of statistics such as mean and
-population total. The designs must first be resampled using
-[bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)) in order
-to compute the standard errors.
+population total. Standard errors are computed by Taylor linearization (the
+default of the R `survey` package) directly from the design:
+
+```julia
+julia> mean(:api00, srs)
+1×2 DataFrame
+ Row │ mean     SE
+     │ Float64  Float64
+─────┼──────────────────
+   1 │ 656.585  9.40277
+```
+
+Alternatively, the designs can be resampled using
+[bootstrapping](https://en.wikipedia.org/wiki/Bootstrapping_(statistics)),
+jackknife or balanced repeated replication, and the standard errors computed
+from the replicate weights.
 
 ```julia
 julia> bootsrs = bootweights(srs; replicates=1000)

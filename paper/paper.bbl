@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{SummarySurveyAnalysis}
+Summary of {{Survey Analysis Software}}.
+\newblock https://www.hcp.med.harvard.edu/statistics/survey-soft/\#Packages.
+
+\bibitem{Lohr}
+Sharon~L. Lohr.
+\newblock {\em Sampling Design and Analysis}.
+\newblock Cengage Learning, 2010.
+
+\bibitem{lumley2004analysis}
+Thomas Lumley.
+\newblock Analysis of complex survey samples.
+\newblock {\em Journal of statistical software}, 9:1--19, 2004.
+
+\end{thebibliography}

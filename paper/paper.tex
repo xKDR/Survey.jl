@@ -1,0 +1,189 @@
+%% The paper limit is 2 pages. Try pushing some things to the footnote, as space is reserved for it. Don't change the template. 
+
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{authblk}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[margin=1in]{geometry}
+
+\begin{document}
+
+
+% Title and author information (moved from header.tex)
+\title{Survey.jl - An Efficient Framework for Analysing Complex Surveys}
+
+\author[1]{Ayush Patnaik}
+\author[2]{Nadia Enhaili}
+\author[3]{Siddhant Chaudhary}
+\author[1]{Shikhar Mishra}
+\author[4]{Iulia Dumitru}
+\affil[1]{XKDR Forum}
+\affil[2]{Simon Fraser University}
+\affil[3]{Chennai Mathematical Institute}
+\affil[4]{Politehnica University of Bucharest}
+
+\hypersetup{
+pdftitle = {Survey.jl - An Efficient Framework for Analysing Complex Surveys},
+pdfsubject = {JuliaCon 2022 Proceedings},
+pdfauthor = {Ayush Patnaik, Nadia Enhaili, Siddhant Chaudhary, Shikhar Mishra, Iulia Dumitru},
+pdfkeywords = {Julia, Survey, Statistics, Sampling},
+}
+
+
+\maketitle
+
+% Disclaimer: Under review
+
+\begin{abstract}
+    
+    Estimating variances in survey data analysis is challenging due to the complex nature of survey designs. It is typically done through resampling methods like bootstrapping, which can be computationally intensive. The Survey.jl package leverages Julia to provide an efficient framework for these resampling techniques, facilitating faster survey data analysis.
+    
+\end{abstract}
+
+\section{Introduction}
+
+The growing volume of survey datasets necessitates more efficient analysis methods, particularly for variance estimation in complex survey designs. Computationally demanding resampling techniques, such as bootstrapping and jackknife, are required when dealing with stratification, clustering, and unequal weights. 
+\\
+
+Many software packages exist for survey analysis\footnote{A comprehensive list is provided by \cite{SummarySurveyAnalysis}}. Notable examples include the R survey package, SAS/STAT, SPSS Complex Samples, Stata, and SUDAAN. The R survey package by Thomas Lumley\cite{lumley2004analysis} is widely recognized for its comprehensive capabilities and open-source availability. However, it is limited by R's computational efficiency, especially for large-scale data. Survey.jl leverages Julia to offer a faster resampling framework for variance estimation and survey data analysis.
+
+
+\section{Survey design}
+
+A \verb|SurveyDesign| object can be created to incorporate the sampling design. This object requires the following arguments: \verb|data::DataFrame|, which is the survey data in the form of a \verb|DataFrame|; \verb|clusters::Symbol|, specifying the column name containing the clusters; \verb|strata::Symbol|, specifying the column name containing the strata; \verb|weights::Symbol|, indicating the column name containing the sampling weights; and \verb|popsize::Symbol|, indicating the column name containing the population size.\footnote{Internaly, there is a single constructor for all types of surveys. Every survey is assumed to be a complex survey. If there is no stratification, we assume that everything is part of one stratum. If there is no clustering, we assume each member is a cluster.}  
+
+For example, consider the NHANES dataset, which includes clustering and stratification. The following example demonstrates how to create a \verb|SurveyDesign| object for this dataset:
+\begin{verbatim}
+julia> nhanes = load_data("nhanes"); 
+# CSV dataframe included with the package
+
+julia> design = SurveyDesign(nhanes;
+                    clusters=:SDMVPSU,
+                    strata=:SDMVSTRA, 
+                    weights=:WTMEC2YR);
+    \end{verbatim}
+Consider another example, a cluster sample based on the Academic Performance Index for all California schools based on standardised testing of students. There is no stratification in this example. 
+
+\begin{verbatim}
+julia> apiclus1 = load_data("apiclus1"); 
+# CSV dataframe included with the package
+
+julia> design = SurveyDesign(apiclus1
+            clusters=:dnum, weights=:pw);
+    \end{verbatim}
+
+\section{Estimation}
+
+Survey.jl provides a range of estimators for survey data analysis. These include univariate statistics such as mean, median, total, and quantiles, as well as multivariate statistics such as regressions and ratios. For example, to estimate the mean of the \verb|:api99| column in the \verb|design| SurveyDesign:
+
+\begin{verbatim}
+julia> mean(:api99, design)
+1x1 DataFrame
+    Row | mean    
+        | Float64 
+--------|--------
+      1 | 606.978
+    \end{verbatim}
+This command estimates the mean of column \verb|:api99|.
+
+For multivariate statistics such as regressions\footnote{Regressions are performed using GLM.jl. Instead of passing a DataFrame, a survey design is passed to the function, maintaining a familiar interface. This approach of using multiple dispatch is applied to all estimators imported from other packages, ensuring consistency and ease of use.}:
+
+\begin{verbatim}
+julia> glm(@formula(y ~ x),
+            my_design, Normal(), IdentityLink()); 
+\end{verbatim}
+
+\section{Replicate weights}
+
+The standard error of an estimator measures the average amount of variability or uncertainty in the estimated value. Standard errors are often provided alongside point estimates in various statistical packages.
+
+To estimate standard errors for complex survey designs, Survey.jl uses replicate weights, generated through resampling techniques such as bootstrap and jackknife. Each replicate sample represents a plausible variation of the original sample, allowing for the estimation of variability as if the sampling were repeated multiple times.
+
+The estimate is calculated for each replicate, and then the standard error is computed from the distribution of these estimates. 
+
+\subsection{Bootstrapping}
+
+
+
+In the bootstrap method, each replicate \( r \) involves selecting a simple random sample of \( n_h - 1 \) primary sampling units (PSUs) with replacement from the \( n_h \) sample PSUs in stratum \( h \). The adjusted weight \( w_i'(r) \) for observation \( i \) in replicate \( r \) is calculated as:
+
+\begin{equation}
+    w_i'(r) = w_i(r) \times \frac{n_h}{n_h - 1} \times m_{h}(r)
+\end{equation}
+
+Where \( w_i(r) \) denotes the initial weight for observation \( i \) within replicate \( r \), \( n_h \) is the total number of observations in stratum \( h \), and \( m_{h}(r) \) is the number of PSUs in stratum \( h \) that are selected in replicate \( r \) \cite{Lohr}.
+
+\verb|bootweights| can be used to generate \verb|ReplicateDesign{BootstrapReplicates}| from a \verb|SurveyDesign|. 
+
+\begin{verbatim}
+julia> bdesign = bootweights(design; replicates = 1000)
+\end{verbatim}
+
+The replicate design object facilitates variance estimation. When a function receives a \verb|ReplicateDesign| rather than a \verb|SurveyDesign|, it provides the standard error along with the point estimate.
+For example: 
+\begin{verbatim}
+julia> mean(:api99, bdesign)
+1x2 DataFrame
+    Row | mean     SE      
+        | Float64  Float64 
+--------|-----------------
+      1 | 606.978  24.7505
+    \end{verbatim}
+For each replicate $r$, $\hat{\theta}^*_r$ is the estimator of $\theta$, calculated the same way as $\hat{\theta}$ but using weights $w_i'(r)$ instead of the original weights $w_i$. The variance of the estimator is given by: 
+
+\begin{equation}
+        \hat{V}_B(\hat{\theta}) = \dfrac{1}{R-1}\sum_{r=1}^{R} (\hat{\theta}^*_r - \hat{\theta})^2.
+\end{equation}
+
+
+\subsection{Jackknife}
+In the jackknife method, each PSU is systematically omitted one at a time to create replicates. The adjusted weight \( w_{i(hj)} \) for observation \( i \) when PSU \( j \) in stratum \( h \) is omitted is calculated as:
+
+\begin{equation}
+    w_{i(hj)} = \begin{cases}
+        w_i & i \notin h\\
+    0 & i \in j_{h} \\
+    \dfrac{n_h}{n_h - 1} w_i &  i \in h \text{ and } i \notin j_{h}
+    \end{cases} 
+    \end{equation} \cite{Lohr}
+
+\verb|jackknifeweights| can be used to generate \verb|ReplicateDesign{JackknifeReplicates}| from a \verb|SurveyDesign|. 
+
+\begin{verbatim}
+    julia> my_jackknife_design = jackknifeweights(my_design)
+    \end{verbatim}
+
+This object can be passed to estimators to obtain an estimate of variance alongside the point estimate. 
+
+$\hat{\theta}$ represents the estimator computed using the original weights, and $\hat{\theta_{(hj)}}$ represents the estimator computed from the replicate weights obtained when PSU $j$ from cluster $h$ is removed. The variance is estimated as: 
+
+\begin{equation}
+\hat{V}_{\text{JK}}(\hat{\theta}) = \sum_{h = 1}^H \dfrac{n_h - 1}{n_h}\sum_{j = 1}^{n_h}(\hat{\theta}_{(hj)} - \hat{\theta})^2
+\end{equation}
+
+
+\subsection{Extending variance estimation}
+
+Survey.jl currently supports variance estimation for the summary statistics functions provided by the package, but the framework can be extended to custom estimators. The \verb|variance| function can be applied to \verb|ReplicateDesign| objects to estimate the variance of an estimator function, such as \verb|Survey.mean|.
+
+\section{Conclusions}
+Survey.jl provides a comprehensive framework for survey data analysis, leveraging Julia's computational efficiency. The package has been tested against R's survey package, and future development aims to port all features from R.
+
+\section{Acknowledgements}
+We gratefully acknowledge the financial support from JuliaLab at MIT for this project. Iulia Dumitru has been a key contributor through GSoC. Harsh Arora, Sayantika Dasgupta, and other volunteers have also contributed. We thank Prof. Rajeeva Karandikar, Ajay Shah, Susan Thomas, Sourish Das, and Mousum Dutta for their valuable inputs.
+
+
+% Bibliography using ref.bib
+\bibliographystyle{plain}
+\bibliography{ref}
+
+\begin{center}
+        \textbf{\textit{This paper is currently under review for JuliaCon 2022 Proceedings.}}
+\end{center}
+
+\end{document}
+
+% Inspired by the International Journal of Computer Applications template
+

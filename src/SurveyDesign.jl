@@ -51,6 +51,7 @@ struct SurveyDesign <: AbstractSurveyDesign
     weights::Symbol # Effective weights in case of singlestage approx supported
     allprobs::Symbol # Right now only singlestage approx supported
     pps::Bool # TODO functionality
+    has_fpc::Bool # true only when an explicit `popsize` was given, enabling finite population correction
     # Single stage clusters sample, like apiclus1
     function SurveyDesign(
         data::AbstractDataFrame;
@@ -59,6 +60,7 @@ struct SurveyDesign <: AbstractSurveyDesign
         popsize::Union{Nothing,Symbol} = nothing,
         weights::Union{Nothing,Symbol} = nothing,
     )
+        has_fpc = isnothing(weights) && isa(popsize, Symbol)
         # sampsize here is number of clusters completely sampled, popsize is total clusters in population
         if typeof(strata) <: Nothing
             data.false_strata = repeat(["FALSE_STRATA"], nrow(data))
@@ -120,6 +122,7 @@ struct SurveyDesign <: AbstractSurveyDesign
             weights_labels,
             allprobs_labels,
             pps,
+            has_fpc,
         )
     end
 end
@@ -148,6 +151,19 @@ Type for the Jackknife replicates method. For more details, see [`jackknifeweigh
 struct JackknifeReplicates <: InferenceMethod
     replicates::UInt
 end
+
+"""
+    BRRReplicates <: InferenceMethod
+
+Type for the balanced repeated replication (BRR) method, optionally with Fay's
+adjustment. `rho == 0` corresponds to standard BRR. For more details, see
+[`brrweights`](@ref).
+"""
+struct BRRReplicates <: InferenceMethod
+    replicates::UInt
+    rho::Float64
+end
+BRRReplicates(replicates) = BRRReplicates(UInt(replicates), 0.0)
 
 """
     ReplicateDesign <: AbstractSurveyDesign
@@ -308,6 +324,26 @@ struct ReplicateDesign{ReplicateType} <: AbstractSurveyDesign
     ) where {ReplicateType <: InferenceMethod}
         new{ReplicateType}(data, cluster, popsize, sampsize, strata, weights, allprobs,
            pps, type, replicates, replicate_weights, ReplicateType(replicates))
+    end
+
+    # constructor with an explicit inference method instance (used e.g. by Fay's method,
+    # where the method carries extra parameters beyond the number of replicates)
+    function ReplicateDesign{ReplicateType}(
+        data::AbstractDataFrame,
+        cluster::Symbol,
+        popsize::Symbol,
+        sampsize::Symbol,
+        strata::Symbol,
+        weights::Symbol,
+        allprobs::Symbol,
+        pps::Bool,
+        type::String,
+        replicates::UInt,
+        replicate_weights::Vector{Symbol},
+        inference_method::ReplicateType,
+    ) where {ReplicateType <: InferenceMethod}
+        new{ReplicateType}(data, cluster, popsize, sampsize, strata, weights, allprobs,
+           pps, type, replicates, replicate_weights, inference_method)
     end
 
     # constructor with given replicate_weights
