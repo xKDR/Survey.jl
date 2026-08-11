@@ -30,4 +30,6 @@ makedocs(;
     checkdocs = :exports,
 )
 
-deploydocs(; repo = "github.com/xKDR/Survey.jl", target = "build", devbranch = "main", push_preview = true)
+# push_preview is disabled: preview deploys from pull_request events fail with
+# the repo's deploy key, and only the docs build/doctests matter for PR checks
+deploydocs(; repo = "github.com/xKDR/Survey.jl", target = "build", devbranch = "main")
