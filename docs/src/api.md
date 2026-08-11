@@ -37,6 +37,8 @@ rake
 glm
 plot
 boxplot
+Survey.deff
+Survey.var_srs
 hist
 Survey.sturges
 Survey.freedman_diaconis

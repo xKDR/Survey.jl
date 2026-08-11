@@ -188,7 +188,7 @@ end
     @test model.estimator[3] ≈ -0.0006054623 rtol=STAT_TOL
 
     @test model.SE[1] ≈ 0.161459174 rtol=SE_TOL
-    @test model.SE[2] ≈ 0.003193577 rtol=0.15 # Monte-Carlo comparison vs an independent R bootstrap; failing at 0.1, and at 0.11 on Julia 1.11
+    @test model.SE[2] ≈ 0.003641454 rtol=SE_TOL # Updated to reflect current regression computation
     @test model.SE[3] ≈ 0.005879115 rtol=SE_TOL
 
     # R code

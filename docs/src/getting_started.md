@@ -28,6 +28,10 @@ the [Academic Performance Index](https://r-survey.r-forge.r-project.org/survey/h
 schools with at least 100 students and for various probability samples of the
 data.
 
+You can explore the meaning of each variable in these datasets by referring to the
+[California API Info Guide (archived PDF)](https://web.archive.org/web/20131201000000/https://www.cde.ca.gov/ta/ac/ap/documents/apiinfoguide.pdf)
+or the [`survey::api` documentation on RDocumentation](https://www.rdocumentation.org/packages/survey/versions/4.4-2/topics/api).
+
 ```@repl tutorial
 apisrs = load_data("apisrs")
 ```
