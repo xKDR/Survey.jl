@@ -153,42 +153,26 @@ Taylor linearization using the full design structure, matching `svyby` with
 `svymean` in R.
 
 ```jldoctest meanlabel; setup = :(apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
-julia> mean(:api00, :cname, dclus1)
-11×3 DataFrame
- Row │ mean     SE            cname
-     │ Float64  Float64       String
-─────┼────────────────────────────────────
-   1 │ 669.0     1.14363e-13  Alameda
-   2 │ 472.0     0.0          Fresno
-   3 │ 452.5     0.0          Kern
-   4 │ 647.267  17.4231       Los Angeles
-   5 │ 623.25    0.0          Mendocino
-   6 │ 519.25    0.0          Merced
-   7 │ 710.563   1.13687e-13  Orange
-   8 │ 709.556   1.28786e-14  Plumas
-   9 │ 659.436   2.3199       San Diego
-  10 │ 551.189   1.40332e-13  San Joaquin
-  11 │ 732.077  15.9316       Santa Clara
+julia> mean(:api00, :stype, dclus1)
+3×3 DataFrame
+ Row │ mean     SE       stype
+     │ Float64  Float64  String
+─────┼──────────────────────────
+   1 │ 618.571  38.4026  H
+   2 │ 648.868  22.5873  E
+   3 │ 631.44   31.9274  M
 ```
 Use the replicate design to compute standard errors of the estimated means.
 
 ```jldoctest meanlabel
-julia> mean(:api00, :cname, bclus1)
-11×3 DataFrame
- Row │ mean     SE            cname
-     │ Float64  Float64       String
-─────┼────────────────────────────────────
-   1 │ 732.077  59.7332       Santa Clara
-   2 │ 659.436   2.6411       San Diego
-   3 │ 519.25    5.92519e-15  Merced
-   4 │ 647.267  47.7412       Los Angeles
-   5 │ 710.563   2.17725e-13  Orange
-   6 │ 472.0     1.13687e-13  Fresno
-   7 │ 709.556   1.27381e-13  Plumas
-   8 │ 669.0     1.27844e-13  Alameda
-   9 │ 551.189   2.17352e-13  San Joaquin
-  10 │ 452.5     0.0          Kern
-  11 │ 623.25    1.08494e-13  Mendocino
+julia> mean(:api00, :stype, bclus1)
+3×3 DataFrame
+ Row │ mean     SE       stype
+     │ Float64  Float64  String
+─────┼──────────────────────────
+   1 │ 648.868  22.9491  E
+   2 │ 631.44   32.0912  M
+   3 │ 618.571  39.7277  H
 ```
 """
 function mean(x::Symbol, domain, design::AbstractSurveyDesign)

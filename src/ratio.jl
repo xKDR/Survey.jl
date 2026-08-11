@@ -70,43 +70,27 @@ end
 Estimate ratios of domains.
 
 ```jldoctest ratiolabel; setup = :(using Survey, StatsBase; apiclus1 = load_data("apiclus1"); dclus1 = SurveyDesign(apiclus1; clusters = :dnum, weights = :pw); bclus1 = dclus1 |> bootweights)
-julia> ratio([:api00, :api99], :cname, dclus1)
-11×3 DataFrame
- Row │ ratio    SE           cname
-     │ Float64  Float64      String
-─────┼───────────────────────────────────
-   1 │ 1.09852  1.01915e-16  Alameda
-   2 │ 1.17779  2.42861e-16  Fresno
-   3 │ 1.11453  0.0          Kern
-   4 │ 1.06307  0.00780246   Los Angeles
-   5 │ 1.00565  4.68375e-17  Mendocino
-   6 │ 1.08121  8.32667e-17  Merced
-   7 │ 1.03628  2.48391e-16  Orange
-   8 │ 1.02127  7.28584e-17  Plumas
-   9 │ 1.06112  0.00842564   San Diego
-  10 │ 1.07331  1.61763e-16  San Joaquin
-  11 │ 1.05598  0.0137928    Santa Clara
+julia> ratio([:api00, :api99], :stype, dclus1)
+3×3 DataFrame
+ Row │ ratio    SE          stype
+     │ Float64  Float64     String
+─────┼─────────────────────────────
+   1 │ 1.03837  0.0114577   H
+   2 │ 1.06758  0.00713347  E
+   3 │ 1.03753  0.0104412   M
 ```
 
-Use the replicate design to compute standard errors of the estimated means. 
+Use the replicate design to compute standard errors of the estimated ratios.
 
 ```jldoctest ratiolabel
-julia> ratio([:api00, :api99], :cname, bclus1)
-11×3 DataFrame
- Row │ estimator  SE           cname
-     │ Float64    Float64      String
-─────┼─────────────────────────────────────
-   1 │   1.05598  0.0191326    Santa Clara
-   2 │   1.06112  0.00969399   San Diego
-   3 │   1.08121  6.47299e-17  Merced
-   4 │   1.06307  0.0257811    Los Angeles
-   5 │   1.03628  0.0          Orange
-   6 │   1.17779  7.76836e-18  Fresno
-   7 │   1.02127  0.0          Plumas
-   8 │   1.09852  2.12491e-16  Alameda
-   9 │   1.07331  2.22045e-16  San Joaquin
-  10 │   1.11453  0.0          Kern
-  11 │   1.00565  0.0          Mendocino
+julia> ratio([:api00, :api99], :stype, bclus1)
+3×3 DataFrame
+ Row │ estimator  SE          stype
+     │ Float64    Float64     String
+─────┼───────────────────────────────
+   1 │   1.06758  0.00776773  E
+   2 │   1.03753  0.0112329   M
+   3 │   1.03837  0.014136    H
 ```
 """
 function ratio(x::Vector{Symbol}, domain, design::AbstractSurveyDesign)

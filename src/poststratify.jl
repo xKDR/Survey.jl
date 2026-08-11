@@ -28,11 +28,11 @@ julia> pop_types = DataFrame(stype = ["E", "H", "M"], Freq = [4421, 755, 1018]);
 
 julia> ps = poststratify(dclus1, :stype, pop_types);
 
-julia> total(:stype, ps).total
+julia> round.(total(:stype, ps).total)
 3-element Vector{Float64}:
- 4420.999999999992
-  755.0000000000001
- 1017.9999999999998
+ 4421.0
+  755.0
+ 1018.0
 ```
 """
 function poststratify(design::SurveyDesign, strata_var::Symbol, population::DataFrame)
